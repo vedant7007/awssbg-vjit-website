@@ -79,12 +79,12 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
     const academicOffset = currentMonth >= 6 ? 1 : 0;
     const yearsLeft = batchYear - (currentYear + academicOffset);
 
-    if (yearsLeft <= 0) return "Alumni";
-    if (yearsLeft === 1) return "4th Year";
-    if (yearsLeft === 2) return "3rd Year";
-    if (yearsLeft === 3) return "2nd Year";
-    if (yearsLeft === 4) return "1st Year";
-    return `${batchYear} Batch`;
+    if (yearsLeft < 0) return "Alumni";
+    if (yearsLeft === 0) return "4th Year";
+    if (yearsLeft === 1) return "3rd Year";
+    if (yearsLeft === 2) return "2nd Year";
+    if (yearsLeft === 3) return "1st Year";
+    return "Alumni";
   };
 
   const years = Array.from(
