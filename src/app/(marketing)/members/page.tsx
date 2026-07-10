@@ -4,8 +4,9 @@ import { safe } from "@/lib/utils/safe";
 import { getPublicMembers } from "@/lib/firestore/members.server";
 import { PageShell } from "@/components/layout/PageShell";
 import { MembersDirectoryClient } from "./MembersDirectoryClient";
-import { mockMembers } from "@/lib/constants/mock-members";
 import type { Member } from "@/lib/types";
+
+export type MemberView = Omit<Member, "createdAt" | "updatedAt">;
 
 export const metadata: Metadata = {
   title: "Members",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 // Strip non-serializable fields (like functions/Timestamps) before passing to Client Component
-function serializeMember(member: Member) {
+function serializeMember(member: Member): MemberView {
   return {
     id: member.id,
     username: member.username,
@@ -38,11 +39,8 @@ export default async function MembersPage() {
   // Fetch members from Firestore database
   const dbMembers = await safe(getPublicMembers(200), [], "members:list");
 
-  // Fallback to local mock database if Firestore is empty
-  const rawMembers = dbMembers.length > 0 ? dbMembers : mockMembers;
-
-  // Serialize members to make them safe for Client Component boundary
-  const members = rawMembers.map(serializeMember);
+  // Map and serialize members directly (no mock fallback data)
+  const members = dbMembers.map(serializeMember);
 
   return (
     <PageShell
@@ -50,7 +48,7 @@ export default async function MembersPage() {
       title="Members Directory"
       description="Meet the builders, innovators, and cloud engineers of AWS Student Builder Group at VJIT."
     >
-      <MembersDirectoryClient initialMembers={members as any} />
+      <MembersDirectoryClient initialMembers={members} />
     </PageShell>
   );
 }

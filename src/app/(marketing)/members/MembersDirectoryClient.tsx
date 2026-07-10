@@ -10,68 +10,56 @@ import {
   Twitter,
   Globe,
   X,
-  Award,
-  BookOpen,
   GraduationCap,
-  Sparkles,
   AlertCircle,
 } from "lucide-react";
-import type { Member } from "@/lib/types";
+import Link from "next/link";
+import Image from "next/image";
+import { routes } from "@/lib/constants/routes";
+import type { MemberView } from "./page";
 
-// Role styling map
-const getTierColor = (role: string) => {
+// Role-based design tokens using Tailwind utility classes instead of hardcoded hex values
+const getRoleColors = (role: string) => {
   const lowercaseRole = role.toLowerCase();
-  if (lowercaseRole.includes("captain") || lowercaseRole === "core") return "#FF9900"; // AWS Gold/Orange
-  if (lowercaseRole.includes("lead")) return "#4DA6FF"; // Cloud Blue
-  if (lowercaseRole.includes("coordinator")) return "#2DD4BF"; // Teal
-  return "#8B93A1"; // Muted Slate
-};
-
-// Certification styling map
-const getCertColor = (cert: string) => {
-  const lowercaseCert = cert.toLowerCase();
-  if (lowercaseCert.includes("architect")) {
+  if (lowercaseRole.includes("captain") || lowercaseRole === "core") {
     return {
-      bg: "bg-blue-500/10 border-blue-500/20 text-blue-400",
-      badge: "bg-blue-500 text-white",
-      label: "SAA",
+      text: "text-orange",
+      border: "border-orange/30",
+      bg: "bg-orange/5",
     };
   }
-  if (lowercaseCert.includes("developer")) {
+  if (lowercaseRole.includes("lead")) {
     return {
-      bg: "bg-purple-500/10 border-purple-500/20 text-purple-400",
-      badge: "bg-purple-500 text-white",
-      label: "DVA",
+      text: "text-blue",
+      border: "border-blue/30",
+      bg: "bg-blue/5",
+    };
+  }
+  if (lowercaseRole.includes("coordinator")) {
+    return {
+      text: "text-purple",
+      border: "border-purple/30",
+      bg: "bg-purple/5",
     };
   }
   return {
-    bg: "bg-amber-500/10 border-amber-500/20 text-amber-400",
-    badge: "bg-amber-500 text-white",
-    label: "CCP",
+    text: "text-muted-foreground",
+    border: "border-border/80",
+    bg: "bg-paper/40",
   };
 };
 
-export function MembersDirectoryClient({ initialMembers }: { initialMembers: Member[] }) {
+export function MembersDirectoryClient({ initialMembers }: { initialMembers: MemberView[] }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCert, setSelectedCert] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All");
   const [selectedBranch, setSelectedBranch] = useState("All");
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [selectedMember, setSelectedMember] = useState<MemberView | null>(null);
 
-  // Filter Options
-  const certOptions = [
-    { label: "All Credentials", value: "All" },
-    { label: "Cloud Practitioner (CCP)", value: "practitioner" },
-    { label: "Solutions Architect (SAA)", value: "architect" },
-    { label: "Developer Associate (DVA)", value: "developer" },
-    { label: "Cloud Enthusiasts (None)", value: "None" },
-  ];
-
-  // Dynamic filter collections
+  // Dynamic branch options derived from active member data
   const branches = Array.from(new Set(initialMembers.map((m) => m.branch).filter(Boolean)));
   const branchOptions = ["All", ...branches];
 
-  // Map batch years to standard display years (e.g. 2027 -> 3rd Year)
+  // Map batch years to current academic study years dynamically
   const getStudyYear = (batchYear: number) => {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth();
@@ -87,91 +75,39 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
     return "Alumni";
   };
 
+  // Dynamic study year options
   const years = Array.from(
     new Set(initialMembers.map((m) => getStudyYear(m.batchYear)).filter(Boolean)),
   );
   const yearOptions = ["All", ...years];
 
-  // Filtering Logic
+  // Search and filter logic
   const filteredMembers = initialMembers.filter((member) => {
-    // Search filter
     const matchesSearch =
       member.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (member.team && member.team.toLowerCase().includes(searchQuery.toLowerCase())) ||
       member.skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase())) ||
       member.role.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Certifications filter
-    let matchesCert = true;
-    const certList = member.skills.filter((s) =>
-      /aws|certified|practitioner|architect|developer/i.test(s),
-    );
-    if (selectedCert !== "All") {
-      if (selectedCert === "None") {
-        matchesCert = certList.length === 0;
-      } else {
-        matchesCert = certList.some((c) => c.toLowerCase().includes(selectedCert.toLowerCase()));
-      }
-    }
-
-    // Study Year filter
     const matchesYear = selectedYear === "All" || getStudyYear(member.batchYear) === selectedYear;
-
-    // Branch/Department filter
     const matchesBranch = selectedBranch === "All" || member.branch === selectedBranch;
 
-    return matchesSearch && matchesCert && matchesYear && matchesBranch;
+    return matchesSearch && matchesYear && matchesBranch;
   });
 
-  // Dynamic Statistics
   const totalCount = initialMembers.length;
-  const certifiedList = initialMembers.filter((m) =>
-    m.skills.some((s) => /aws|certified|practitioner|architect|developer/i.test(s)),
-  );
-  const certifiedCount = certifiedList.length;
-  const associateCount = initialMembers.filter((m) =>
-    m.skills.some((s) => /architect|developer/i.test(s)),
-  ).length;
 
   return (
     <div className="space-y-12">
       {/* ── STATS DASHBOARD ───────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {[
-          {
-            label: "Total Members",
-            val: totalCount,
-            icon: GraduationCap,
-            color: "text-orange",
-          },
-          {
-            label: "Certified Members",
-            val: certifiedCount,
-            icon: Award,
-            color: "text-blue",
-          },
-          {
-            label: "Associate level",
-            val: associateCount,
-            icon: BookOpen,
-            color: "text-purple",
-          },
-          {
-            label: "Cloud Enthusiasts",
-            val: totalCount - certifiedCount,
-            icon: Sparkles,
-            color: "text-magenta",
-          },
-        ].map((stat, idx) => (
-          <div
-            key={idx}
-            className="bg-card border-border/80 flex flex-col items-center justify-center rounded-sm border p-4 text-center backdrop-blur-sm transition-colors hover:bg-card/85"
-          >
-            <stat.icon className={`size-5 mb-2 ${stat.color}`} />
-            <span className="font-display text-2xl font-bold md:text-3xl">{stat.val}</span>
-            <span className="text-muted-foreground mt-1 text-xs">{stat.label}</span>
+      <div className="flex justify-start">
+        <div className="bg-card border-border/80 flex items-center gap-4 rounded-sm border px-6 py-4 backdrop-blur-sm">
+          <GraduationCap className="size-6 text-orange" />
+          <div className="flex flex-col">
+            <span className="font-display text-2xl font-bold">{totalCount}</span>
+            <span className="text-muted-foreground text-xs">Total Members</span>
           </div>
-        ))}
+        </div>
       </div>
 
       {/* ── FILTER & SEARCH PANEL ─────────────────────────── */}
@@ -189,24 +125,7 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
         </div>
 
         {/* Dropdown Filters */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="flex flex-col">
-            <span className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase mb-1.5">
-              Certification
-            </span>
-            <select
-              value={selectedCert}
-              onChange={(e) => setSelectedCert(e.target.value)}
-              className="w-full bg-paper border border-border/80 rounded-sm py-2 px-3 text-xs outline-none focus:border-orange transition-all cursor-pointer"
-            >
-              {certOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col">
             <span className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase mb-1.5">
               Year of Study
@@ -253,128 +172,91 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           >
             {filteredMembers.map((member) => {
-              const tierColor = getTierColor(member.role);
-              const certs = member.skills.filter((s) =>
-                /aws|certified|practitioner|architect|developer/i.test(s),
-              );
-              const primaryCert = certs.length > 0 ? certs[0] : null;
-              const certTheme = primaryCert ? getCertColor(primaryCert) : null;
+              const roleColors = getRoleColors(member.role);
 
               return (
-                <motion.div
-                  key={member.id}
-                  layoutId={`member-card-${member.id}`}
-                  onClick={() => setSelectedMember(member)}
-                  className="bg-card hover:border-orange border-border/80 group flex cursor-pointer flex-col justify-between rounded-sm border p-4 transition-all hover:bg-card/95 hover:shadow-md hover:shadow-orange/5"
-                  whileHover={{ y: -3 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <div>
-                    {/* Header: Photo and Badges */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div
-                        className="relative size-12 overflow-hidden rounded-full flex items-center justify-center font-bold text-sm"
-                        style={{
-                          background: `linear-gradient(135deg, ${tierColor}20, ${tierColor}05)`,
-                          border: `1.5px solid ${tierColor}30`,
-                        }}
-                      >
-                        {member.photoURL ? (
-                          <img
-                            src={member.photoURL}
-                            alt=""
-                            className="size-full object-cover"
-                          />
-                        ) : (
-                          <span style={{ color: tierColor }}>
-                            {member.displayName.charAt(0)}
+                <div key={member.id} className="relative group">
+                  <Link
+                    href={routes.member(member.username)}
+                    className="bg-card hover:border-orange border-border/80 flex flex-col justify-between rounded-sm border p-4 h-full transition-all hover:bg-card/95 hover:shadow-md hover:shadow-orange/5"
+                  >
+                    <div>
+                      {/* Header: Photo */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div
+                          className={`relative size-12 overflow-hidden rounded-full flex items-center justify-center font-bold text-sm border ${roleColors.border} ${roleColors.bg}`}
+                        >
+                          {member.photoURL ? (
+                            <Image
+                              src={member.photoURL}
+                              alt=""
+                              fill
+                              sizes="48px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <span className={roleColors.text}>
+                              {member.displayName.charAt(0)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Member Identity */}
+                      <h3 className="font-display font-semibold tracking-tight text-ink group-hover:text-orange transition-colors">
+                        {member.displayName}
+                      </h3>
+                      <p className={`font-mono text-[10px] tracking-wide uppercase font-semibold mt-1 ${roleColors.text}`}>
+                        {member.role === "core" && member.team === "Core" ? "Captain" : member.role}
+                      </p>
+                      <p className="text-muted-foreground text-xs mt-0.5">
+                        {getStudyYear(member.batchYear)} &bull; {member.branch}
+                      </p>
+
+                      {/* Bio Snip */}
+                      <p className="text-muted-foreground text-xs mt-3 line-clamp-2 leading-relaxed">
+                        {member.bio}
+                      </p>
+                    </div>
+
+                    {/* Skills Cloud */}
+                    <div className="mt-5 pt-3 border-t">
+                      <div className="flex flex-wrap gap-1 mb-4 h-[22px] overflow-hidden">
+                        {member.skills.slice(0, 3).map((skill) => (
+                          <span
+                            key={skill}
+                            className="bg-paper border border-border/80 rounded-sm px-1.5 py-0.5 text-[9px] text-muted-foreground"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {member.skills.length > 3 && (
+                          <span className="text-[9px] text-muted-foreground/60 px-1 py-0.5">
+                            +{member.skills.length - 3}
                           </span>
                         )}
                       </div>
 
-                      {/* Certification tag */}
-                      {certTheme && (
-                        <span
-                          className={`font-mono text-[9px] font-semibold px-2 py-0.5 rounded-sm border tracking-wider ${certTheme.bg}`}
+                      {/* Actions */}
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] font-bold text-orange tracking-wide group-hover:underline">
+                          View profile &rarr;
+                        </span>
+
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setSelectedMember(member);
+                          }}
+                          className="text-[10px] font-mono text-muted-foreground hover:text-ink border border-border hover:border-orange px-2 py-0.5 rounded-sm transition-all"
                         >
-                          {certTheme.label}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Member Identity */}
-                    <h3 className="font-display font-semibold tracking-tight text-ink group-hover:text-orange transition-colors">
-                      {member.displayName}
-                    </h3>
-                    <p
-                      className="font-mono text-[10px] tracking-wide uppercase font-semibold mt-1"
-                      style={{ color: tierColor }}
-                    >
-                      {member.role === "core" && member.team === "Core" ? "Captain" : member.role}
-                    </p>
-                    <p className="text-muted-foreground text-xs mt-0.5">
-                      {getStudyYear(member.batchYear)} &bull; {member.branch}
-                    </p>
-
-                    {/* Bio Snip */}
-                    <p className="text-muted-foreground text-xs mt-3 line-clamp-2 leading-relaxed">
-                      {member.bio}
-                    </p>
-                  </div>
-
-                  {/* Skills Cloud */}
-                  <div className="mt-5 pt-3 border-t">
-                    <div className="flex flex-wrap gap-1 mb-4 h-[22px] overflow-hidden">
-                      {member.skills.slice(0, 3).map((skill) => (
-                        <span
-                          key={skill}
-                          className="bg-paper border border-border/80 rounded-sm px-1.5 py-0.5 text-[9px] text-muted-foreground"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                      {member.skills.length > 3 && (
-                        <span className="text-[9px] text-muted-foreground/60 px-1 py-0.5">
-                          +{member.skills.length - 3}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Link outs */}
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] font-bold text-orange tracking-wide group-hover:underline">
-                        View profile &rarr;
-                      </span>
-
-                      <div className="flex items-center gap-2">
-                        {member.socials.github && (
-                          <a
-                            href={member.socials.github}
-                            onClick={(e) => e.stopPropagation()}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-muted-foreground/60 hover:text-ink transition-colors p-1"
-                            aria-label="GitHub"
-                          >
-                            <Github className="size-3.5" />
-                          </a>
-                        )}
-                        {member.socials.linkedin && (
-                          <a
-                            href={member.socials.linkedin}
-                            onClick={(e) => e.stopPropagation()}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-muted-foreground/60 hover:text-blue transition-colors p-1"
-                            aria-label="LinkedIn"
-                          >
-                            <Linkedin className="size-3.5" />
-                          </a>
-                        )}
+                          Quick Peek
+                        </button>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </Link>
+                </div>
               );
             })}
           </motion.div>
@@ -388,12 +270,11 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
             <AlertCircle className="size-8 text-muted-foreground mb-4" />
             <h3 className="font-display font-semibold text-ink">No Members Found</h3>
             <p className="text-muted-foreground text-xs mt-1.5 leading-relaxed">
-              We couldn't find any members matching your current filters. Try resetting the criteria.
+              We couldn&apos;t find any members matching your current filters. Try resetting the criteria.
             </p>
             <button
               onClick={() => {
                 setSearchQuery("");
-                setSelectedCert("All");
                 setSelectedYear("All");
                 setSelectedBranch("All");
               }}
@@ -414,7 +295,7 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedMember(null)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-ink/80 backdrop-blur-sm"
             />
             <motion.div
               layoutId={`member-card-${selectedMember.id}`}
@@ -435,20 +316,18 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
               {/* Identity Header */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6">
                 <div
-                  className="size-16 overflow-hidden rounded-full flex items-center justify-center font-bold text-2xl"
-                  style={{
-                    background: `linear-gradient(135deg, ${getTierColor(selectedMember.role)}20, ${getTierColor(selectedMember.role)}05)`,
-                    border: `2px solid ${getTierColor(selectedMember.role)}30`,
-                  }}
+                  className={`size-16 relative overflow-hidden rounded-full flex items-center justify-center font-bold text-2xl border ${getRoleColors(selectedMember.role).border} ${getRoleColors(selectedMember.role).bg}`}
                 >
                   {selectedMember.photoURL ? (
-                    <img
+                    <Image
                       src={selectedMember.photoURL}
                       alt=""
-                      className="size-full object-cover"
+                      fill
+                      sizes="64px"
+                      className="object-cover"
                     />
                   ) : (
-                    <span style={{ color: getTierColor(selectedMember.role) }}>
+                    <span className={getRoleColors(selectedMember.role).text}>
                       {selectedMember.displayName.charAt(0)}
                     </span>
                   )}
@@ -458,10 +337,7 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
                   <h3 className="font-display font-bold text-xl leading-none text-ink">
                     {selectedMember.displayName}
                   </h3>
-                  <p
-                    className="font-mono text-xs tracking-wider uppercase font-semibold mt-2"
-                    style={{ color: getTierColor(selectedMember.role) }}
-                  >
+                  <p className={`font-mono text-xs tracking-wider uppercase font-semibold mt-2 ${getRoleColors(selectedMember.role).text}`}>
                     {selectedMember.role === "core" && selectedMember.team === "Core"
                       ? "Club Captain"
                       : `${selectedMember.role} • ${selectedMember.team}`}
@@ -482,33 +358,6 @@ export function MembersDirectoryClient({ initialMembers }: { initialMembers: Mem
                     {selectedMember.bio}
                   </p>
                 </div>
-
-                {/* Certifications (if any) */}
-                {selectedMember.skills.some((s) =>
-                  /aws|certified|practitioner|architect|developer/i.test(s),
-                ) && (
-                  <div className="bg-paper/40 border border-border/60 rounded-sm p-4">
-                    <h4 className="font-mono text-[9px] font-bold text-muted-foreground tracking-wide uppercase mb-2.5">
-                      AWS Credentials
-                    </h4>
-                    <div className="space-y-2">
-                      {selectedMember.skills
-                        .filter((s) => /aws|certified|practitioner|architect|developer/i.test(s))
-                        .map((cert) => {
-                          const certTheme = getCertColor(cert);
-                          return (
-                            <div
-                              key={cert}
-                              className={`flex items-center gap-2 px-3 py-1.5 rounded-sm border text-xs font-semibold ${certTheme.bg}`}
-                            >
-                              <Award className="size-4 shrink-0" />
-                              <span>{cert}</span>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-                )}
 
                 {/* Core skills cloud */}
                 <div>
