@@ -1,21 +1,12 @@
-/*
- * Owner: Mohiuddin
- * Status: skeleton (admin auth + validation + signature check real; write TODO)
- *
- * POST marks attendance from a scanned ticket. Admin only.
- * TODO(Mohiuddin):
- *   1. verifyTicketCode already rejects tampered codes below.
- *   2. Confirm the decoded eventId matches the body eventId.
- *   3. Load the registration; 404 if missing.
- *   4. Guard against double check-in (status already "attended").
- *   5. In a transaction set status "attended", attendedAt now, checkedInBy uid.
- *   6. Return the member + event summary for the success UI.
- */
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth/server";
 import { verifyTicketCode } from "@/lib/qr/ticket";
+import { markAttended } from "@/lib/firestore/registrations";
+import { getMemberById } from "@/lib/firestore/members.server";
+import { getEventById } from "@/lib/firestore/events";
+import { safe } from "@/lib/utils/safe";
 
 export const runtime = "nodejs";
 
@@ -36,14 +27,57 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const decoded = verifyTicketCode(parsed.data.ticketCode);
-  if (!decoded || decoded.eventId !== parsed.data.eventId) {
-    return NextResponse.json({ error: "Invalid ticket" }, { status: 400 });
+  const { ticketCode, eventId } = parsed.data;
+
+  // 1. Verify and decode the ticket code
+  const decoded = verifyTicketCode(ticketCode);
+  if (!decoded) {
+    return NextResponse.json(
+      { error: "Invalid ticket code signature" },
+      { status: 400 },
+    );
   }
 
-  // TODO(Mohiuddin): load registration, guard double check-in, mark attended.
-  return NextResponse.json(
-    { error: "Not implemented", owner: "Mohiuddin" },
-    { status: 501 },
-  );
+  // 2. Assert the eventId matches
+  if (decoded.eventId !== eventId) {
+    return NextResponse.json(
+      { error: "Ticket is for a different event" },
+      { status: 400 },
+    );
+  }
+
+  try {
+    // 3. Mark attended in transaction (checks for 404, double checkin, cancelled)
+    const reg = await markAttended(decoded.registrationId, user.uid);
+
+    // 4. Load member and event info for success UI
+    const [member, event] = await Promise.all([
+      safe(getMemberById(reg.userId), null, "checkin:member"),
+      safe(getEventById(reg.eventId), null, "checkin:event"),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      member: {
+        displayName: member?.displayName || "Member",
+        username: member?.username || "unknown",
+        photoURL: member?.photoURL || null,
+      },
+      event: {
+        title: event?.title || "Event",
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Check-in failed";
+    let status = 400;
+    if (message === "Registration not found") {
+      status = 404;
+    } else if (
+      message === "Already checked in" ||
+      message === "Registration is cancelled"
+    ) {
+      status = 409;
+    }
+    return NextResponse.json({ error: message }, { status });
+  }
 }

@@ -1,22 +1,13 @@
-/*
- * Owner: Mohiuddin
- * Status: skeleton (auth + ownership real; QR rendering TODO)
- *
- * GET returns the ticket data / QR for a registration. Only the owner or an
- * admin may read it.
- * TODO(Mohiuddin):
- *   1. Load registrations/{id}; 404 if missing.
- *   2. Authorize: registration.userId === user.uid OR user.admin.
- *   3. Return the ticketCode (and optionally render a PNG QR for email use).
- */
 import { NextResponse, type NextRequest } from "next/server";
+import QRCode from "qrcode";
 
 import { getCurrentUser } from "@/lib/auth/server";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 export const runtime = "nodejs";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
@@ -25,9 +16,60 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // TODO(Mohiuddin): load the registration, authorize owner/admin, return QR.
-  return NextResponse.json(
-    { error: "Not implemented", owner: "Mohiuddin", registrationId: id },
-    { status: 501 },
-  );
+  // 1. Load the registration
+  const regSnap = await getAdminDb().collection("registrations").doc(id).get();
+  if (!regSnap.exists) {
+    return NextResponse.json(
+      { error: "Registration not found" },
+      { status: 404 },
+    );
+  }
+  const reg = regSnap.data();
+
+  // 2. Authorize: Only the ticket owner or an admin
+  const isOwner = reg?.userId === user.uid;
+  const isAdmin = user.admin;
+  if (!isOwner && !isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const ticketCode = reg?.ticketCode;
+  if (!ticketCode) {
+    return NextResponse.json(
+      { error: "Ticket code not generated" },
+      { status: 500 },
+    );
+  }
+
+  // 3. Check if image request
+  const url = new URL(request.url);
+  const isImage =
+    url.searchParams.get("img") === "true" ||
+    request.headers.get("accept")?.includes("image/") ||
+    false;
+
+  if (isImage) {
+    try {
+      const pngBuffer = await QRCode.toBuffer(ticketCode, {
+        type: "png",
+        margin: 2,
+        width: 300,
+      });
+
+      return new Response(new Uint8Array(pngBuffer), {
+        headers: {
+          "Content-Type": "image/png",
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    } catch {
+      return NextResponse.json(
+        { error: "Could not generate QR image" },
+        { status: 500 },
+      );
+    }
+  }
+
+  // Default: Return JSON
+  return NextResponse.json({ ticketCode });
 }
