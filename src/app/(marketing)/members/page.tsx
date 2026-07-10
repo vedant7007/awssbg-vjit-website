@@ -1,18 +1,12 @@
-/*
- * Owner: Aarush
- * Status: skeleton (reads all public members)
- * Acceptance criteria:
- *   - Searchable, filterable directory of public members.
- *   - Filter by role, team, batch year, skills.
- * Reference: src/components/admin/MembersTable.tsx (client filtering pattern).
- */
 import type { Metadata } from "next";
 
 import { safe } from "@/lib/utils/safe";
 import { getPublicMembers } from "@/lib/firestore/members.server";
-import { RouteSkeleton } from "@/components/feedback/RouteSkeleton";
-import { MemberCard } from "@/components/cards/MemberCard";
-import { EmptyState } from "@/components/feedback/EmptyState";
+import { PageShell } from "@/components/layout/PageShell";
+import { MembersDirectoryClient } from "./MembersDirectoryClient";
+import type { Member } from "@/lib/types";
+
+export type MemberView = Omit<Member, "createdAt" | "updatedAt">;
 
 export const metadata: Metadata = {
   title: "Members",
@@ -21,32 +15,40 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+// Strip non-serializable fields (like functions/Timestamps) before passing to Client Component
+function serializeMember(member: Member): MemberView {
+  return {
+    id: member.id,
+    username: member.username,
+    displayName: member.displayName,
+    email: member.email,
+    photoURL: member.photoURL,
+    role: member.role,
+    team: member.team,
+    cohortYear: member.cohortYear,
+    batchYear: member.batchYear,
+    branch: member.branch,
+    bio: member.bio,
+    skills: member.skills,
+    socials: member.socials,
+    isPublic: member.isPublic,
+  };
+}
+
 export default async function MembersPage() {
-  const members = await safe(getPublicMembers(200), [], "members:list");
+  // Fetch members from Firestore database
+  const dbMembers = await safe(getPublicMembers(200), [], "members:list");
+
+  // Map and serialize members directly (no mock fallback data)
+  const members = dbMembers.map(serializeMember);
 
   return (
-    <div className="pt-16">
-      <RouteSkeleton
-        eyebrow="The people"
-        title="Members"
-        owner="Aarush"
-        reference="src/components/admin/MembersTable.tsx"
-        criteria={[
-          "Searchable directory with role, team, batch, and skills filters.",
-          "Responsive grid of member cards.",
-          "Empty and no-match states.",
-        ]}
-      >
-        {members.length > 0 ? (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {members.map((member) => (
-              <MemberCard key={member.id} member={member} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState title="No public members yet" />
-        )}
-      </RouteSkeleton>
-    </div>
+    <PageShell
+      eyebrow="The community"
+      title="Members Directory"
+      description="Meet the builders, innovators, and cloud engineers of AWS Student Builder Group at VJIT."
+    >
+      <MembersDirectoryClient initialMembers={members} />
+    </PageShell>
   );
 }

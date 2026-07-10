@@ -27,6 +27,11 @@ export function useUser(): UseUserState {
   });
 
   useEffect(() => {
+    // No Firebase Auth (keys not configured yet): render as signed-out.
+    if (!auth) {
+      setState({ user: null, loading: false });
+      return;
+    }
     return onAuthStateChanged(auth, (user) => {
       setState({ user, loading: false });
     });
@@ -40,6 +45,12 @@ export function useUser(): UseUserState {
  * Returns true on success.
  */
 export async function signInWithGoogle(): Promise<boolean> {
+  if (!auth) {
+    logger.error(
+      "Sign-in unavailable: Firebase Auth is not configured. Set NEXT_PUBLIC_FIREBASE_* in .env.local.",
+    );
+    return false;
+  }
   try {
     const cred = await signInWithPopup(auth, googleProvider);
     const idToken = await cred.user.getIdToken();
@@ -69,5 +80,5 @@ export async function signOut(): Promise<void> {
   } catch (error) {
     logger.warn("session clear failed", error);
   }
-  await fbSignOut(auth);
+  if (auth) await fbSignOut(auth);
 }

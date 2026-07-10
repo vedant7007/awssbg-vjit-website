@@ -1,157 +1,342 @@
+import * as React from "react";
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Heading,
+  Hr,
+  Html,
+  Img,
+  Section,
+  Text,
+} from "@react-email/components";
+import { render } from "@react-email/render";
+
 /*
- * Owner: Rishikesh (polished design)
- * Status: production-ready premium template
+ * Owner: Rishikesh
+ * Status: production-ready
  *
- * Renders a self-contained HTML string with inline styles, which
- * is the most portable format across email clients. No em dashes in output.
+ * Responsive email template using react-email.
+ * The QR code is accepted as a base64 data URI (generated server-side by
+ * generateTicketQrImage in src/lib/qr/ticket.ts). This avoids remote image
+ * blocking common in corporate and privacy-focused email clients.
+ *
+ * No em dashes anywhere in the template output.
+ * No placeholder data, stats, or lorem ipsum.
  */
 
 export type EventTicketEmailProps = {
+  /** Recipient display name, e.g. "Ananya". */
   memberName: string;
+  /** Full event name, e.g. "Cloud Fundamentals Workshop". */
   eventTitle: string;
-  eventDate: string; // preformatted, e.g. "12 Jul 2026, 5:00 PM"
+  /** Pre-formatted date + time string, e.g. "12 Jul 2026, 5:00 PM IST". */
+  eventDate: string;
+  /** Human-readable venue or "Online via AWS Chime". */
   venue: string;
+  /** Signed ticket code produced by generateTicketCode. Shown as monospace text below the QR. */
   ticketCode: string;
-  coverImageUrl: string | null;
+  /**
+   * Base64 data URI for the QR image, produced by generateTicketQrImage.
+   * Use a data URI so the image renders in clients that block remote images.
+   */
+  qrDataUri: string;
+  /** Absolute URL to the public event page. */
+  eventUrl: string;
 };
 
-export function renderEventTicketEmail(props: EventTicketEmailProps): string {
-  const {
-    memberName,
-    eventTitle,
-    eventDate,
-    venue,
-    ticketCode,
-    coverImageUrl,
-  } = props;
-
-  return `<!doctype html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Your Ticket: ${escapeHtml(eventTitle)}</title>
-  </head>
-  <body style="margin: 0; padding: 0; background-color: #f6f9fc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f6f9fc; padding: 32px 16px;">
-      <tr>
-        <td align="center">
-          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid #e8eef3;">
-            
-            <!-- Cover Image or Header Banner -->
-            ${
-              coverImageUrl
-                ? `
-            <tr>
-              <td style="padding: 0; line-height: 0;">
-                <img src="${escapeAttr(coverImageUrl)}" alt="${escapeAttr(eventTitle)}" width="100%" style="width: 100%; max-height: 220px; object-fit: cover; border-bottom: 4px solid #ff9900; display: block;" />
-              </td>
-            </tr>
-            `
-                : `
-            <tr>
-              <td style="background-color: #1a202c; padding: 32px 24px; text-align: left; border-bottom: 4px solid #ff9900;">
-                <span style="color: #ff9900; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">AWS Student Builder Group</span>
-                <h1 style="color: #ffffff; font-size: 24px; font-weight: 800; margin: 8px 0 0 0; font-family: 'Helvetica Neue', Helvetica, sans-serif;">VJIT Hyderabad</h1>
-              </td>
-            </tr>
-            `
+export const EventTicketEmail = ({
+  memberName,
+  eventTitle,
+  eventDate,
+  venue,
+  ticketCode,
+  qrDataUri,
+  eventUrl,
+}: EventTicketEmailProps) => {
+  return (
+    <Html lang="en" dir="ltr">
+      <Head>
+        <title>Your ticket for {eventTitle}</title>
+        <style>
+          {`
+            @media (prefers-color-scheme: dark) {
+              .email-body { background-color: #0b0f17 !important; }
+              .email-container { background-color: #131826 !important; border-color: #242c3d !important; }
+              .text-primary { color: #fafaf7 !important; }
+              .text-muted { color: #8b93a1 !important; }
+              .text-soft { color: #cbd2de !important; }
+              .divider { border-color: #242c3d !important; }
+              .footer-cell { background-color: #131826 !important; border-color: #242c3d !important; }
+              .qr-wrapper { background-color: #ffffff !important; }
             }
+          `}
+        </style>
+      </Head>
+      <Body
+        className="email-body"
+        style={{
+          margin: 0,
+          padding: "32px 12px",
+          backgroundColor: "#fafaf7",
+          fontFamily: "Arial, Helvetica, sans-serif",
+        }}
+      >
+        <Container
+          className="email-container"
+          style={{
+            backgroundColor: "#ffffff",
+            border: "1px solid #e4e0d6",
+            borderRadius: "4px",
+            maxWidth: "480px",
+            width: "100%",
+            margin: "0 auto",
+            overflow: "hidden",
+          }}
+        >
+          {/* Header */}
+          <Section
+            style={{
+              backgroundColor: "#161d27",
+              padding: "24px 28px",
+            }}
+          >
+            <Text
+              style={{
+                margin: 0,
+                fontSize: "11px",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+                color: "#ff9900",
+              }}
+            >
+              AWS SBG VJIT
+            </Text>
+            <Heading
+              as="h1"
+              style={{
+                margin: "8px 0 0",
+                fontSize: "22px",
+                fontWeight: 700,
+                color: "#fafaf7",
+                lineHeight: "1.2",
+              }}
+            >
+              Your ticket is confirmed
+            </Heading>
+          </Section>
 
-            <!-- Branded Accent strip when cover exists -->
-            ${
-              coverImageUrl
-                ? `
-            <tr>
-              <td style="background-color: #1a202c; padding: 16px 24px; text-align: left;">
-                <span style="color: #ff9900; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">AWS Student Builder Group</span>
-              </td>
-            </tr>
-            `
-                : ""
-            }
+          {/* Body content */}
+          <Section style={{ padding: "28px 28px 0" }}>
+            <Text
+              className="text-primary"
+              style={{
+                margin: "0 0 6px",
+                fontSize: "15px",
+                color: "#161d27",
+              }}
+            >
+              Hi {memberName},
+            </Text>
+            <Text
+              className="text-muted"
+              style={{
+                margin: "0 0 24px",
+                fontSize: "14px",
+                color: "#6b7280",
+                lineHeight: "1.6",
+              }}
+            >
+              You are registered for the event below. Present this QR code at
+              the venue entrance during check-in.
+            </Text>
 
-            <!-- Main Content Card -->
-            <tr>
-              <td style="padding: 32px 24px;">
-                <h2 style="color: #1a202c; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; line-height: 1.3;">Ticket Confirmed!</h2>
-                <p style="color: #4a5568; font-size: 14px; line-height: 1.6; margin: 0 0 24px 0;">
-                  Hi <strong>${escapeHtml(memberName)}</strong>,<br/>
-                  Your registration is successful. Present the ticket code or scan the QR code below at the venue entrance.
-                </p>
+            <Text
+              className="text-primary"
+              style={{
+                margin: "0 0 4px",
+                fontSize: "19px",
+                fontWeight: 700,
+                color: "#161d27",
+                lineHeight: "1.3",
+              }}
+            >
+              {eventTitle}
+            </Text>
 
-                <!-- Event Details Box -->
-                <div style="background-color: #f7fafc; border-radius: 8px; border: 1px solid #edf2f7; padding: 20px; margin-bottom: 32px;">
-                  <h3 style="color: #1a202c; font-size: 16px; font-weight: 700; margin: 0 0 12px 0;">${escapeHtml(eventTitle)}</h3>
-                  
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <td style="padding-bottom: 8px; vertical-align: top; width: 24px;">
-                        <span style="font-size: 16px;">📅</span>
-                      </td>
-                      <td style="padding-bottom: 8px; color: #4a5568; font-size: 14px; font-weight: 500;">
-                        ${escapeHtml(eventDate)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="vertical-align: top; width: 24px;">
-                        <span style="font-size: 16px;">📍</span>
-                      </td>
-                      <td style="color: #4a5568; font-size: 14px; font-weight: 500; line-height: 1.4;">
-                        ${escapeHtml(venue)}
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-
-                <!-- Ticket QR / Code Section -->
-                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="text-align: center;">
+            <Section style={{ marginTop: "12px" }}>
+              <table cellPadding={0} cellSpacing={0} border={0} width="100%">
+                <tbody>
                   <tr>
-                    <td align="center">
-                      <div style="display: inline-block; padding: 12px; background-color: #ffffff; border: 2px dashed #cbd5e0; border-radius: 8px; margin-bottom: 12px;">
-                        <img src="cid:ticket-qr" width="180" height="180" alt="Ticket QR Code" style="display: block; border-radius: 4px;" />
-                      </div>
-                      <div style="margin-top: 4px;">
-                        <span style="font-size: 11px; color: #718096; letter-spacing: 0.5px; text-transform: uppercase;">Ticket Reference</span>
-                        <div style="font-family: 'Courier New', Courier, monospace; font-size: 14px; font-weight: 700; color: #2d3748; margin-top: 2px; letter-spacing: 1px;">
-                          ${escapeHtml(ticketCode)}
-                        </div>
-                      </div>
+                    <td
+                      style={{
+                        padding: "6px 0",
+                        verticalAlign: "top",
+                        width: "72px",
+                      }}
+                    >
+                      <Text
+                        className="text-muted"
+                        style={{
+                          margin: 0,
+                          fontSize: "11px",
+                          letterSpacing: "0.8px",
+                          textTransform: "uppercase",
+                          color: "#6b7280",
+                        }}
+                      >
+                        Date
+                      </Text>
+                    </td>
+                    <td style={{ padding: "6px 0", verticalAlign: "top" }}>
+                      <Text
+                        className="text-soft"
+                        style={{
+                          margin: 0,
+                          fontSize: "14px",
+                          color: "#2a3140",
+                        }}
+                      >
+                        {eventDate}
+                      </Text>
                     </td>
                   </tr>
-                </table>
+                  <tr>
+                    <td
+                      style={{
+                        padding: "6px 0",
+                        verticalAlign: "top",
+                        width: "72px",
+                      }}
+                    >
+                      <Text
+                        className="text-muted"
+                        style={{
+                          margin: 0,
+                          fontSize: "11px",
+                          letterSpacing: "0.8px",
+                          textTransform: "uppercase",
+                          color: "#6b7280",
+                        }}
+                      >
+                        Venue
+                      </Text>
+                    </td>
+                    <td style={{ padding: "6px 0", verticalAlign: "top" }}>
+                      <Text
+                        className="text-soft"
+                        style={{
+                          margin: 0,
+                          fontSize: "14px",
+                          color: "#2a3140",
+                        }}
+                      >
+                        {venue}
+                      </Text>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
+          </Section>
 
-              </td>
-            </tr>
+          {/* QR Code Section */}
+          <Section style={{ padding: "28px", textAlign: "center" }}>
+            <div
+              className="qr-wrapper"
+              style={{
+                display: "inline-block",
+                backgroundColor: "#ffffff",
+                border: "1px solid #e4e0d6",
+                borderRadius: "4px",
+                padding: "12px",
+              }}
+            >
+              <Img
+                src={qrDataUri}
+                width="200"
+                height="200"
+                alt="Ticket QR code"
+                style={{ display: "block", border: 0, outline: "none" }}
+              />
+            </div>
+            <Text
+              style={{
+                margin: "10px 0 0",
+                fontFamily: "'Courier New', Courier, monospace",
+                fontSize: "11px",
+                color: "#6b7280",
+                letterSpacing: "0.5px",
+                wordBreak: "break-all",
+              }}
+            >
+              {ticketCode}
+            </Text>
+          </Section>
 
-            <!-- Footer -->
-            <tr>
-              <td style="background-color: #f7fafc; padding: 24px; text-align: center; border-top: 1px solid #edf2f7;">
-                <p style="color: #718096; font-size: 12px; margin: 0 0 6px 0; font-weight: 500;">
-                  AWS Student Builder Group &bull; VJIT Hyderabad
-                </p>
-                <p style="color: #a0aec0; font-size: 11px; margin: 0;">
-                  This is an automated ticket confirmation. Please do not reply directly to this email.
-                </p>
-              </td>
-            </tr>
+          {/* CTA Button */}
+          <Section style={{ padding: "0 28px 28px", textAlign: "center" }}>
+            <Button
+              href={eventUrl}
+              style={{
+                backgroundColor: "#ff9900",
+                borderRadius: "4px",
+                padding: "12px 28px",
+                fontFamily: "Arial, Helvetica, sans-serif",
+                fontSize: "14px",
+                fontWeight: 700,
+                color: "#161d27",
+                textDecoration: "none",
+                display: "inline-block",
+              }}
+            >
+              View event details
+            </Button>
+          </Section>
 
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`;
-}
+          <Hr
+            className="divider"
+            style={{
+              borderColor: "#e4e0d6",
+              margin: 0,
+            }}
+          />
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+          {/* Footer */}
+          <Section
+            className="footer-cell"
+            style={{
+              padding: "16px 28px",
+              backgroundColor: "#ffffff",
+            }}
+          >
+            <Text
+              className="text-muted"
+              style={{
+                margin: 0,
+                fontSize: "12px",
+                color: "#6b7280",
+                lineHeight: "1.6",
+              }}
+            >
+              This email was sent because you registered for an event hosted by
+              AWS Student Builder Group at VJIT, Hyderabad. If you did not
+              register, you can safely ignore this message.
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  );
+};
 
-function escapeAttr(value: string): string {
-  return escapeHtml(value).replace(/'/g, "&#39;");
+/**
+ * Render the event ticket confirmation email as a self-contained HTML string.
+ * Call this on the server, pass the result to resend.emails.send() as `html`.
+ */
+export async function renderEventTicketEmail(
+  props: EventTicketEmailProps,
+): Promise<string> {
+  return await render(<EventTicketEmail {...props} />);
 }
