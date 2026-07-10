@@ -10,6 +10,7 @@ import type {
   Serialized,
 } from "@/lib/types";
 import { toDate } from "@/lib/utils/format";
+import { requireAdmin } from "@/lib/auth/server";
 
 const COLLECTION = "events";
 
@@ -130,6 +131,8 @@ export async function checkEventSlugAvailable(
 }
 
 export async function createEvent(values: EventFormValues): Promise<string> {
+  await requireAdmin("/admin/events");
+
   const isAvailable = await checkEventSlugAvailable(values.slug);
   if (!isAvailable) {
     throw new Error(`Slug "${values.slug}" is already taken`);
@@ -175,6 +178,8 @@ export async function updateEvent(
   id: string,
   values: EventFormValues,
 ): Promise<void> {
+  await requireAdmin("/admin/events");
+
   const isAvailable = await checkEventSlugAvailable(values.slug, id);
   if (!isAvailable) {
     throw new Error(`Slug "${values.slug}" is already taken`);
@@ -214,6 +219,7 @@ export async function updateEvent(
 }
 
 export async function deleteEvent(id: string): Promise<void> {
+  await requireAdmin("/admin/events");
   await getAdminDb().collection(COLLECTION).doc(id).delete();
 }
 

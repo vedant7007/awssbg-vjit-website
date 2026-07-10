@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import QRCode from "qrcode";
 
 import { getCurrentUser } from "@/lib/auth/server";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { generateTicketQrImage } from "@/lib/qr/ticket";
 
 export const runtime = "nodejs";
 
@@ -50,11 +50,10 @@ export async function GET(
 
   if (isImage) {
     try {
-      const pngBuffer = await QRCode.toBuffer(ticketCode, {
-        type: "png",
-        margin: 2,
-        width: 300,
-      });
+      // generateTicketQrImage returns a data URI; extract the base64 payload
+      const dataUri = await generateTicketQrImage(ticketCode);
+      const base64 = dataUri.replace(/^data:image\/png;base64,/, "");
+      const pngBuffer = Buffer.from(base64, "base64");
 
       return new Response(new Uint8Array(pngBuffer), {
         headers: {

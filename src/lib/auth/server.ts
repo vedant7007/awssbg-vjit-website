@@ -27,7 +27,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   if (!session) return null;
 
   try {
-    const decoded = await getAdminAuth().verifySessionCookie(session);
+    const decoded = await getAdminAuth().verifySessionCookie(session, true);
     return {
       uid: decoded.uid,
       email: decoded.email ?? null,

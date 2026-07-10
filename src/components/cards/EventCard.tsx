@@ -46,7 +46,6 @@ export function EventCard({
             src={event.coverImage}
             alt=""
             fill
-            unoptimized
             sizes={featured ? "(min-width: 768px) 50vw, 100vw" : "100vw"}
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />

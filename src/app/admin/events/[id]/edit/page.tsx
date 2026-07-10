@@ -1,69 +1,49 @@
-"use client";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-import * as React from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
-
+import { getEventByIdSerialized } from "@/lib/firestore/events";
+import { requireAdmin } from "@/lib/auth/server";
 import { routes } from "@/lib/constants/routes";
-import { getEventByIdSerialized, updateEvent } from "@/lib/firestore/events";
-import type { Event, EventFormValues, Serialized } from "@/lib/types";
+import type { EventFormValues } from "@/lib/types";
 import { PageShell } from "@/components/layout/PageShell";
-import { EventForm } from "@/components/forms/EventForm";
+import { EditEventClient } from "./EditEventClient";
 
-export default function EditEventPage() {
-  const router = useRouter();
-  const params = useParams();
-  const id = params?.id as string;
+export const metadata: Metadata = { title: "Edit Event | Admin" };
+export const dynamic = "force-dynamic";
 
-  const [event, setEvent] = React.useState<Serialized<Event> | null>(null);
-  const [loading, setLoading] = React.useState(true);
+export default async function EditEventPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  await requireAdmin(routes.adminEvents);
 
-  React.useEffect(() => {
-    if (!id) return;
-    async function loadEvent() {
-      try {
-        const data = await getEventByIdSerialized(id);
-        if (!data) {
-          toast.error("Event not found");
-          router.push(routes.adminEvents);
-          return;
-        }
-        setEvent(data);
-      } catch {
-        toast.error("Could not load event");
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadEvent();
-  }, [id, router]);
+  const { id } = await params;
+  const event = await getEventByIdSerialized(id);
+  if (!event) notFound();
 
-  async function handleSubmit(values: EventFormValues) {
-    try {
-      await updateEvent(id, values);
-      toast.success(`Updated event: ${values.title}`);
-      router.push(routes.adminEvents);
-      router.refresh();
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Could not update event",
-      );
-    }
-  }
-
-  if (loading) {
-    return (
-      <PageShell eyebrow="Events" title="Edit event" description="Loading...">
-        <div className="flex h-32 items-center justify-center">
-          <p className="text-muted-foreground text-sm">
-            Loading event details...
-          </p>
-        </div>
-      </PageShell>
-    );
-  }
-
-  if (!event) return null;
+  const defaultValues: EventFormValues = {
+    slug: event.slug,
+    title: event.title,
+    tagline: event.tagline,
+    description: event.description,
+    coverImage: event.coverImage ?? "",
+    gallery: event.gallery,
+    category: event.category,
+    status: event.status,
+    startAt: event.startAt
+      ? new Date(event.startAt).toISOString().slice(0, 16)
+      : "",
+    endAt: event.endAt ? new Date(event.endAt).toISOString().slice(0, 16) : "",
+    venue: event.venue,
+    capacity: event.capacity,
+    registrationOpen: event.registrationOpen,
+    registrationDeadline: event.registrationDeadline
+      ? new Date(event.registrationDeadline).toISOString().slice(0, 16)
+      : "",
+    externalLink: event.externalLink ?? "",
+    outcomes: event.outcomes,
+  };
 
   return (
     <PageShell
@@ -71,11 +51,7 @@ export default function EditEventPage() {
       title={`Edit ${event.title}`}
       description="Update event details."
     >
-      <EventForm
-        defaultValues={event}
-        onSubmit={handleSubmit}
-        submitLabel="Save changes"
-      />
+      <EditEventClient id={id} defaultValues={defaultValues} />
     </PageShell>
   );
 }

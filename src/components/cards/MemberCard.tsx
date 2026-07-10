@@ -33,7 +33,6 @@ export function MemberCard({
             src={member.photoURL}
             alt=""
             fill
-            unoptimized
             sizes="44px"
             className="object-cover"
           />

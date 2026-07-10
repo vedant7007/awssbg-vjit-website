@@ -85,11 +85,13 @@ export function EventForm({
   onSubmit,
   submitLabel = "Save event",
 }: {
-  defaultValues?: Partial<Event> & {
-    startAt?: unknown;
-    endAt?: unknown;
-    registrationDeadline?: unknown;
-  };
+  defaultValues?:
+    | EventFormValues
+    | (Partial<Event> & {
+        startAt?: unknown;
+        endAt?: unknown;
+        registrationDeadline?: unknown;
+      });
   onSubmit: (values: EventFormValues) => Promise<void>;
   submitLabel?: string;
 }) {

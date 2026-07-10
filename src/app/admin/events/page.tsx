@@ -8,7 +8,7 @@ import { listEvents } from "@/lib/firestore/events";
 import { formatDateTime } from "@/lib/utils/format";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
-import { EventsTable, type EventRow } from "@/components/admin/MembersTable";
+import { EventsTable, type EventRow } from "@/components/admin/EventsTable";
 
 export const metadata: Metadata = { title: "Events | Admin" };
 export const dynamic = "force-dynamic";

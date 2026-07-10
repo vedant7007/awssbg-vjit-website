@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import QRCode from "qrcode";
 import { Timestamp } from "firebase-admin/firestore";
 
 import { getCurrentUser } from "@/lib/auth/server";
@@ -11,6 +10,8 @@ import { safe } from "@/lib/utils/safe";
 import { formatDateTime } from "@/lib/utils/format";
 import { sendEmail } from "@/lib/email/resend";
 import { renderEventTicketEmail } from "@/lib/email/templates/eventTicket";
+import { generateTicketQrImage } from "@/lib/qr/ticket";
+import { routes } from "@/lib/constants/routes";
 import { logger } from "@/lib/utils/logger";
 
 export const runtime = "nodejs";
@@ -59,33 +60,28 @@ export async function POST(request: NextRequest) {
         const memberName = member?.displayName || user.name || "Member";
         const eventDate = formatDateTime(event.startAt);
 
-        const qrBuffer = await QRCode.toBuffer(reg.ticketCode, {
-          type: "png",
-          margin: 2,
-          width: 300,
-        });
+        // Use Rishikesh's QR image generator — returns a base64 data URI
+        const qrDataUri = await generateTicketQrImage(reg.ticketCode);
 
-        const html = renderEventTicketEmail({
+        // Build absolute event URL
+        const baseUrl =
+          process.env["NEXT_PUBLIC_BASE_URL"] ?? "https://awssbg-vjit.in";
+        const eventUrl = `${baseUrl}${routes.event(event.slug)}`;
+
+        const html = await renderEventTicketEmail({
           memberName,
           eventTitle: event.title,
           eventDate,
           venue: event.venue,
           ticketCode: reg.ticketCode,
-          coverImageUrl: event.coverImage || null,
+          qrDataUri,
+          eventUrl,
         });
 
         await sendEmail({
           to: user.email,
           subject: `Your ticket for ${event.title}`,
           html,
-          attachments: [
-            {
-              filename: "ticket-qr.png",
-              content: qrBuffer,
-              contentType: "image/png",
-              cid: "ticket-qr",
-            },
-          ],
         });
       } catch (emailError) {
         logger.error("Graceful email failure", emailError);
