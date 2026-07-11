@@ -17,6 +17,9 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 export const metadata: Metadata = {
   title: "Members",
   description: "The people of AWS SBG VJIT.",
+  alternates: {
+    canonical: "/members",
+  },
 };
 
 export const dynamic = "force-dynamic";

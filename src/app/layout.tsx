@@ -43,9 +43,35 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "AWS Student Builder Group VJIT",
+    url: SITE_URL,
+    logo: `${SITE_URL}/brand-assets/logo.png`,
+    sameAs: ["https://github.com/aws-sbg-vjit"],
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "AWS Student Builder Group VJIT",
+    url: SITE_URL,
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="bg-background font-display text-foreground min-h-dvh antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <Providers>{children}</Providers>
         <Toaster position="top-center" richColors />
       </body>

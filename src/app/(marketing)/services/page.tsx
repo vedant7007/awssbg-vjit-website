@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "Services",
   description:
     "The five pillars of AWS SBG VJIT: learn, build, compete, ship, speak.",
+  alternates: {
+    canonical: "/services",
+  },
 };
 
 export default function ServicesPage() {

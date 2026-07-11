@@ -3,7 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, LayoutDashboard, LogOut, Search } from "lucide-react";
+
+import { useCommandPalette } from "@/components/command/CommandPalette";
 
 import { cn } from "@/lib/utils/cn";
 import { NAV_LINKS } from "@/lib/constants/nav";
@@ -92,6 +94,7 @@ export function Nav() {
           </nav>
 
           <div className="flex items-center gap-1">
+            <SearchTrigger />
             <ThemeToggle />
 
             {!loading && user ? (
@@ -148,6 +151,26 @@ export function Nav() {
         </div>
       </Container>
     </header>
+  );
+}
+
+function SearchTrigger() {
+  const { setOpen } = useCommandPalette();
+  return (
+    <button
+      onClick={() => setOpen(true)}
+      aria-label="Open command palette (Ctrl+K)"
+      className={cn(
+        "flex items-center gap-2 rounded-sm border px-2.5 py-1.5 text-xs",
+        "text-muted-foreground hover:text-foreground hover:border-foreground/30",
+        "focus-visible:ring-ring transition-colors focus-visible:ring-2 focus-visible:outline-none",
+        "hidden md:flex", // only on desktop; mobile uses the keyboard shortcut
+      )}
+    >
+      <Search className="size-3.5" aria-hidden />
+      <span className="font-display">Search</span>
+      <kbd className="font-mono text-[0.6rem] opacity-60">⌘K</kbd>
+    </button>
   );
 }
 

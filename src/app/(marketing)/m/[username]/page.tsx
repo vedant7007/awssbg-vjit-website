@@ -44,10 +44,19 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `/m/${member.username}`,
+    },
     openGraph: {
       title,
       description,
-      images: member.photoURL ? [{ url: member.photoURL }] : undefined,
+      url: `/m/${member.username}`,
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
     },
   };
 }
@@ -83,8 +92,28 @@ export default async function MemberProfilePage({
 
   const profileUrl = `${SITE_URL}${routes.member(member.username)}`;
 
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: member.displayName,
+    jobTitle:
+      member.role === "lead" ? `${member.team || "Team"} Lead` : member.role,
+    worksFor: {
+      "@type": "Organization",
+      name: "AWS Student Builder Group VJIT",
+      url: SITE_URL,
+    },
+    image: member.photoURL || undefined,
+    description: member.bio || undefined,
+    url: profileUrl,
+  };
+
   return (
     <div className="pt-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
       <section className="bg-paper-warm border-b">
         <Container>
           <div className="flex flex-col gap-8 py-14 md:flex-row md:items-end">

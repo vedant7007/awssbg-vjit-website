@@ -17,11 +17,14 @@ import { EventCard } from "@/components/cards/EventCard";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import { MemberCard } from "@/components/cards/MemberCard";
 import { EmptyState } from "@/components/feedback/EmptyState";
-
+import { ShinyText } from "@/components/ui/ShinyText";
 export const metadata: Metadata = {
   title: "Build the cloud, on campus",
   description:
     "AWS Student Builder Group at VJIT. A student community learning, building, and shipping on AWS. Join us to build in the cloud with people who ship.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 // Reads live Firestore data at request time; never prerendered at build.
@@ -143,7 +146,14 @@ function Hero() {
         aria-hidden
       />
       <Container>
-        <p className="eyebrow mb-6">AWS Student Builder Group, VJIT</p>
+        <div className="eyebrow mb-6">
+          <ShinyText
+            text="AWS Student Builder Group, VJIT"
+            speed={3}
+            color="#ff9900"
+            shineColor="#ffffff"
+          />
+        </div>
         <h1 className="font-display max-w-4xl text-[clamp(3rem,6vw+1rem,6rem)] leading-[0.95] font-bold tracking-[-0.03em]">
           Build the <span className="font-duo text-orange">cloud</span>, on
           campus.

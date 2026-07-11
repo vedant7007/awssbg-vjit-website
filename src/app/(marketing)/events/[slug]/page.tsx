@@ -23,6 +23,8 @@ export const dynamic = "force-dynamic";
 
 type Params = { slug: string };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export async function generateMetadata({
   params,
 }: {
@@ -31,7 +33,27 @@ export async function generateMetadata({
   const { slug } = await params;
   const event = await safe(getEventBySlug(slug), null, "event:meta");
   if (!event) return { title: "Event" };
-  return { title: event.title, description: event.tagline };
+  const title = `${event.title} | AWS SBG VJIT`;
+  const description =
+    event.tagline || `Learn and build with us at ${event.title}`;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/events/${event.slug}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/events/${event.slug}`,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function EventDetailPage({
@@ -43,8 +65,42 @@ export default async function EventDetailPage({
   const event = await safe(getEventBySlug(slug), null, "event:detail");
   if (!event) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    description: event.tagline || undefined,
+    startDate: event.startAt
+      ? typeof event.startAt.toDate === "function"
+        ? event.startAt.toDate().toISOString()
+        : new Date(event.startAt as unknown as string).toISOString()
+      : undefined,
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: "VJIT Campus",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Vidya Jyothi Institute of Technology",
+        addressLocality: "Hyderabad",
+        addressRegion: "Telangana",
+        addressCountry: "IN",
+      },
+    },
+    organizer: {
+      "@type": "Organization",
+      name: "AWS Student Builder Group VJIT",
+      url: SITE_URL,
+    },
+  };
+
   return (
     <div className="pt-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="bg-paper-warm border-b">
         <Container>
           <div className="max-w-3xl py-14">

@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Join",
   description: "Join AWS SBG VJIT and start building on the cloud.",
+  alternates: {
+    canonical: "/join",
+  },
 };
 
 export default function JoinPage() {

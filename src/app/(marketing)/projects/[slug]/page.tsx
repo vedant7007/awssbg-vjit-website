@@ -19,6 +19,8 @@ export const dynamic = "force-dynamic";
 
 type Params = { slug: string };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export async function generateMetadata({
   params,
 }: {
@@ -27,7 +29,28 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await safe(getProjectBySlug(slug), null, "project:meta");
   if (!project) return { title: "Project" };
-  return { title: project.title, description: project.tagline };
+  const title = `${project.title} | AWS SBG VJIT`;
+  const description =
+    project.tagline ||
+    `Explore the ${project.title} project built by student developers.`;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/projects/${project.slug}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/projects/${project.slug}`,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function ProjectDetailPage({
@@ -39,8 +62,25 @@ export default async function ProjectDetailPage({
   const project = await safe(getProjectBySlug(slug), null, "project:detail");
   if (!project) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: project.title,
+    description: project.tagline || undefined,
+    url: `${SITE_URL}/projects/${project.slug}`,
+    creator: {
+      "@type": "Organization",
+      name: "AWS Student Builder Group VJIT",
+      url: SITE_URL,
+    },
+  };
+
   return (
     <div className="pt-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Container>
         <div className="max-w-3xl py-14">
           <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
