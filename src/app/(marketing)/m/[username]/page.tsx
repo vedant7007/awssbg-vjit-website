@@ -10,7 +10,7 @@ import { safe } from "@/lib/utils/safe";
 import { getMemberByUsername } from "@/lib/firestore/members.server";
 import { getAttendedEventIds } from "@/lib/firestore/registrations";
 import { getEventsByIds } from "@/lib/firestore/events";
-import { getProjectsByContributor } from "@/lib/firestore/projects";
+import { getProjectsByContributor } from "@/lib/firestore/projects.server";
 import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/badge";
 import { QRDisplay } from "@/components/qr/QRDisplay";

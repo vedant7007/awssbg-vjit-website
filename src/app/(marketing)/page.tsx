@@ -6,8 +6,11 @@ import { routes } from "@/lib/constants/routes";
 import { PILLARS } from "@/lib/constants/services";
 import { safe } from "@/lib/utils/safe";
 import { getFeaturedEvent } from "@/lib/firestore/events";
-import { getFeaturedProjects } from "@/lib/firestore/projects";
-import { getRandomPublicMembers } from "@/lib/firestore/members.server";
+import { getFeaturedProjects } from "@/lib/firestore/projects.server";
+import {
+  getRandomPublicMembers,
+  getMemberById,
+} from "@/lib/firestore/members.server";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
@@ -28,11 +31,40 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
-  const [featuredEvent, featuredProjects, members] = await Promise.all([
+  const [featuredEvent, rawFeaturedProjects, members] = await Promise.all([
     safe(getFeaturedEvent(), null, "landing:featuredEvent"),
     safe(getFeaturedProjects(3), [], "landing:featuredProjects"),
     safe(getRandomPublicMembers(8), [], "landing:members"),
   ]);
+
+  const featuredProjects = await Promise.all(
+    rawFeaturedProjects.map(async (p) => {
+      const contributors = await Promise.all(
+        p.contributors.map(async (uid) => {
+          const member = await safe(
+            getMemberById(uid),
+            null,
+            "landing:projects:contributor",
+          );
+          return member
+            ? {
+                id: member.id,
+                displayName: member.displayName,
+                photoURL: member.photoURL,
+                github: member.socials?.github,
+              }
+            : null;
+        }),
+      );
+
+      return {
+        ...p,
+        createdAt: p.createdAt?.toDate().toISOString() ?? "",
+        updatedAt: p.updatedAt?.toDate().toISOString() ?? "",
+        populatedContributors: contributors.filter((c) => c !== null),
+      };
+    }),
+  );
 
   return (
     <>

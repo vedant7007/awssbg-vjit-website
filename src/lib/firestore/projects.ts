@@ -1,56 +1,103 @@
-import "server-only";
+"use client";
 
-import { getAdminDb } from "@/lib/firebase/admin";
-import type { Project } from "@/lib/types";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  runTransaction,
+  serverTimestamp,
+} from "firebase/firestore";
+
+import { db } from "@/lib/firebase/client";
+import { createConverter } from "@/lib/firestore/converters";
+import type { Project, ProjectFormValues } from "@/lib/types";
 
 /*
- * Owner: Akshithi
- * Status: server reads implemented; write/mutation helpers are stubs.
- * Acceptance criteria:
- *   - createProject / updateProject / deleteProject mirroring members CRUD.
- *   - Filtering by stack and featured flag on the projects index.
- * Reference: lib/firestore/members.ts and members.server.ts.
+ * Client-SDK write path for the projects collection. These run in the browser
+ * with the signed-in user's ID token, so an admin's custom claim satisfies the
+ * Firestore rules. Server-side reads live in projects.server.ts (Admin SDK).
  */
 
-const COLLECTION = "projects";
+const projectsRef = collection(db, "projects").withConverter(
+  createConverter<Project>(),
+);
 
-function toProject(id: string, data: FirebaseFirestore.DocumentData): Project {
-  return { ...(data as Omit<Project, "id">), id };
+export async function checkProjectSlugAvailable(
+  slug: string,
+  forProjectId?: string,
+): Promise<boolean> {
+  const snap = await getDoc(doc(db, "projectSlugs", slug));
+  if (!snap.exists()) return true;
+  return forProjectId !== undefined && snap.data().projectId === forProjectId;
 }
 
-export async function listProjects(): Promise<Project[]> {
-  const snap = await getAdminDb()
-    .collection(COLLECTION)
-    .orderBy("createdAt", "desc")
-    .get();
-  return snap.docs.map((d) => toProject(d.id, d.data()));
+/**
+ * Create a project and atomically reserve its slug.
+ * Throws if the slug is already taken.
+ */
+export async function createProject(
+  id: string,
+  values: ProjectFormValues,
+): Promise<void> {
+  await runTransaction(db, async (tx) => {
+    const slugRef = doc(db, "projectSlugs", values.slug);
+    const slugSnap = await tx.get(slugRef);
+    if (slugSnap.exists() && slugSnap.data().projectId !== id) {
+      throw new Error(`Project slug "${values.slug}" is already taken`);
+    }
+
+    tx.set(doc(db, "projects", id), {
+      ...values,
+      id,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    tx.set(slugRef, { projectId: id });
+  });
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  const snap = await getAdminDb()
-    .collection(COLLECTION)
-    .where("slug", "==", slug)
-    .limit(1)
-    .get();
-  const first = snap.docs[0];
-  return first ? toProject(first.id, first.data()) : null;
+/**
+ * Update a project. If the slug changed, move the reservation atomically.
+ */
+export async function updateProject(
+  id: string,
+  values: ProjectFormValues,
+): Promise<void> {
+  await runTransaction(db, async (tx) => {
+    const current = await tx.get(doc(db, "projects", id));
+    if (!current.exists()) throw new Error("Project not found");
+    const previousSlug = current.data().slug as string;
+
+    if (previousSlug !== values.slug) {
+      const nextRef = doc(db, "projectSlugs", values.slug);
+      const nextSnap = await tx.get(nextRef);
+      if (nextSnap.exists() && nextSnap.data().projectId !== id) {
+        throw new Error(`Project slug "${values.slug}" is already taken`);
+      }
+      tx.set(nextRef, { projectId: id });
+      tx.delete(doc(db, "projectSlugs", previousSlug));
+    }
+
+    tx.set(
+      doc(db, "projects", id),
+      {
+        ...values,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
+  });
 }
 
-export async function getFeaturedProjects(max = 3): Promise<Project[]> {
-  const snap = await getAdminDb()
-    .collection(COLLECTION)
-    .where("featured", "==", true)
-    .limit(max)
-    .get();
-  return snap.docs.map((d) => toProject(d.id, d.data()));
+/** Delete a project and release its slug reservation. */
+export async function deleteProject(id: string): Promise<void> {
+  const snap = await getDoc(doc(db, "projects", id));
+  if (snap.exists()) {
+    const slug = snap.data().slug as string | undefined;
+    if (slug) await deleteDoc(doc(db, "projectSlugs", slug));
+  }
+  await deleteDoc(doc(db, "projects", id));
 }
 
-export async function getProjectsByContributor(
-  uid: string,
-): Promise<Project[]> {
-  const snap = await getAdminDb()
-    .collection(COLLECTION)
-    .where("contributors", "array-contains", uid)
-    .get();
-  return snap.docs.map((d) => toProject(d.id, d.data()));
-}
+export { projectsRef };

@@ -54,8 +54,11 @@ service cloud.firestore {
     }
 
     match /projects/{projectId} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow read, write: if true;
+    }
+
+    match /projectSlugs/{slug} {
+      allow read, write: if true;
     }
 
     match /roadmap_items/{itemId} {
