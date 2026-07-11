@@ -64,6 +64,7 @@ export function ProjectCard({
   project: SerializedProjectWithContributors | Project | Serialized<Project>;
   className?: string;
 }) {
+  const p = project as SerializedProjectWithContributors;
   const [isFlipped, setIsFlipped] = React.useState(false);
 
   const handleFlip = (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -97,7 +98,7 @@ export function ProjectCard({
           {/* Main card viewport wrapper */}
           <div className="relative flex size-full flex-col overflow-hidden rounded-lg border border-white/5 bg-[#161E2C]/50">
             {/* Hero Area (Top ~52% of Card) */}
-            <div className="relative flex h-[52%] w-full items-center justify-center overflow-hidden border-b border-white/5 bg-[#0e141f]">
+            <div className="relative flex h-[52%] w-full items-center justify-center overflow-hidden border-b border-white/5 bg-[#130720]">
               {project.coverImage ? (
                 <Image
                   src={project.coverImage}
@@ -108,21 +109,29 @@ export function ProjectCard({
                 />
               ) : (
                 <>
-                  {/* Low Opacity Dot-Texture Backdrop */}
+                  <style>{`
+                    @keyframes grid-move {
+                      0% { background-position: 0 0; }
+                      100% { background-position: 24px 24px; }
+                    }
+                  `}</style>
+
+                  {/* Purple Center Glow */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15)_0%,transparent_60%)]" />
+
+                  {/* Animated Grid Texture */}
                   <div
-                    className="pointer-events-none absolute inset-0 opacity-15"
+                    className="pointer-events-none absolute inset-[-24px] opacity-25"
                     style={{
                       backgroundImage:
-                        "radial-gradient(#ffffff 1px, transparent 1px)",
-                      backgroundSize: "16px 16px",
+                        "linear-gradient(to right, rgba(168, 85, 247, 0.3) 1px, transparent 1px), linear-gradient(to bottom, rgba(168, 85, 247, 0.3) 1px, transparent 1px)",
+                      backgroundSize: "24px 24px",
+                      animation: "grid-move 4s linear infinite",
                     }}
                   />
 
-                  <div className="absolute inset-4 flex items-center justify-center rounded border border-dashed border-white/10">
-                    <span className="animate-pulse font-mono text-[8px] tracking-[0.2em] text-[#FF9900]/40 select-none">
-                      {"// LINK_ESTABLISHED"}
-                    </span>
-                  </div>
+                  {/* Fade out bottom edge to blend with border */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#130720] via-transparent to-transparent opacity-80" />
                 </>
               )}
 
@@ -242,19 +251,45 @@ export function ProjectCard({
 
             {/* Console Diagnostics Readout */}
             <div className="my-4 flex flex-1 flex-col justify-center gap-3.5">
-              {metrics.map((metric) => (
-                <div
-                  key={metric.label}
-                  className="flex items-center justify-between border-b border-dashed border-white/5 pb-2.5"
-                >
-                  <span className="font-mono text-[10px] tracking-wider text-white/50">
-                    &gt; {metric.label}
-                  </span>
-                  <span className="rounded border border-[#FF9900]/10 bg-[#FF9900]/5 px-2 py-0.5 font-mono text-xs font-bold tracking-wider text-[#FF9900]">
-                    {metric.value}
-                  </span>
-                </div>
-              ))}
+              {p.populatedContributors && p.populatedContributors.length > 0 ? (
+                <>
+                  <div className="mb-1 font-mono text-[9px] tracking-widest text-white/40 uppercase">
+                    [ SYSTEM_ARCHITECTS ]
+                  </div>
+                  {p.populatedContributors.slice(0, 4).map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center justify-between border-b border-dashed border-white/5 pb-2.5"
+                    >
+                      <span className="truncate pr-2 font-mono text-[10px] tracking-wider text-white/50">
+                        &gt; {member.displayName}
+                      </span>
+                      <span className="shrink-0 rounded border border-[#FF9900]/10 bg-[#FF9900]/5 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-[#FF9900] uppercase">
+                        ENGINEER
+                      </span>
+                    </div>
+                  ))}
+                  {p.populatedContributors.length > 4 && (
+                    <div className="text-center font-mono text-[9px] text-white/30 italic">
+                      + {p.populatedContributors.length - 4} MORE
+                    </div>
+                  )}
+                </>
+              ) : (
+                metrics.map((metric) => (
+                  <div
+                    key={metric.label}
+                    className="flex items-center justify-between border-b border-dashed border-white/5 pb-2.5"
+                  >
+                    <span className="font-mono text-[10px] tracking-wider text-white/50">
+                      &gt; {metric.label}
+                    </span>
+                    <span className="rounded border border-[#FF9900]/10 bg-[#FF9900]/5 px-2 py-0.5 font-mono text-xs font-bold tracking-wider text-[#FF9900]">
+                      {metric.value}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Console Footer Control */}
