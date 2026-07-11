@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { Timestamp } from "./firestore";
 
 export const ROADMAP_STATUSES = [
@@ -28,6 +29,16 @@ export type RoadmapItem = {
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
+
+export const roadmapItemSchema = z.object({
+  title: z.string().min(1).max(100),
+  description: z.string().min(1).max(500),
+  quarter: z.string().min(1).max(20),
+  status: z.enum(ROADMAP_STATUSES),
+  category: z.enum(ROADMAP_CATEGORIES),
+});
+
+export type RoadmapItemFormValues = z.infer<typeof roadmapItemSchema>;
 
 export type RoadmapVote = {
   id: string; // `${itemId}_${userId}`

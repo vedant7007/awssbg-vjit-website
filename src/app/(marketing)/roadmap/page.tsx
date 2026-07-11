@@ -12,9 +12,9 @@ import type { Metadata } from "next";
 
 import { safe } from "@/lib/utils/safe";
 import { listRoadmapItems } from "@/lib/firestore/roadmap";
-import { RouteSkeleton } from "@/components/feedback/RouteSkeleton";
-import { Badge } from "@/components/ui/badge";
+import { PageShell } from "@/components/layout/PageShell";
 import { EmptyState } from "@/components/feedback/EmptyState";
+import { RoadmapBoard } from "@/components/roadmap/RoadmapBoard";
 
 export const metadata: Metadata = {
   title: "Roadmap",
@@ -28,45 +28,31 @@ export default async function RoadmapPage() {
 
   return (
     <div className="pt-16">
-      <RouteSkeleton
+      <PageShell
         eyebrow="What's next"
         title="Roadmap"
-        owner="Hanu"
-        reference="lib/firestore/members.ts (transaction pattern)"
-        criteria={[
-          "Board grouped by status and quarter.",
-          "Upvote via transaction; one vote per member per item.",
-          "Prompt sign-in before voting.",
-        ]}
+        description="Vote on upcoming work, grouped by status and quarter."
       >
         {items.length > 0 ? (
-          <ul className="space-y-3">
-            {items.map((item) => (
-              <li
-                key={item.id}
-                className="flex items-start justify-between gap-4 rounded-sm border p-4"
-              >
-                <div>
-                  <p className="font-medium">{item.title}</p>
-                  <p className="text-muted-foreground text-sm">
-                    {item.description}
-                  </p>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-1">
-                  <Badge variant="secondary" className="capitalize">
-                    {item.status}
-                  </Badge>
-                  <span className="text-muted-foreground font-mono text-xs">
-                    {item.quarter}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="border-muted/40 bg-muted/60 text-muted-foreground rounded-3xl border p-5 text-sm">
+              Members may vote once per idea. Sign in first so your vote is
+              recorded in the club roadmap.
+            </div>
+            <RoadmapBoard items={items} />
+          </>
         ) : (
-          <EmptyState title="Roadmap coming soon" />
+          <div className="space-y-8">
+            <EmptyState title="Roadmap coming soon" />
+            <div className="border-muted/40 bg-muted/50 rounded-sm border p-6">
+              <p className="text-muted-foreground mb-4">
+                No roadmap items were found in Firestore. Add roadmap items via
+                admin or deploy with seeded data.
+              </p>
+            </div>
+          </div>
         )}
-      </RouteSkeleton>
+      </PageShell>
     </div>
   );
 }
