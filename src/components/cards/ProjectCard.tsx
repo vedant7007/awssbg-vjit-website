@@ -48,7 +48,7 @@ const getTagColor = (tech: string): string => {
       t,
     )
   ) {
-    return "bg-[#FF9900]";
+    return "bg-purple-500";
   }
   if (/postgres|sql|mongo|prisma|graphql|redis|database|db|storage/i.test(t)) {
     return "bg-teal-500";
@@ -83,20 +83,20 @@ export function ProjectCard({
     >
       <div
         className={cn(
-          "relative h-full w-full rounded-xl border border-white/10 bg-[#161E2C] text-white transition-all duration-700 [transform-style:preserve-3d] hover:border-[#FF9900]/40 hover:shadow-[0_0_35px_rgba(255,153,0,0.2)]",
+          "relative h-full w-full rounded-xl border border-white/10 bg-[#130720] text-white transition-all duration-700 [transform-style:preserve-3d] hover:border-purple-500/40 hover:shadow-[0_0_35px_rgba(168,85,247,0.2)]",
           isFlipped && "[transform:rotateY(180deg)]",
         )}
       >
         {/* Decorative Sci-Fi Corner Brackets on the card container */}
-        <div className="pointer-events-none absolute top-2 left-2 z-30 size-2 border-t-2 border-l-2 border-white/20 transition-colors group-hover:border-[#FF9900]/60" />
-        <div className="pointer-events-none absolute top-2 right-2 z-30 size-2 border-t-2 border-r-2 border-white/20 transition-colors group-hover:border-[#FF9900]/60" />
-        <div className="pointer-events-none absolute bottom-2 left-2 z-30 size-2 border-b-2 border-l-2 border-white/20 transition-colors group-hover:border-[#FF9900]/60" />
-        <div className="pointer-events-none absolute right-2 bottom-2 z-30 size-2 border-r-2 border-b-2 border-white/20 transition-colors group-hover:border-[#FF9900]/60" />
+        <div className="pointer-events-none absolute top-2 left-2 z-30 size-2 border-t-2 border-l-2 border-white/20 transition-colors group-hover:border-purple-500/60" />
+        <div className="pointer-events-none absolute top-2 right-2 z-30 size-2 border-t-2 border-r-2 border-white/20 transition-colors group-hover:border-purple-500/60" />
+        <div className="pointer-events-none absolute bottom-2 left-2 z-30 size-2 border-b-2 border-l-2 border-white/20 transition-colors group-hover:border-purple-500/60" />
+        <div className="pointer-events-none absolute right-2 bottom-2 z-30 size-2 border-r-2 border-b-2 border-white/20 transition-colors group-hover:border-purple-500/60" />
 
         {/* === FRONT FACE === */}
-        <div className="absolute inset-0 flex flex-col overflow-hidden rounded-xl bg-[#161E2C] p-3 text-white [backface-visibility:hidden]">
+        <div className="absolute inset-0 flex flex-col overflow-hidden rounded-xl bg-[#130720] p-3 text-white [backface-visibility:hidden]">
           {/* Main card viewport wrapper */}
-          <div className="relative flex size-full flex-col overflow-hidden rounded-lg border border-white/5 bg-[#161E2C]/50">
+          <div className="relative flex size-full flex-col overflow-hidden rounded-lg border border-white/5 bg-[#130720]/50">
             {/* Hero Area (Top ~52% of Card) */}
             <div className="relative flex h-[52%] w-full items-center justify-center overflow-hidden border-b border-white/5 bg-[#130720]">
               {project.coverImage ? (
@@ -136,7 +136,7 @@ export function ProjectCard({
               )}
 
               {/* Blinking Status Indicator */}
-              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 rounded border border-white/10 bg-[#161E2C]/90 px-1.5 py-0.5">
+              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 rounded border border-white/10 bg-[#130720]/90 px-1.5 py-0.5">
                 <span className="absolute size-1.5 animate-ping rounded-full bg-green-500" />
                 <span className="size-1.5 rounded-full bg-green-500" />
                 <span className="font-mono text-[7px] font-bold tracking-widest text-white/80 uppercase">
@@ -151,12 +151,12 @@ export function ProjectCard({
                     <Link
                       href={project.repoUrl}
                       target="_blank"
-                      className="flex size-7 items-center justify-center rounded border border-white/10 bg-[#161E2C]/90 text-white/70 transition-all duration-200 hover:scale-105 hover:border-[#FF9900] hover:bg-[#FF9900] hover:text-white focus-visible:ring-1 focus-visible:ring-[#FF9900] focus-visible:outline-none"
+                      className="flex size-7 items-center justify-center rounded border border-white/10 bg-[#130720]/90 text-white/70 transition-all duration-200 hover:scale-105 hover:border-purple-500 hover:bg-purple-500 hover:text-white focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none"
                       aria-label="View Code on GitHub"
                     >
                       <Github className="size-3.5" />
                     </Link>
-                    <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 rounded border border-white/10 bg-[#161E2C] px-1.5 py-0.5 font-mono text-[8px] whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover/tooltip:opacity-100">
+                    <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 rounded border border-white/10 bg-[#130720] px-1.5 py-0.5 font-mono text-[8px] whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover/tooltip:opacity-100">
                       CODE
                     </span>
                   </div>
@@ -166,12 +166,12 @@ export function ProjectCard({
                     <Link
                       href={project.liveUrl}
                       target="_blank"
-                      className="flex size-7 items-center justify-center rounded border border-white/10 bg-[#161E2C]/90 text-white/70 transition-all duration-200 hover:scale-105 hover:border-[#FF9900] hover:bg-[#FF9900] hover:text-white focus-visible:ring-1 focus-visible:ring-[#FF9900] focus-visible:outline-none"
+                      className="flex size-7 items-center justify-center rounded border border-white/10 bg-[#130720]/90 text-white/70 transition-all duration-200 hover:scale-105 hover:border-purple-500 hover:bg-purple-500 hover:text-white focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none"
                       aria-label="Live Demo"
                     >
                       <Globe className="size-3.5" />
                     </Link>
-                    <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 rounded border border-white/10 bg-[#161E2C] px-1.5 py-0.5 font-mono text-[8px] whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover/tooltip:opacity-100">
+                    <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 rounded border border-white/10 bg-[#130720] px-1.5 py-0.5 font-mono text-[8px] whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover/tooltip:opacity-100">
                       DEMO
                     </span>
                   </div>
@@ -180,8 +180,8 @@ export function ProjectCard({
             </div>
 
             {/* Body Area (Bottom ~48% of Card) */}
-            <div className="flex flex-1 flex-col bg-[#0e141f]/30 p-5">
-              <span className="mb-1 font-mono text-[8px] tracking-widest text-[#FF9900]/60 select-none">
+            <div className="flex flex-1 flex-col bg-[#1a0b2e]/30 p-5">
+              <span className="mb-1 font-mono text-[8px] tracking-widest text-purple-400/60 select-none">
                 PROJECT_READOUT // 01
               </span>
 
@@ -226,7 +226,7 @@ export function ProjectCard({
 
                 <button
                   onClick={handleFlip}
-                  className="shrink-0 cursor-pointer rounded border border-white/5 bg-white/5 px-2 py-1 font-mono text-[9px] font-bold tracking-widest text-[#FF9900]/80 uppercase transition-colors select-none hover:bg-[#FF9900]/20 hover:text-white focus-visible:ring-1 focus-visible:ring-[#FF9900] focus-visible:outline-none"
+                  className="shrink-0 cursor-pointer rounded border border-white/5 bg-white/5 px-2 py-1 font-mono text-[9px] font-bold tracking-widest text-purple-400/80 uppercase transition-colors select-none hover:bg-purple-500/20 hover:text-white focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none"
                   aria-label="Flip card for system stats"
                 >
                   SYS.DIAG
@@ -237,12 +237,12 @@ export function ProjectCard({
         </div>
 
         {/* === BACK FACE === */}
-        <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col overflow-hidden rounded-xl border border-white/5 bg-[#161E2C] p-3 text-white [backface-visibility:hidden]">
-          <div className="relative flex size-full flex-col overflow-hidden rounded-lg border border-white/5 bg-[#0e141f]/20 p-5">
+        <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col overflow-hidden rounded-xl border border-white/5 bg-[#130720] p-3 text-white [backface-visibility:hidden]">
+          <div className="relative flex size-full flex-col overflow-hidden rounded-lg border border-white/5 bg-[#1a0b2e]/20 p-5">
             {/* Console Header */}
             <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <span className="flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-widest text-[#FF9900]/80 uppercase">
-                <span className="size-1 animate-pulse bg-[#FF9900]" />
+              <span className="flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-widest text-purple-400/80 uppercase">
+                <span className="size-1 animate-pulse bg-purple-500" />
                 CONSOLE_LOG //{" "}
                 {project.title.toLowerCase().replace(/\s+/g, "_")}
               </span>
@@ -264,7 +264,7 @@ export function ProjectCard({
                       <span className="truncate pr-2 font-mono text-[10px] tracking-wider text-white/50">
                         &gt; {member.displayName}
                       </span>
-                      <span className="shrink-0 rounded border border-[#FF9900]/10 bg-[#FF9900]/5 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-[#FF9900] uppercase">
+                      <span className="shrink-0 rounded border border-purple-500/10 bg-purple-500/5 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-purple-400 uppercase">
                         ENGINEER
                       </span>
                     </div>
@@ -284,7 +284,7 @@ export function ProjectCard({
                     <span className="font-mono text-[10px] tracking-wider text-white/50">
                       &gt; {metric.label}
                     </span>
-                    <span className="rounded border border-[#FF9900]/10 bg-[#FF9900]/5 px-2 py-0.5 font-mono text-xs font-bold tracking-wider text-[#FF9900]">
+                    <span className="rounded border border-purple-500/10 bg-purple-500/5 px-2 py-0.5 font-mono text-xs font-bold tracking-wider text-purple-400">
                       {metric.value}
                     </span>
                   </div>
@@ -296,7 +296,7 @@ export function ProjectCard({
             <div className="mt-auto flex justify-end border-t border-white/5 pt-3">
               <button
                 onClick={handleFlip}
-                className="cursor-pointer rounded border border-white/5 bg-white/5 px-2 py-1 font-mono text-[9px] font-bold tracking-widest text-white/60 transition-colors select-none hover:bg-white/10 hover:text-[#FF9900] focus-visible:ring-1 focus-visible:ring-[#FF9900] focus-visible:outline-none"
+                className="cursor-pointer rounded border border-white/5 bg-white/5 px-2 py-1 font-mono text-[9px] font-bold tracking-widest text-white/60 transition-colors select-none hover:bg-white/10 hover:text-purple-400 focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none"
                 aria-label="Flip card to front face"
               >
                 RETURN_SYS
