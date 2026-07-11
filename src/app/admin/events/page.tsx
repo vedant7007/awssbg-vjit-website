@@ -1,29 +1,46 @@
-/*
- * Owner: Mohiuddin
- * Status: skeleton
- * Acceptance criteria:
- *   - Full events CRUD mirroring /admin/members exactly.
- *   - lib/firestore/events.ts write helpers (createEvent/updateEvent/deleteEvent).
- * Reference: src/app/admin/members/page.tsx (the reference CRUD).
- */
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
-import { RouteSkeleton } from "@/components/feedback/RouteSkeleton";
+import { routes } from "@/lib/constants/routes";
+import { safe } from "@/lib/utils/safe";
+import { listEvents } from "@/lib/firestore/events";
+import { formatDateTime } from "@/lib/utils/format";
+import { PageShell } from "@/components/layout/PageShell";
+import { Button } from "@/components/ui/button";
+import { EventsTable, type EventRow } from "@/components/admin/EventsTable";
 
 export const metadata: Metadata = { title: "Events | Admin" };
+export const dynamic = "force-dynamic";
 
-export default function AdminEventsPage() {
+export default async function AdminEventsPage() {
+  const events = await safe(listEvents(), [], "admin:events");
+
+  const rows: EventRow[] = events.map((e) => ({
+    id: e.id,
+    title: e.title,
+    slug: e.slug,
+    status: e.status,
+    category: e.category,
+    startAt: formatDateTime(e.startAt),
+    venue: e.venue,
+  }));
+
   return (
-    <RouteSkeleton
+    <PageShell
       eyebrow="Admin"
       title="Events"
-      owner="Mohiuddin"
-      reference="src/app/admin/members/page.tsx"
-      criteria={[
-        "Copy the members CRUD: list, new, [id]/edit.",
-        "Add createEvent/updateEvent/deleteEvent to lib/firestore/events.ts.",
-        "Build an EventForm mirroring MemberForm.",
-      ]}
-    />
+      description="Manage community events, workshops, hackathons, and check-ins."
+      actions={
+        <Button asChild>
+          <Link href={routes.adminEventNew}>
+            <Plus className="size-4" />
+            Add event
+          </Link>
+        </Button>
+      }
+    >
+      <EventsTable events={rows} />
+    </PageShell>
   );
 }

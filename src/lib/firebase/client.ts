@@ -3,6 +3,8 @@ import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
+import { logger } from "@/lib/utils/logger";
+
 /**
  * Client-side Firebase. Safe to import in Client Components only.
  * Values are public (NEXT_PUBLIC_*); the real security boundary is the
@@ -21,7 +23,24 @@ export const firebaseApp: FirebaseApp = getApps().length
   ? getApp()
   : initializeApp(firebaseConfig);
 
-export const auth: Auth = getAuth(firebaseApp);
+/**
+ * Auth validates the API key eagerly: getAuth throws auth/invalid-api-key when
+ * NEXT_PUBLIC_FIREBASE_API_KEY is missing or invalid. Guard it so the whole app
+ * still renders during local development before real Firebase keys land. Any
+ * auth-dependent UI (sign-in button, avatar) stays inert until keys are set.
+ */
+export const auth: Auth | null = (() => {
+  try {
+    return getAuth(firebaseApp);
+  } catch (error) {
+    logger.warn(
+      "Firebase Auth is not configured. Set NEXT_PUBLIC_FIREBASE_* in .env.local to enable sign-in.",
+      error,
+    );
+    return null;
+  }
+})();
+
 export const db: Firestore = getFirestore(firebaseApp);
 export const storage: FirebaseStorage = getStorage(firebaseApp);
 

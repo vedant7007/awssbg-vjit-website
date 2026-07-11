@@ -23,6 +23,12 @@ export type SendEmailArgs = {
   subject: string;
   html: string;
   replyTo?: string;
+  attachments?: {
+    filename: string;
+    content: Buffer | string;
+    contentType?: string;
+    cid?: string;
+  }[];
 };
 
 /**
@@ -41,6 +47,7 @@ export async function sendEmail(args: SendEmailArgs): Promise<string | null> {
     subject: args.subject,
     html: args.html,
     ...(args.replyTo ? { replyTo: args.replyTo } : {}),
+    ...(args.attachments ? { attachments: args.attachments } : {}),
   });
 
   if (error) {

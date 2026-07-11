@@ -25,6 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 
 const CURRENT_YEAR = 2026;
 
@@ -267,7 +268,7 @@ export function MemberForm({
         />
 
         <FormItem>
-          <FormLabel htmlFor="skill-input">Skills</FormLabel>
+          <Label htmlFor="skill-input">Skills</Label>
           <div className="flex gap-2">
             <Input
               id="skill-input"
