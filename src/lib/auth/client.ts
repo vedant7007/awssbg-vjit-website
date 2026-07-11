@@ -57,6 +57,7 @@ export async function signInWithGoogle(): Promise<boolean> {
 
     const res = await fetch("/api/auth/session", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken }),
     });
@@ -76,7 +77,10 @@ export async function signInWithGoogle(): Promise<boolean> {
 /** Sign out of Firebase and clear the server session cookie. */
 export async function signOut(): Promise<void> {
   try {
-    await fetch("/api/auth/session", { method: "DELETE" });
+    await fetch("/api/auth/session", {
+      method: "DELETE",
+      credentials: "include",
+    });
   } catch (error) {
     logger.warn("session clear failed", error);
   }

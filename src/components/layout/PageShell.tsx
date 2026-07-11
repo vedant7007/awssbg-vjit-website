@@ -14,6 +14,7 @@ export function PageShell({
   actions,
   children,
   className,
+  contentClassName,
 }: {
   eyebrow?: string | undefined;
   title: string;
@@ -21,6 +22,7 @@ export function PageShell({
   actions?: React.ReactNode;
   children?: React.ReactNode;
   className?: string | undefined;
+  contentClassName?: string | undefined;
 }) {
   return (
     <div className={cn("py-12 md:py-16", className)}>
@@ -41,7 +43,9 @@ export function PageShell({
             <div className="flex shrink-0 gap-2">{actions}</div>
           ) : null}
         </div>
-        {children ? <div className="mt-8">{children}</div> : null}
+        {children ? (
+          <div className={cn(contentClassName ?? "mt-8")}>{children}</div>
+        ) : null}
       </Container>
     </div>
   );

@@ -30,6 +30,8 @@ export const routes = {
   adminEventEdit: (id: string) => `/admin/events/${id}/edit`,
   adminProjects: "/admin/projects",
   adminRoadmap: "/admin/roadmap",
+  adminRoadmapNew: "/admin/roadmap/new",
+  adminRoadmapEdit: (id: string) => `/admin/roadmap/${id}/edit`,
   adminCheckin: "/admin/checkin",
 } as const;
 
