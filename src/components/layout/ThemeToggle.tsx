@@ -11,18 +11,29 @@ export function ThemeToggle() {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
 
-  const isDark = resolvedTheme === "dark";
+  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <Button
+      suppressHydrationWarning
       variant="ghost"
       size="icon"
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={
+        mounted
+          ? isDark
+            ? "Switch to light mode"
+            : "Switch to dark mode"
+          : "Toggle theme"
+      }
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
       {/* Render a stable icon until mounted to avoid hydration mismatch. */}
-      {mounted && isDark ? (
-        <Sun className="size-5" />
+      {mounted ? (
+        isDark ? (
+          <Sun className="size-5" />
+        ) : (
+          <Moon className="size-5" />
+        )
       ) : (
         <Moon className="size-5" />
       )}
