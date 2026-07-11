@@ -261,10 +261,24 @@ export function ProjectCard({
                       key={member.id}
                       className="flex items-center justify-between border-b border-dashed border-white/5 pb-2.5"
                     >
-                      <span className="truncate pr-2 font-mono text-[10px] tracking-wider text-white/50">
-                        &gt; {member.displayName}
+                      <span className="flex items-center gap-1.5 truncate pr-2 font-mono text-[10px] tracking-wider text-white/50">
+                        <span>&gt;</span>
+                        {member.github ? (
+                          <Link
+                            href={member.github}
+                            target="_blank"
+                            className="group/link flex items-center gap-1 transition-colors hover:text-purple-400"
+                          >
+                            <span className="truncate group-hover/link:underline">
+                              {member.displayName}
+                            </span>
+                            <Github className="size-2.5 opacity-50 group-hover/link:opacity-100" />
+                          </Link>
+                        ) : (
+                          <span className="truncate">{member.displayName}</span>
+                        )}
                       </span>
-                      <span className="shrink-0 rounded border border-purple-500/10 bg-purple-500/5 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-purple-400 uppercase">
+                      <span className="shrink-0 rounded border border-purple-500/30 bg-purple-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-purple-400 uppercase">
                         ENGINEER
                       </span>
                     </div>
