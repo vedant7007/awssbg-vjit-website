@@ -11,23 +11,35 @@ export const projectFormSchema = z.object({
       "Lowercase letters, numbers, and hyphens only",
     ),
   title: z.string().min(2, "Required").max(80),
-  tagline: z.string().min(5, "Required").max(120),
-  description: z.string().min(10, "Required"),
+  tagline: z.string().max(120).optional().default(""),
+  description: z.string().optional().default(""),
   coverImage: z
     .string()
     .url("Must be a valid URL")
+    .optional()
     .nullable()
     .or(z.literal("")),
-  stack: z.array(z.string().min(1)).max(20),
-  contributors: z.array(z.string().min(1)).max(20),
-  repoUrl: z.string().url("Must be a valid URL").nullable().or(z.literal("")),
-  liveUrl: z.string().url("Must be a valid URL").nullable().or(z.literal("")),
+  stack: z.array(z.string().min(1)).max(20).optional().default([]),
+  contributors: z.array(z.string().min(1)).max(20).optional().default([]),
+  repoUrl: z
+    .string()
+    .url("Must be a valid URL")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
+  liveUrl: z
+    .string()
+    .url("Must be a valid URL")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
   architectureDiagram: z
     .string()
     .url("Must be a valid URL")
+    .optional()
     .nullable()
     .or(z.literal("")),
-  featured: z.boolean(),
+  featured: z.boolean().optional().default(false),
 });
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;
