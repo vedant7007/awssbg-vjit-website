@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { Github, Linkedin, Twitter, Globe, Lock } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
-import { initials } from "@/lib/utils/format";
+import { initials, toDate } from "@/lib/utils/format";
 import { safe } from "@/lib/utils/safe";
 import { getMemberByUsername } from "@/lib/firestore/members.server";
 import { getAttendedEventIds } from "@/lib/firestore/registrations";
@@ -80,6 +80,13 @@ export default async function MemberProfilePage({
     [],
     "profile:attendedEvents",
   );
+
+  // ProjectCard is a Client Component; strip Firestore Timestamps before passing.
+  const serializedProjects = projects.map((p) => ({
+    ...p,
+    createdAt: toDate(p.createdAt)?.toISOString() ?? "",
+    updatedAt: toDate(p.updatedAt)?.toISOString() ?? "",
+  }));
 
   const profileUrl = `${SITE_URL}${routes.member(member.username)}`;
 
@@ -161,11 +168,11 @@ export default async function MemberProfilePage({
               </div>
             ) : null}
 
-            {projects.length > 0 ? (
+            {serializedProjects.length > 0 ? (
               <div>
                 <h2 className="eyebrow mb-4">Projects</h2>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {projects.map((project) => (
+                  {serializedProjects.map((project) => (
                     <ProjectCard key={project.id} project={project} />
                   ))}
                 </div>

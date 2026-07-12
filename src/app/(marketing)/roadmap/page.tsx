@@ -24,7 +24,17 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RoadmapPage() {
-  const items = await safe(listRoadmapItems(), [], "roadmap:list");
+  const rawItems = await safe(listRoadmapItems(), [], "roadmap:list");
+
+  // Strip Firestore Timestamps (class instances) before passing to the client
+  // board, which only needs the plain fields.
+  const items = rawItems.map(
+    ({ createdAt: _createdAt, updatedAt: _updatedAt, ...rest }) => {
+      void _createdAt;
+      void _updatedAt;
+      return rest;
+    },
+  );
 
   return (
     <div className="pt-16">

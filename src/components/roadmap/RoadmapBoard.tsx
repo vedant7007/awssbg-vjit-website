@@ -10,9 +10,16 @@ import { ROADMAP_STATUSES, type RoadmapItem } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Server passes plain objects only; Firestore Timestamps (createdAt/updatedAt)
+ * are class instances and cannot cross the client boundary, so the board works
+ * with a serialized shape that omits them.
+ */
+export type RoadmapBoardItem = Omit<RoadmapItem, "createdAt" | "updatedAt">;
+
 type RoadmapBoardGroup = Record<
   (typeof ROADMAP_STATUSES)[number],
-  Record<string, RoadmapItem[]>
+  Record<string, RoadmapBoardItem[]>
 >;
 
 function groupItemsByStatusAndQuarter(): RoadmapBoardGroup {
@@ -22,7 +29,7 @@ function groupItemsByStatusAndQuarter(): RoadmapBoardGroup {
   }, {} as RoadmapBoardGroup);
 }
 
-export function RoadmapBoard({ items }: { items: RoadmapItem[] }) {
+export function RoadmapBoard({ items }: { items: RoadmapBoardItem[] }) {
   const { user, loading: authLoading } = useUser();
   const pathname = usePathname();
   const router = useRouter();
