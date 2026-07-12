@@ -58,6 +58,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /projectSlugs/{slug} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /roadmap_items/{itemId} {
       allow read: if true;
       // voteCount is denormalized and only mutated via server transactions/admin.

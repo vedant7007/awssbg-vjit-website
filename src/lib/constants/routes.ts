@@ -29,6 +29,8 @@ export const routes = {
   adminEventNew: "/admin/events/new",
   adminEventEdit: (id: string) => `/admin/events/${id}/edit`,
   adminProjects: "/admin/projects",
+  adminProjectNew: "/admin/projects/new",
+  adminProjectEdit: (id: string) => `/admin/projects/${id}/edit`,
   adminRoadmap: "/admin/roadmap",
   adminRoadmapNew: "/admin/roadmap/new",
   adminRoadmapEdit: (id: string) => `/admin/roadmap/${id}/edit`,
