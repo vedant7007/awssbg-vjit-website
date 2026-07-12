@@ -1,41 +1,72 @@
-/*
- * Owner: Jashwanth
- * Status: skeleton
- * Acceptance criteria (see also src/components/forms/MemberForm.tsx):
- *   - Client form using react-hook-form + memberFormSchema (lib/types/member.ts).
- *   - Username uniqueness check + reservation transaction: read usernames/{username},
- *     create it in the SAME transaction as the member update (see members.ts).
- *   - Photo upload via Firebase Storage (members/{uid}/...).
- *   - Show a live preview link to /m/[username] at the top.
- *   - Handle the first-time flow where the user has no member doc yet.
- * Reference: src/components/forms/MemberForm.tsx and lib/firestore/members.ts.
- */
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
+import { getCurrentUser } from "@/lib/auth/server";
+import { getMemberById } from "@/lib/firestore/members.server";
 import { routes } from "@/lib/constants/routes";
-import { RouteSkeleton } from "@/components/feedback/RouteSkeleton";
+import { PageShell } from "@/components/layout/PageShell";
+import type { MemberFormValues } from "@/lib/types";
+import { ProfileClient } from "./ProfileClient";
 
 export const metadata: Metadata = { title: "Profile | Console" };
+export const dynamic = "force-dynamic";
 
-export default function ConsoleProfilePage() {
+const CURRENT_YEAR = 2026;
+
+export default async function ConsoleProfilePage() {
+  const user = await getCurrentUser();
+  if (!user) redirect(routes.signinNext(routes.consoleProfile));
+
+  const member = await getMemberById(user.uid);
+  const isNew = member === null;
+
+  const initialValues: MemberFormValues = member
+    ? {
+        username: member.username,
+        displayName: member.displayName,
+        email: member.email,
+        photoURL: member.photoURL,
+        role: member.role,
+        team: member.team,
+        cohortYear: member.cohortYear,
+        batchYear: member.batchYear,
+        branch: member.branch,
+        bio: member.bio,
+        skills: member.skills,
+        socials: member.socials,
+        isPublic: member.isPublic,
+      }
+    : {
+        username: "",
+        displayName: user.name ?? "",
+        email: user.email ?? "",
+        photoURL: user.picture,
+        role: "member",
+        team: null,
+        cohortYear: CURRENT_YEAR,
+        batchYear: CURRENT_YEAR + 2,
+        branch: "",
+        bio: "",
+        skills: [],
+        socials: {},
+        isPublic: true,
+      };
+
   return (
-    <RouteSkeleton
+    <PageShell
       eyebrow="Console"
-      title="Your profile"
-      description="Reuse MemberForm here and wire the self-service save path."
-      owner="Jashwanth"
-      reference="src/components/forms/MemberForm.tsx"
-      criteria={[
-        "Render MemberForm with the member's current values.",
-        "Enforce username uniqueness via a reservation transaction.",
-        "Upload photos to Firebase Storage; preview /m/[username].",
-        "Support the first-time flow (no member doc yet).",
-      ]}
+      title={isNew ? "Complete your profile" : "Your profile"}
+      description={
+        isNew
+          ? "Set up your public member profile."
+          : "Update how you appear across the site."
+      }
     >
-      <p className="text-muted-foreground text-sm">
-        New members are routed here after first sign-in to complete their
-        profile before anything else ({routes.consoleProfile}).
-      </p>
-    </RouteSkeleton>
+      <ProfileClient
+        uid={user.uid}
+        initialValues={initialValues}
+        isNew={isNew}
+      />
+    </PageShell>
   );
 }

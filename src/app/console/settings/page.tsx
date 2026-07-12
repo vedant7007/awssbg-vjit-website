@@ -1,29 +1,48 @@
-/*
- * Owner: Jashwanth
- * Status: skeleton
- * Acceptance criteria:
- *   - Account settings: profile visibility toggle, email preferences, sign out.
- *   - Danger zone: leave the group (delete member doc) with confirmation.
- * Reference: src/components/forms/MemberForm.tsx isPublic toggle.
- */
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { RouteSkeleton } from "@/components/feedback/RouteSkeleton";
+import { getCurrentUser } from "@/lib/auth/server";
+import { getMemberById } from "@/lib/firestore/members.server";
+import { routes } from "@/lib/constants/routes";
+import { safe } from "@/lib/utils/safe";
+import { PageShell } from "@/components/layout/PageShell";
+import type { MemberFormValues } from "@/lib/types";
+import { SettingsClient } from "./SettingsClient";
 
 export const metadata: Metadata = { title: "Settings | Console" };
+export const dynamic = "force-dynamic";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect(routes.signinNext(routes.consoleSettings));
+
+  const member = await safe(getMemberById(user.uid), null, "settings:member");
+
+  const values: MemberFormValues | null = member
+    ? {
+        username: member.username,
+        displayName: member.displayName,
+        email: member.email,
+        photoURL: member.photoURL,
+        role: member.role,
+        team: member.team,
+        cohortYear: member.cohortYear,
+        batchYear: member.batchYear,
+        branch: member.branch,
+        bio: member.bio,
+        skills: member.skills,
+        socials: member.socials,
+        isPublic: member.isPublic,
+      }
+    : null;
+
   return (
-    <RouteSkeleton
+    <PageShell
       eyebrow="Console"
       title="Settings"
-      owner="Jashwanth"
-      reference="src/components/forms/MemberForm.tsx"
-      criteria={[
-        "Profile visibility toggle and email preferences.",
-        "Sign out control.",
-        "Danger zone with a confirm dialog.",
-      ]}
-    />
+      description="Manage your account, privacy, and membership."
+    >
+      <SettingsClient uid={user.uid} email={user.email} values={values} />
+    </PageShell>
   );
 }
