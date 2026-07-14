@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { FadeUp } from "@/components/motion/FadeUp";
-import { HeroAurora } from "@/components/home/HeroAurora";
+import { HeroGrid } from "@/components/home/HeroGrid";
 import { EventCard } from "@/components/cards/EventCard";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import { MemberCard } from "@/components/cards/MemberCard";
@@ -111,7 +111,7 @@ export default async function LandingPage() {
 
   return (
     <>
-      <HeroAurora />
+      <HeroGrid />
 
       {/* Manifesto. */}
       <Section className="!pb-16">

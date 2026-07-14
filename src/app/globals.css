@@ -361,6 +361,22 @@
   animation-play-state: paused;
 }
 
+/* Perspective grid — tiles glow in brand colors under the cursor/finger and
+ * fade out behind it. Only background/box-shadow transition, so it's cheap. */
+.pg-tile {
+  border-right: 1px solid rgba(255, 255, 255, 0.045);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  transition:
+    background-color 1400ms ease-out,
+    box-shadow 1400ms ease-out;
+}
+.pg-tile:hover,
+.pg-tile.pg-lit {
+  background-color: var(--pg-c);
+  box-shadow: 0 0 16px 1px var(--pg-c);
+  transition-duration: 0ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
