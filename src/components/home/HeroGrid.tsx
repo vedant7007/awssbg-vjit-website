@@ -6,7 +6,7 @@ import { PerspectiveGrid } from "@/components/motion/PerspectiveGrid";
  */
 export function HeroGrid() {
   return (
-    <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden bg-[#05070c]">
+    <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[#05070c]">
       {/* Interactive grid (receives pointer events). */}
       <div className="absolute inset-0 z-0">
         <PerspectiveGrid />
