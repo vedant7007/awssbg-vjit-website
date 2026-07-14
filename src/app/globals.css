@@ -361,34 +361,6 @@
   animation-play-state: paused;
 }
 
-/* Lightfall — CSS light streaks raining on a dark field. GPU-cheap (transform
- * + opacity only), so it stays smooth on mobile. */
-.lf-streak {
-  position: absolute;
-  top: 0;
-  border-radius: 9999px;
-  animation-name: lf-fall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform, opacity;
-}
-@keyframes lf-fall {
-  0% {
-    transform: translate3d(0, -45vh, 0);
-    opacity: 0;
-  }
-  8% {
-    opacity: var(--lf-o, 0.5);
-  }
-  90% {
-    opacity: var(--lf-o, 0.5);
-  }
-  100% {
-    transform: translate3d(0, 125vh, 0);
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
