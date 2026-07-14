@@ -10,72 +10,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Amazon Ember font faces. Drop the .ttf files into /public/fonts/ (see
- * brand-assets/fonts/README.md). Until then the fallback stacks below apply,
- * so the build and dev server stay green without the licensed files. */
-@font-face {
-  font-family: "Amazon Ember Display";
-  src: url("/fonts/AmazonEmberDisplay_Lt.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Display";
-  src: url("/fonts/AmazonEmberDisplay_Rg.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Display";
-  src: url("/fonts/AmazonEmberDisplay_Md.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Display";
-  src: url("/fonts/AmazonEmberDisplay_Bd.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Display";
-  src: url("/fonts/AmazonEmberDisplay_He.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Mono";
-  src: url("/fonts/AmazonEmberMono_Rg.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Mono";
-  src: url("/fonts/AmazonEmberMono_Bd.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Duospace";
-  src: url("/fonts/Amazon Ember Duospace.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Amazon Ember Duospace";
-  src: url("/fonts/Amazon Ember Duospace Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* Type is loaded via next/font (see src/lib/fonts.ts), which injects the
+ * --font-space / --font-jbmono / --font-inter CSS variables on <html>. The
+ * @theme block below maps them onto font-display / font-mono / font-duo. */
 
 :root {
   /* Brand palette (light). These raw values flip in .dark below. */
@@ -180,16 +117,17 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Fonts (Tailwind exposes these as font-display / font-mono / font-duo) */
+  /* Fonts (Tailwind exposes these as font-display / font-mono / font-duo / font-sans) */
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
   --font-display:
-    "Amazon Ember Display", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    var(--font-space), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
   --font-mono:
-    "Amazon Ember Mono", ui-monospace, "SFMono-Regular", "Menlo", "Consolas",
+    var(--font-jbmono), ui-monospace, "SFMono-Regular", "Menlo", "Consolas",
     monospace;
-  --font-duo:
-    "Amazon Ember Duospace", "Amazon Ember Mono", ui-monospace, "Consolas",
-    monospace;
+  --font-duo: var(--font-jbmono), ui-monospace, "Consolas", monospace;
 
   /* Radius scale (sharp corners are on-brand) */
   --radius-sm: calc(var(--radius) - 0.0625rem);
@@ -200,10 +138,61 @@
   /* Motion */
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
   --animate-shimmer: shimmer 2s infinite;
+  --animate-caret: caret 1.05s ease-in-out infinite;
+  --animate-glow: glow 3.2s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-pan: pan 8s linear infinite;
+  --animate-rise: rise 0.7s var(--ease-brand) both;
 
   @keyframes shimmer {
     100% {
       transform: translateX(100%);
+    }
+  }
+  @keyframes caret {
+    0%,
+    45% {
+      opacity: 1;
+    }
+    55%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes glow {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes pan {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }
@@ -215,9 +204,16 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-display);
   }
   ::selection {
     background-color: var(--orange);
@@ -240,6 +236,129 @@
     background-size: 3rem 3rem;
     mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
   }
+
+  /* Dark "console" band — used for the hero and any always-dark section.
+   * Scopes brand tokens to their dark values regardless of theme. */
+  .console {
+    --background: #0b0f17;
+    --foreground: #fafaf7;
+    --card: #131826;
+    --muted: #1b2233;
+    --muted-foreground: #8b93a1;
+    --border: #242c3d;
+    background-color: #0b0f17;
+    color: #fafaf7;
+  }
+  .console-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
+    mask-image: radial-gradient(ellipse at 50% 40%, black 25%, transparent 80%);
+  }
+
+  /* Ambient orange/blue glow blobs behind the hero. */
+  .aurora {
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 70%;
+    background:
+      radial-gradient(
+        40% 60% at 20% 30%,
+        color-mix(in oklab, var(--orange) 45%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        35% 55% at 80% 20%,
+        color-mix(in oklab, var(--blue) 40%, transparent),
+        transparent 70%
+      );
+    filter: blur(70px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* Text with an animated orange→blue sheen. */
+  .text-sheen {
+    background: linear-gradient(
+      100deg,
+      var(--orange) 0%,
+      #ffd591 25%,
+      var(--orange) 45%,
+      var(--blue) 75%,
+      var(--orange) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: pan 8s linear infinite;
+  }
+
+  /* Card with a glowing hairline border that lifts + brightens on hover. */
+  .glow-card {
+    position: relative;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-card);
+    transition:
+      transform 0.35s var(--ease-brand),
+      border-color 0.35s var(--ease-brand),
+      box-shadow 0.35s var(--ease-brand);
+  }
+  .glow-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      130deg,
+      color-mix(in oklab, var(--orange) 70%, transparent),
+      transparent 40%,
+      color-mix(in oklab, var(--blue) 60%, transparent)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s var(--ease-brand);
+    pointer-events: none;
+  }
+  .glow-card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in oklab, var(--orange) 40%, var(--color-border));
+    box-shadow:
+      0 18px 40px -20px color-mix(in oklab, var(--orange) 60%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--orange) 20%, transparent);
+  }
+  .glow-card:hover::after {
+    opacity: 1;
+  }
+
+  /* Pill/tag with a soft orange halo. */
+  .glow-pill {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--orange) 35%, transparent),
+      0 0 18px -6px color-mix(in oklab, var(--orange) 70%, transparent);
+  }
+}
+
+/* Marquee for the tech ticker; pauses on hover. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 26s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {

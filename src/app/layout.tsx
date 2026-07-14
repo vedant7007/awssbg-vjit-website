@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
+import { fontVariables } from "@/lib/fonts";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -44,8 +45,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-background font-display text-foreground min-h-dvh antialiased">
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <body className="bg-background text-foreground min-h-dvh antialiased">
         <Providers>{children}</Providers>
         <Toaster position="top-center" richColors />
       </body>
