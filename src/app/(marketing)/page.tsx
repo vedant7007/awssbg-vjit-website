@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { FadeUp } from "@/components/motion/FadeUp";
-import { HeroConsole } from "@/components/home/HeroConsole";
+import { HeroLightfall } from "@/components/home/HeroLightfall";
 import { EventCard } from "@/components/cards/EventCard";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import { MemberCard } from "@/components/cards/MemberCard";
@@ -57,13 +57,6 @@ export default async function LandingPage() {
       (a, b) => a.startAt.toDate().getTime() - b.startAt.toDate().getTime(),
     );
   const nextEv = upcoming[0] ?? null;
-  const nextEvent = nextEv
-    ? {
-        title: nextEv.title,
-        href: routes.event(nextEv.slug),
-        startAtISO: nextEv.startAt.toDate().toISOString(),
-      }
-    : null;
   const heroEvent = featuredEvent ?? nextEv;
 
   // Real leaderboard: rank public members by projects they contributed to.
@@ -118,12 +111,7 @@ export default async function LandingPage() {
 
   return (
     <>
-      <HeroConsole
-        memberCount={publicMembers.length}
-        projectCount={allProjects.length}
-        eventCount={allEvents.length}
-        nextEvent={nextEvent}
-      />
+      <HeroLightfall />
 
       {/* Manifesto. */}
       <Section className="!pb-16">
