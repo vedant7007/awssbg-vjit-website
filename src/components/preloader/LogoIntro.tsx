@@ -19,6 +19,17 @@ import { gsap } from "gsap";
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
 
+// Signals hero text effects that the intro has finished (or was skipped).
+function signalIntroDone() {
+  try {
+    (window as Window & { __awssbgIntroDone?: boolean }).__awssbgIntroDone =
+      true;
+    window.dispatchEvent(new Event("awssbg:intro-done"));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function LogoIntro({ color = "#05070c" }: { color?: string }) {
   const [show, setShow] = React.useState(true);
   const rootRef = React.useRef<HTMLDivElement>(null);
@@ -34,6 +45,7 @@ export function LogoIntro({ color = "#05070c" }: { color?: string }) {
 
     // Only the homepage gets the loader; everything else renders immediately.
     if (reduced || !isHome) {
+      signalIntroDone();
       setShow(false);
       return;
     }
@@ -41,6 +53,7 @@ export function LogoIntro({ color = "#05070c" }: { color?: string }) {
     const ctx = gsap.context(() => {
       const logo = root.querySelector<SVGSVGElement>(".intro-logo");
       if (!logo) {
+        signalIntroDone();
         setShow(false);
         return;
       }
@@ -80,7 +93,10 @@ export function LogoIntro({ color = "#05070c" }: { color?: string }) {
 
       const tl = gsap.timeline({
         defaults: { force3D: true, duration: PD, ease: "back.out(1.6)" },
-        onComplete: () => setShow(false),
+        onComplete: () => {
+          signalIntroDone();
+          setShow(false);
+        },
       });
 
       // Phase 1 — one E after another: left, down, right, up.

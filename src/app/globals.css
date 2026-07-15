@@ -414,6 +414,27 @@
   text-shadow: 0 0 30px color-mix(in oklab, var(--orange) 45%, transparent);
 }
 
+/* Light chromatic glitch while the decrypt text resolves. */
+@keyframes decrypt-glitch {
+  0%,
+  100% {
+    text-shadow: 0 0 rgba(0, 0, 0, 0);
+  }
+  30% {
+    text-shadow:
+      -2px 0 var(--orange),
+      2px 0 var(--blue);
+  }
+  60% {
+    text-shadow:
+      2px 0 var(--magenta),
+      -2px 0 var(--blue);
+  }
+}
+.decrypting {
+  animation: decrypt-glitch 0.26s steps(2, jump-none) infinite;
+}
+
 /* Theme wave: the toggle drives an expanding circular clip on the new theme
  * snapshot (see ThemeToggle). Disable the default cross-fade so only the
  * circle animates. */
