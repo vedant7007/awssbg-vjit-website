@@ -21,12 +21,15 @@ export function DecryptText({
   className,
   duration = 4200,
   idleClassName,
+  trigger = "intro",
 }: {
   text: string;
   className?: string;
   duration?: number;
   /** Class added once the decrypt resolves (e.g. an ongoing shimmer). */
   idleClassName?: string;
+  /** "intro" waits for the logo intro; "view" runs when scrolled into view. */
+  trigger?: "intro" | "view";
 }) {
   const ref = React.useRef<HTMLSpanElement>(null);
 
@@ -100,13 +103,23 @@ export function DecryptText({
     };
 
     let fallback = 0;
+    let io: IntersectionObserver | null = null;
     const onDone = () => {
       window.clearTimeout(fallback);
       window.removeEventListener("awssbg:intro-done", onDone);
+      io?.disconnect();
       run();
     };
 
-    if ((window as WindowWithIntro).__awssbgIntroDone) {
+    if (trigger === "view") {
+      io = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) onDone();
+        },
+        { threshold: 0.35 },
+      );
+      io.observe(el);
+    } else if ((window as WindowWithIntro).__awssbgIntroDone) {
       run();
     } else {
       window.addEventListener("awssbg:intro-done", onDone);
@@ -117,8 +130,9 @@ export function DecryptText({
       cancelAnimationFrame(raf);
       window.clearTimeout(fallback);
       window.removeEventListener("awssbg:intro-done", onDone);
+      io?.disconnect();
     };
-  }, [text, duration, idleClassName]);
+  }, [text, duration, idleClassName, trigger]);
 
   return (
     <span ref={ref} className={className} aria-label={text}>

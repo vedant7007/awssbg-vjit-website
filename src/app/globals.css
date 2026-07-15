@@ -462,11 +462,12 @@
   }
 }
 
-/* Clouds read as one giant blob on phones — shrink the fields so several
- * clouds show and it looks like a cloudscape. */
+/* Clouds read as one giant blob on phones — shrink the fields and tile them so
+ * several clouds show and they still cover the full (tall) screen. */
 @media (max-width: 767px) {
   #cloud-transition .cloud {
-    background-size: 155vw auto !important;
+    background-size: 150vw auto !important;
+    background-repeat: repeat !important;
   }
 }
 
