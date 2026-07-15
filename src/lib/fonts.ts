@@ -1,4 +1,9 @@
-import { Space_Grotesk, JetBrains_Mono, Inter } from "next/font/google";
+import {
+  Space_Grotesk,
+  JetBrains_Mono,
+  Inter,
+  Press_Start_2P,
+} from "next/font/google";
 
 /**
  * Type system for the site.
@@ -27,4 +32,13 @@ export const fontBody = Inter({
   display: "swap",
 });
 
-export const fontVariables = `${fontDisplay.variable} ${fontMono.variable} ${fontBody.variable}`;
+// Pixel accent face — used for the wordmark and small labels, echoing the
+// pixelated logo. Kept to short strings; it's not a reading face.
+export const fontPixel = Press_Start_2P({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-pressstart",
+  display: "swap",
+});
+
+export const fontVariables = `${fontDisplay.variable} ${fontMono.variable} ${fontBody.variable} ${fontPixel.variable}`;

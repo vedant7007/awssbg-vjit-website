@@ -128,6 +128,7 @@
     var(--font-jbmono), ui-monospace, "SFMono-Regular", "Menlo", "Consolas",
     monospace;
   --font-duo: var(--font-jbmono), ui-monospace, "Consolas", monospace;
+  --font-pixel: var(--font-pressstart), ui-monospace, "Consolas", monospace;
 
   /* Radius scale (sharp corners are on-brand) */
   --radius-sm: calc(var(--radius) - 0.0625rem);
@@ -364,8 +365,8 @@
 /* Perspective grid — tiles glow in brand colors under the cursor/finger and
  * fade out behind it. Only background/box-shadow transition, so it's cheap. */
 .pg-tile {
-  border-right: 1px solid rgba(255, 255, 255, 0.045);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  border-right: 1px solid var(--grid-line);
+  border-bottom: 1px solid var(--grid-line);
   transition:
     background-color 1400ms ease-out,
     box-shadow 1400ms ease-out;
@@ -375,6 +376,136 @@
   background-color: var(--pg-c);
   box-shadow: 0 0 16px 1px var(--pg-c);
   transition-duration: 0ms;
+}
+
+/* Theme-aware faint grid line (dark lines in light mode, light in dark mode). */
+:root {
+  --grid-line: rgba(11, 15, 23, 0.08);
+}
+.dark {
+  --grid-line: rgba(255, 255, 255, 0.05);
+}
+
+/* Glassmorphism surface — background shows through, works in both themes. */
+.glass {
+  background-color: color-mix(in oklab, var(--background) 60%, transparent);
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+
+/* Pixel accent face. */
+.font-pixel {
+  font-family: var(--font-pixel);
+}
+.eyebrow-pixel {
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  color: var(--orange);
+  text-transform: uppercase;
+}
+@media (min-width: 640px) {
+  .eyebrow-pixel {
+    font-size: 0.62rem;
+  }
+}
+.text-glow {
+  text-shadow: 0 0 30px color-mix(in oklab, var(--orange) 45%, transparent);
+}
+
+/* Theme wave: the toggle drives an expanding circular clip on the new theme
+ * snapshot (see ThemeToggle). Disable the default cross-fade so only the
+ * circle animates. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 0;
+}
+::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* Logo intro preloader. Blocking script sets html[data-intro] before paint. */
+html[data-intro="skip"] #logo-intro {
+  display: none !important;
+}
+#logo-intro .intro-logo {
+  opacity: 0; /* GSAP reveals it; avoids a pre-JS flash of the assembled mark */
+}
+#logo-intro .intro-piece {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Cloud/fog page transition overlay. Layers animate transform + opacity only. */
+#cloud-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  visibility: hidden;
+  pointer-events: none;
+  overflow: hidden;
+}
+#cloud-transition .cloud {
+  position: absolute;
+  inset: -45%;
+  background-repeat: no-repeat;
+  background-size: 160% 160%;
+}
+/* Eight fields (two waves of four) reuse three sprites at varied positions. */
+#cloud-transition .c-1 {
+  background-image: url("/transition/cloud-a.png");
+  background-position: 18% 12%;
+}
+#cloud-transition .c-2 {
+  background-image: url("/transition/cloud-b.png");
+  background-position: 85% 25%;
+}
+#cloud-transition .c-3 {
+  background-image: url("/transition/cloud-c.png");
+  background-position: 45% 88%;
+}
+#cloud-transition .c-4 {
+  background-image: url("/transition/cloud-a.png");
+  background-position: 90% 62%;
+  background-size: 180% 180%;
+}
+#cloud-transition .c-5 {
+  background-image: url("/transition/cloud-b.png");
+  background-position: 10% 55%;
+  background-size: 172% 172%;
+}
+#cloud-transition .c-6 {
+  background-image: url("/transition/cloud-c.png");
+  background-position: 62% 15%;
+  background-size: 176% 176%;
+}
+#cloud-transition .c-7 {
+  background-image: url("/transition/cloud-a.png");
+  background-position: 50% 45%;
+  background-size: 190% 190%;
+}
+#cloud-transition .c-8 {
+  background-image: url("/transition/cloud-b.png");
+  background-position: 35% 82%;
+  background-size: 184% 184%;
+}
+
+/* Incoming-page fade (app/template.tsx). Opacity only — safe for fixed nav. */
+.page-fade {
+  animation: page-fade 200ms ease-out both;
+}
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

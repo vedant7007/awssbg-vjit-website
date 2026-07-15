@@ -52,20 +52,24 @@ export function PerspectiveGrid({
     };
     window.addEventListener("pointermove", onPointerMove, { passive: true });
 
-    // Ambient shimmer: light a couple of random tiles on a gentle cadence.
+    // Ambient shimmer: occasionally light a few random tiles, with pauses in
+    // between so it glows now and then ("kabhi kabhi"), not constantly.
     let timer = 0;
     const nodes = grid.children;
     const tick = () => {
-      for (let k = 0; k < 2; k++) {
-        const el = nodes[Math.floor(Math.random() * nodes.length)];
-        if (el) {
-          el.classList.add("pg-lit");
-          window.setTimeout(() => el.classList.remove("pg-lit"), 70);
+      if (Math.random() < 0.55) {
+        const count = 1 + Math.floor(Math.random() * 3);
+        for (let k = 0; k < count; k++) {
+          const el = nodes[Math.floor(Math.random() * nodes.length)];
+          if (el) {
+            el.classList.add("pg-lit");
+            window.setTimeout(() => el.classList.remove("pg-lit"), 90);
+          }
         }
       }
-      timer = window.setTimeout(tick, 280);
+      timer = window.setTimeout(tick, 420 + Math.random() * 1300);
     };
-    if (!reduced) timer = window.setTimeout(tick, 280);
+    if (!reduced) timer = window.setTimeout(tick, 600);
 
     return () => {
       window.removeEventListener("pointermove", onPointerMove);

@@ -2,32 +2,35 @@ import { PerspectiveGrid } from "@/components/motion/PerspectiveGrid";
 
 /**
  * Minimal hero: wordmark + one line over a 3D perspective grid that glows in
- * brand colors under the cursor/finger. No buttons.
+ * brand colors under the cursor/finger. Works in both light and dark themes.
  */
 export function HeroGrid() {
   return (
-    <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[#05070c]">
+    <section className="bg-background relative flex min-h-[100dvh] items-center justify-center overflow-hidden">
       {/* Interactive grid (receives pointer events). */}
       <div className="absolute inset-0 z-0">
-        <PerspectiveGrid />
+        <PerspectiveGrid cols={30} rows={30} />
       </div>
 
-      {/* Fade the grid edges into black; never blocks pointer. */}
+      {/* Fade the grid edges into the page background; never blocks pointer. */}
       <div
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            "radial-gradient(circle at 50% 45%, transparent 18%, #05070c 78%)",
+            "radial-gradient(circle at 50% 45%, transparent 16%, var(--background) 76%)",
         }}
       />
 
       {/* Content sits above but lets the pointer through so the glow follows
           everywhere, even behind the text. */}
       <div className="pointer-events-none relative z-10 mx-auto max-w-3xl px-6 text-center">
-        <h1 className="font-display text-[clamp(2.75rem,10vw,7rem)] leading-[0.95] font-bold tracking-[-0.04em] text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.6)]">
+        <p className="font-pixel text-orange mb-7 text-[0.55rem] tracking-[0.25em] sm:text-[0.7rem]">
+          AWS · STUDENT · BUILDERS
+        </p>
+        <h1 className="font-display text-foreground text-[clamp(2.75rem,10vw,7rem)] leading-[0.95] font-bold tracking-[-0.04em] [text-shadow:0_2px_34px_var(--background)]">
           AWS SBG VJIT
         </h1>
-        <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60 drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)] md:text-lg">
+        <p className="text-muted-foreground mx-auto mt-6 max-w-xl text-base leading-relaxed md:text-lg">
           AWS Student Builder Group at Vidya Jyothi Institute of Technology — a
           student community learning, building, and shipping on the cloud.
         </p>

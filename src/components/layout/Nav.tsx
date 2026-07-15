@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, LayoutDashboard, LogOut } from "lucide-react";
 
@@ -11,8 +10,9 @@ import { routes } from "@/lib/constants/routes";
 import { initials } from "@/lib/utils/format";
 import { useUser, signOut } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
-import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
+import { LogoMark } from "@/components/brand/LogoMark";
+import { TransitionLink } from "@/components/transition/TransitionLink";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -39,114 +39,101 @@ import {
  */
 export function Nav() {
   const pathname = usePathname();
-  const isLanding = pathname === routes.home;
-  const [scrolled, setScrolled] = React.useState(false);
   const { user, loading } = useUser();
 
-  React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const solid = scrolled || !isLanding;
-
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-40 transition-colors duration-300",
-        solid
-          ? "bg-paper/80 supports-[backdrop-filter]:bg-paper/60 border-b backdrop-blur"
-          : "border-b border-transparent bg-transparent",
-      )}
-    >
-      <Container>
-        <div className="flex h-16 items-center justify-between gap-4">
-          <Link
-            href={routes.home}
-            className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-none"
-          >
-            <Logo />
-          </Link>
+    <header className="fixed inset-x-0 top-4 z-40 px-3 md:px-5">
+      <div className="relative mx-auto flex max-w-[1320px] items-center justify-between gap-3">
+        {/* Left corner: logo, on its own. */}
+        <TransitionLink
+          href={routes.home}
+          className="glass focus-visible:ring-ring flex shrink-0 items-center gap-2 rounded-full py-2 pr-3.5 pl-2.5 focus-visible:ring-2 focus-visible:outline-none"
+        >
+          <LogoMark id="site-logo-mark" className="size-6 shrink-0" />
+          <span className="font-pixel text-[0.58rem] leading-none tracking-tight">
+            AWS<span className="text-orange">SBG</span>
+          </span>
+        </TransitionLink>
 
-          <nav
-            aria-label="Primary"
-            className="hidden items-center gap-1 md:flex"
-          >
-            {NAV_LINKS.map((link) => {
-              const active = pathname.startsWith(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "hover:text-orange focus-visible:ring-ring rounded-sm px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
-                    active ? "text-foreground" : "text-muted-foreground",
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
-
-            {!loading && user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className="focus-visible:ring-ring rounded-full focus-visible:ring-2 focus-visible:outline-none"
-                    aria-label="Account menu"
-                  >
-                    <Avatar className="size-9">
-                      {user.photoURL ? (
-                        <AvatarImage src={user.photoURL} alt="" />
-                      ) : null}
-                      <AvatarFallback>
-                        {initials(user.displayName ?? user.email ?? "?")}
-                      </AvatarFallback>
-                    </Avatar>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel className="truncate">
-                    {user.displayName ?? user.email}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href={routes.console}>
-                      <LayoutDashboard className="size-4" />
-                      Console
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      signOut().catch(() => undefined);
-                    }}
-                  >
-                    <LogOut className="size-4" />
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button
-                asChild
-                size="sm"
-                variant={solid ? "default" : "secondary"}
-                className="hidden md:inline-flex"
+        {/* Centre: glass pill with only the sections. */}
+        <nav
+          aria-label="Primary"
+          className="glass absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded-full p-1.5 md:flex"
+        >
+          {NAV_LINKS.map((link) => {
+            const active = pathname.startsWith(link.href);
+            return (
+              <TransitionLink
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "font-display focus-visible:ring-ring rounded-full px-4 py-1.5 text-sm font-medium transition-all focus-visible:ring-2 focus-visible:outline-none",
+                  active
+                    ? "bg-orange/15 text-orange ring-orange/30 shadow-[0_0_20px_-3px_rgba(255,153,0,0.65)] ring-1"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5",
+                )}
               >
-                <Link href={routes.signin}>Sign in</Link>
-              </Button>
-            )}
+                {link.label}
+              </TransitionLink>
+            );
+          })}
+        </nav>
 
-            <MobileMenu />
-          </div>
+        {/* Right corner: theme toggle + sign in, on their own. */}
+        <div className="glass flex shrink-0 items-center gap-0.5 rounded-full p-1">
+          <ThemeToggle />
+
+          {!loading && user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="focus-visible:ring-ring rounded-full focus-visible:ring-2 focus-visible:outline-none"
+                  aria-label="Account menu"
+                >
+                  <Avatar className="size-9">
+                    {user.photoURL ? (
+                      <AvatarImage src={user.photoURL} alt="" />
+                    ) : null}
+                    <AvatarFallback>
+                      {initials(user.displayName ?? user.email ?? "?")}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel className="truncate">
+                  {user.displayName ?? user.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <TransitionLink href={routes.console}>
+                    <LayoutDashboard className="size-4" />
+                    Console
+                  </TransitionLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    signOut().catch(() => undefined);
+                  }}
+                >
+                  <LogOut className="size-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              asChild
+              size="sm"
+              className="hidden rounded-full md:inline-flex"
+            >
+              <TransitionLink href={routes.signin}>Sign in</TransitionLink>
+            </Button>
+          )}
+
+          <MobileMenu />
         </div>
-      </Container>
+      </div>
     </header>
   );
 }
@@ -173,21 +160,21 @@ function MobileMenu() {
         <nav aria-label="Mobile" className="mt-8 flex flex-col gap-1">
           {NAV_LINKS.map((link) => (
             <SheetClose asChild key={link.href}>
-              <Link
+              <TransitionLink
                 href={link.href}
                 className="hover:bg-accent rounded-sm px-3 py-2.5 text-base font-medium"
               >
                 {link.label}
-              </Link>
+              </TransitionLink>
             </SheetClose>
           ))}
           <SheetClose asChild>
-            <Link
+            <TransitionLink
               href={routes.signin}
               className="bg-primary text-primary-foreground mt-4 rounded-sm px-3 py-2.5 text-center text-base font-medium"
             >
               Sign in
-            </Link>
+            </TransitionLink>
           </SheetClose>
         </nav>
       </SheetContent>
