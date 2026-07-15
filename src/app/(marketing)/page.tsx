@@ -6,44 +6,23 @@ import { routes } from "@/lib/constants/routes";
 import { PROGRAMS, TRACKS, PERKS } from "@/lib/constants/club";
 import { safe } from "@/lib/utils/safe";
 import { getFeaturedEvent, listEvents } from "@/lib/firestore/events";
-import {
-  getFeaturedProjects,
-  listProjects,
-} from "@/lib/firestore/projects.server";
-import {
-  getPublicMembers,
-  getMemberById,
-} from "@/lib/firestore/members.server";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
-import { CountUp } from "@/components/motion/CountUp";
 import { HeroGrid } from "@/components/home/HeroGrid";
 import { EventCard } from "@/components/cards/EventCard";
-import { ProjectCard } from "@/components/cards/ProjectCard";
-import { MemberCard } from "@/components/cards/MemberCard";
-import { EmptyState } from "@/components/feedback/EmptyState";
 
 export const metadata: Metadata = {
   title: "Build the cloud, on campus",
   description:
-    "AWS Student Builder Group at VJIT. Learn AWS, run real programs, ship projects to production, and grow with a community of student builders in Hyderabad.",
+    "AWS Student Builder Group at VJIT. Learn AWS, run real programs, and grow with a community of student builders in Hyderabad.",
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
-  const [
-    featuredEvent,
-    rawFeaturedProjects,
-    publicMembers,
-    allProjects,
-    allEvents,
-  ] = await Promise.all([
+  const [featuredEvent, allEvents] = await Promise.all([
     safe(getFeaturedEvent(), null, "landing:featuredEvent"),
-    safe(getFeaturedProjects(3), [], "landing:featuredProjects"),
-    safe(getPublicMembers(100), [], "landing:members"),
-    safe(listProjects(), [], "landing:projects"),
     safe(listEvents(), [], "landing:events"),
   ]);
 
@@ -54,254 +33,263 @@ export default async function LandingPage() {
     );
   const heroEvent = featuredEvent ?? upcoming[0] ?? null;
 
-  const leadership = publicMembers.filter(
-    (m) => m.role === "core" || m.role === "lead",
-  );
-  const crew = (leadership.length > 0 ? leadership : publicMembers).slice(0, 8);
-
-  const featuredProjects = await Promise.all(
-    rawFeaturedProjects.map(async (p) => {
-      const contributors = await Promise.all(
-        p.contributors.map(async (uid) => {
-          const member = await safe(
-            getMemberById(uid),
-            null,
-            "landing:projects:contributor",
-          );
-          return member
-            ? {
-                id: member.id,
-                displayName: member.displayName,
-                photoURL: member.photoURL,
-                github: member.socials?.github,
-              }
-            : null;
-        }),
-      );
-      return {
-        ...p,
-        createdAt: p.createdAt?.toDate().toISOString() ?? "",
-        updatedAt: p.updatedAt?.toDate().toISOString() ?? "",
-        populatedContributors: contributors.filter((c) => c !== null),
-      };
-    }),
-  );
-
   return (
     <>
       <HeroGrid />
-
-      {/* 01 — About. 60/40. */}
-      <Section>
-        <div className="grid items-center gap-12 lg:grid-cols-[3fr_2fr]">
-          <div>
-            <Reveal>
-              <p className="eyebrow-pixel mb-6">{"// who we are"}</p>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 className="font-display text-4xl leading-[1.05] font-bold tracking-tight text-balance md:text-6xl">
-                We learn the cloud by{" "}
-                <span className="text-sheen">building things that run.</span>
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="text-muted-foreground mt-6 max-w-xl text-lg leading-relaxed">
-                AWS SBG VJIT is a student-led builder group at Vidya Jyothi
-                Institute of Technology. We meet to learn cloud fundamentals,
-                run real programs, and ship projects to production together — no
-                gatekeeping. If you want to build on AWS, you belong here.
-              </p>
-            </Reveal>
-          </div>
-
-          <Reveal delay={0.15}>
-            <dl className="glass grid grid-cols-3 gap-px overflow-hidden rounded-2xl">
-              <Stat label="builders" value={publicMembers.length} />
-              <Stat label="projects" value={allProjects.length} />
-              <Stat label="events" value={allEvents.length} />
-            </dl>
-          </Reveal>
-        </div>
-      </Section>
-
-      {/* 02 — Our plan / tracks. */}
-      <Section muted>
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow-pixel mb-4">{"// our plan"}</p>
-          <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-            Pick a track, follow the path
-          </h2>
-          <p className="text-muted-foreground mt-4 text-lg">
-            Five domains, each a route through the AWS services that matter —
-            learned by building, together.
-          </p>
-        </Reveal>
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {TRACKS.map((track, i) => {
-            const Icon = track.icon;
-            return (
-              <Reveal key={track.key} delay={i * 0.06}>
-                <article className="glow-card group flex h-full flex-col gap-4 rounded-2xl p-6">
-                  <div className="flex items-center gap-3">
-                    <Icon className="text-orange size-6" />
-                    <h3 className="font-display text-lg font-semibold">
-                      {track.name}
-                    </h3>
-                  </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {track.blurb}
-                  </p>
-                  <div className="mt-auto flex flex-wrap gap-1.5">
-                    {track.services.map((svc) => (
-                      <span
-                        key={svc}
-                        className="border-border bg-background/40 text-muted-foreground rounded-md border px-2 py-0.5 font-mono text-[0.7rem]"
-                      >
-                        {svc}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              </Reveal>
-            );
-          })}
-        </div>
-      </Section>
-
-      {/* 03 — Events glimpse. 60/40. */}
-      <Section>
-        <div className="grid items-center gap-12 lg:grid-cols-[2fr_3fr]">
-          <div className="order-2 lg:order-1">
-            <Reveal>
-              <p className="eyebrow-pixel mb-4">{"// what we run"}</p>
-              <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-                Programs, not one-off meetups
-              </h2>
-              <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-                A repeating calendar built to move you forward — foundations,
-                camps, sprints, and a flagship community day.
-              </p>
-            </Reveal>
-            <ul className="mt-6 space-y-2">
-              {PROGRAMS.slice(0, 4).map((program, i) => (
-                <Reveal key={program.key} delay={0.05 + i * 0.05}>
-                  <li className="flex items-center gap-3">
-                    <span className="bg-orange size-1.5 rounded-full" />
-                    <span className="font-medium">{program.name}</span>
-                    <span className="text-muted-foreground font-mono text-xs">
-                      {program.cadence}
-                    </span>
-                  </li>
-                </Reveal>
-              ))}
-            </ul>
-            <Reveal delay={0.3}>
-              <Button asChild variant="outline" className="mt-8 rounded-full">
-                <Link href={routes.events} className="group">
-                  See all events
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              </Button>
-            </Reveal>
-          </div>
-
-          <Reveal className="order-1 lg:order-2" delay={0.1}>
-            {heroEvent ? (
-              <EventCard event={heroEvent} featured />
-            ) : (
-              <EmptyState title="Next event dropping soon" />
-            )}
-          </Reveal>
-        </div>
-      </Section>
-
-      {/* 04 — Projects. */}
-      {featuredProjects.length > 0 ? (
-        <Section muted>
-          <Reveal className="max-w-2xl">
-            <p className="eyebrow-pixel mb-4">{"// shipped"}</p>
-            <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-              Built by students, running on AWS
-            </h2>
-            <p className="text-muted-foreground mt-4 text-lg">
-              Not tutorials — deployed projects with a name attached.
-            </p>
-          </Reveal>
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {featuredProjects.map((project, i) => (
-              <Reveal key={project.id} delay={i * 0.06}>
-                <ProjectCard project={project} className="h-full" />
-              </Reveal>
-            ))}
-          </div>
-        </Section>
-      ) : null}
-
-      {/* 05 — Crew. */}
-      {crew.length > 0 ? (
-        <Section>
-          <Reveal className="max-w-2xl">
-            <p className="eyebrow-pixel mb-4">{"// the crew"}</p>
-            <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-              Run by students, for students
-            </h2>
-            <p className="text-muted-foreground mt-4 text-lg">
-              A captain, functional leads, and builders who keep it all moving.
-            </p>
-          </Reveal>
-          <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {crew.map((member, i) => (
-              <Reveal key={member.id} delay={i * 0.05}>
-                <MemberCard member={member} />
-              </Reveal>
-            ))}
-          </div>
-          <Reveal delay={0.2}>
-            <Button asChild variant="outline" className="mt-8 rounded-full">
-              <Link href={routes.members} className="group">
-                Meet everyone
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Button>
-          </Reveal>
-        </Section>
-      ) : null}
-
-      {/* 06 — Join. */}
+      <AboutSection />
+      <TracksSection />
+      <ProgramsSection />
+      {heroEvent ? <EventsSection heroEvent={heroEvent} /> : null}
+      <PerksSection />
       <JoinSection />
     </>
   );
 }
 
+/* ------------------------------------------------------------------ */
+
 /** Full-screen section shell with brand vertical rhythm. */
 function Section({
   children,
   muted = false,
+  className,
 }: {
   children: React.ReactNode;
   muted?: boolean;
+  className?: string;
 }) {
   return (
     <section
       className={`flex min-h-screen items-center py-24 ${
         muted ? "bg-muted/30" : "bg-background"
-      }`}
+      } ${className ?? ""}`}
     >
-      <Container>{children}</Container>
+      <Container className="w-full">{children}</Container>
     </section>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+/** About — a terminal / README window. Distinctive, on-brand for a builder group. */
+function AboutSection() {
   return (
-    <div className="bg-background/50 px-5 py-7 text-center">
-      <dd className="text-orange text-4xl font-bold tabular-nums">
-        <CountUp value={value} />
-      </dd>
-      <dt className="text-muted-foreground mt-1 font-mono text-xs tracking-wide uppercase">
-        {label}
-      </dt>
-    </div>
+    <Section>
+      <Reveal className="mx-auto max-w-3xl">
+        <p className="eyebrow-pixel mb-6 text-center">{"// who we are"}</p>
+        <div className="glass overflow-hidden rounded-2xl shadow-xl shadow-black/5">
+          <div className="border-border/60 flex items-center gap-2 border-b px-4 py-3">
+            <span className="flex gap-1.5" aria-hidden>
+              <span className="size-2.5 rounded-full bg-[#ff5f56]" />
+              <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
+              <span className="size-2.5 rounded-full bg-[#27c93f]" />
+            </span>
+            <span className="text-muted-foreground ml-2 font-mono text-xs">
+              ~/aws-sbg-vjit — about
+            </span>
+          </div>
+          <div className="space-y-1 p-6 font-mono text-sm leading-relaxed md:p-9 md:text-base">
+            <p>
+              <span className="text-orange">$</span> whoami
+            </p>
+            <p className="font-display pt-1 text-2xl font-bold md:text-3xl">
+              AWS SBG VJIT
+            </p>
+            <p className="text-muted-foreground">
+              AWS Student Builder Group · VJIT, Hyderabad
+            </p>
+
+            <p className="text-orange/80 pt-6"># what we are</p>
+            <p className="text-muted-foreground">
+              A student-led builder group. We learn cloud fundamentals, run real
+              programs, and ship projects to production — together.
+            </p>
+
+            <p className="text-orange/80 pt-4"># the rule</p>
+            <p className="text-muted-foreground">
+              No gatekeeping. If you want to build on AWS, you belong here.
+              <span className="animate-caret bg-orange ml-1 inline-block h-4 w-2 -translate-y-0.5 align-middle" />
+            </p>
+          </div>
+        </div>
+      </Reveal>
+    </Section>
+  );
+}
+
+/** Tracks — five numbered "path" cards, balanced (3 + 2 centred). */
+function TracksSection() {
+  return (
+    <Section muted>
+      <Reveal className="mx-auto max-w-2xl text-center">
+        <p className="eyebrow-pixel mb-4">{"// pick a track"}</p>
+        <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
+          Follow the path
+        </h2>
+        <p className="text-muted-foreground mt-4 text-lg">
+          Five domains, each a route through the AWS services that matter —
+          learned by building, together.
+        </p>
+      </Reveal>
+
+      <div className="mx-auto mt-12 flex max-w-4xl flex-wrap justify-center gap-4">
+        {TRACKS.map((track, i) => {
+          const Icon = track.icon;
+          return (
+            <Reveal
+              key={track.key}
+              delay={i * 0.06}
+              className="w-full sm:w-[280px]"
+            >
+              <article className="glow-card group flex h-full flex-col gap-3 rounded-2xl p-6">
+                <div className="flex items-center justify-between">
+                  <Icon className="text-orange size-6 transition-transform duration-300 group-hover:scale-110" />
+                  <span className="text-muted-foreground/50 font-mono text-xs">
+                    0{i + 1}
+                  </span>
+                </div>
+                <h3 className="font-display text-lg font-semibold">
+                  {track.name}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {track.blurb}
+                </p>
+                <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
+                  {track.services.map((svc) => (
+                    <span
+                      key={svc}
+                      className="border-border bg-background/40 text-muted-foreground rounded-md border px-2 py-0.5 font-mono text-[0.7rem]"
+                    >
+                      {svc}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            </Reveal>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
+/** Programs — the recurring calendar. */
+function ProgramsSection() {
+  return (
+    <Section>
+      <Reveal className="max-w-2xl">
+        <p className="eyebrow-pixel mb-4">{"// what we run"}</p>
+        <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
+          Programs, not one-off meetups
+        </h2>
+        <p className="text-muted-foreground mt-4 text-lg">
+          A repeating calendar built to move you forward — foundations, camps,
+          sprints, and a flagship community day.
+        </p>
+      </Reveal>
+
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {PROGRAMS.map((program, i) => {
+          const Icon = program.icon;
+          return (
+            <Reveal key={program.key} delay={i * 0.05}>
+              <article
+                className={`glow-card group flex h-full flex-col gap-3 rounded-2xl p-6 ${
+                  program.flagship ? "ring-orange/30 ring-1" : ""
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <Icon className="text-orange size-6 transition-transform duration-300 group-hover:scale-110" />
+                  <span className="text-muted-foreground font-mono text-[0.65rem] tracking-wide uppercase">
+                    {program.cadence}
+                  </span>
+                </div>
+                <h3 className="font-display text-lg font-semibold">
+                  {program.name}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {program.blurb}
+                </p>
+              </article>
+            </Reveal>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
+/** Events glimpse — only shown when there's a real event. */
+function EventsSection({
+  heroEvent,
+}: {
+  heroEvent: NonNullable<Awaited<ReturnType<typeof getFeaturedEvent>>>;
+}) {
+  return (
+    <Section muted>
+      <div className="grid items-center gap-12 lg:grid-cols-[2fr_3fr]">
+        <div className="order-2 lg:order-1">
+          <Reveal>
+            <p className="eyebrow-pixel mb-4">{"// next up"}</p>
+            <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
+              Something is always on
+            </h2>
+            <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+              Workshops, camps, and community days — open to every student who
+              wants to build.
+            </p>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <Button asChild variant="outline" className="mt-8 rounded-full">
+              <Link href={routes.events} className="group">
+                See all events
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </Button>
+          </Reveal>
+        </div>
+        <Reveal className="order-1 lg:order-2" delay={0.1}>
+          <EventCard event={heroEvent} featured />
+        </Reveal>
+      </div>
+    </Section>
+  );
+}
+
+/** Perks — what you actually get. */
+function PerksSection() {
+  return (
+    <Section>
+      <Reveal className="max-w-2xl">
+        <p className="eyebrow-pixel mb-4">{"// why join"}</p>
+        <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
+          What you actually get
+        </h2>
+        <p className="text-muted-foreground mt-4 text-lg">
+          Beyond the community — the concrete things that move your cloud
+          career.
+        </p>
+      </Reveal>
+
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {PERKS.map((perk, i) => {
+          const Icon = perk.icon;
+          return (
+            <Reveal key={perk.key} delay={i * 0.05}>
+              <article className="glow-card flex h-full items-start gap-4 rounded-2xl p-6">
+                <span className="bg-orange/10 text-orange flex size-10 shrink-0 items-center justify-center rounded-lg">
+                  <Icon className="size-5" />
+                </span>
+                <span>
+                  <h3 className="font-display font-semibold">{perk.title}</h3>
+                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+                    {perk.blurb}
+                  </p>
+                </span>
+              </article>
+            </Reveal>
+          );
+        })}
+      </div>
+    </Section>
   );
 }
 
@@ -346,15 +334,6 @@ function JoinSection() {
             </Button>
           </div>
         </Reveal>
-        <div className="mt-16 flex flex-wrap justify-center gap-2">
-          {PERKS.map((perk, i) => (
-            <Reveal key={perk.key} delay={0.15 + i * 0.03}>
-              <span className="glass text-muted-foreground rounded-full px-3 py-1.5 text-xs">
-                {perk.title}
-              </span>
-            </Reveal>
-          ))}
-        </div>
       </Container>
     </section>
   );
