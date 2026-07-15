@@ -29,7 +29,7 @@ export function HeroGrid() {
           AWS · STUDENT · BUILDERS
         </p>
         <h1 className="font-display text-foreground text-[clamp(2.75rem,10vw,7rem)] leading-[0.95] font-bold tracking-[-0.04em] [text-shadow:0_2px_34px_var(--background)]">
-          <DecryptText text="AWS SBG VJIT" />
+          <DecryptText text="AWS SBG VJIT" idleClassName="headline-shimmer" />
         </h1>
         <p className="text-muted-foreground mx-auto mt-6 max-w-xl text-base leading-relaxed md:text-lg">
           AWS Student Builder Group at Vidya Jyothi Institute of Technology — a

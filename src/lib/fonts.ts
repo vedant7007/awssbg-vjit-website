@@ -1,5 +1,5 @@
 import {
-  Space_Grotesk,
+  Bricolage_Grotesque,
   JetBrains_Mono,
   Inter,
   Press_Start_2P,
@@ -7,14 +7,14 @@ import {
 
 /**
  * Type system for the site.
- * - display: Space Grotesk — techy, geometric, oversized headlines (the editorial voice).
+ * - display: Bricolage Grotesque — characterful modern grotesque for headlines.
  * - mono/duo: JetBrains Mono — terminal eyebrows, the blinking caret, data + handles.
  * - body: Inter — quiet, readable long-form.
+ * - pixel: Press Start 2P — wordmark + tiny labels, echoing the pixel logo.
  * Each exposes a CSS variable consumed by @theme in globals.css.
  */
-export const fontDisplay = Space_Grotesk({
+export const fontDisplay = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   variable: "--font-space",
   display: "swap",
 });

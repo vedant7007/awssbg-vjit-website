@@ -20,10 +20,13 @@ export function DecryptText({
   text,
   className,
   duration = 4200,
+  idleClassName,
 }: {
   text: string;
   className?: string;
   duration?: number;
+  /** Class added once the decrypt resolves (e.g. an ongoing shimmer). */
+  idleClassName?: string;
 }) {
   const ref = React.useRef<HTMLSpanElement>(null);
 
@@ -59,6 +62,7 @@ export function DecryptText({
       el.style.minWidth = "";
       el.style.display = "";
       el.classList.remove("decrypting");
+      if (idleClassName) el.classList.add(idleClassName);
     };
 
     const frame = (t: number) => {
@@ -114,7 +118,7 @@ export function DecryptText({
       window.clearTimeout(fallback);
       window.removeEventListener("awssbg:intro-done", onDone);
     };
-  }, [text, duration]);
+  }, [text, duration, idleClassName]);
 
   return (
     <span ref={ref} className={className} aria-label={text}>

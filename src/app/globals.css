@@ -435,6 +435,41 @@
   animation: decrypt-glitch 0.26s steps(2, jump-none) infinite;
 }
 
+/* Ongoing subtle shimmer on the hero headline after the decrypt resolves —
+ * a faint orange highlight sweeping slowly across the (theme-aware) text. */
+.headline-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--foreground) 0%,
+    var(--foreground) 42%,
+    color-mix(in oklab, var(--orange) 75%, var(--foreground)) 50%,
+    var(--foreground) 58%,
+    var(--foreground) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: headline-shimmer 7.5s ease-in-out infinite;
+}
+@keyframes headline-shimmer {
+  0%,
+  100% {
+    background-position: 160% 0;
+  }
+  55% {
+    background-position: -60% 0;
+  }
+}
+
+/* Clouds read as one giant blob on phones — shrink the fields so several
+ * clouds show and it looks like a cloudscape. */
+@media (max-width: 767px) {
+  #cloud-transition .cloud {
+    background-size: 155vw auto !important;
+  }
+}
+
 /* Theme wave: the toggle drives an expanding circular clip on the new theme
  * snapshot (see ThemeToggle). Disable the default cross-fade so only the
  * circle animates. */
