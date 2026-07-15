@@ -19,7 +19,7 @@ type WindowWithIntro = Window & { __awssbgIntroDone?: boolean };
 export function DecryptText({
   text,
   className,
-  duration = 2600,
+  duration = 4200,
 }: {
   text: string;
   className?: string;
@@ -39,7 +39,7 @@ export function DecryptText({
     const chars = text.split("");
     // Each non-space char locks in at a staggered time.
     const lockAt = chars.map(
-      (_, i) => (i / chars.length) * duration * 0.72 + 160,
+      (_, i) => (i / chars.length) * duration * 0.82 + 220,
     );
     const rand = () => GLYPHS[(Math.random() * GLYPHS.length) | 0]!;
 
@@ -51,31 +51,41 @@ export function DecryptText({
 
     let raf = 0;
     let startT = 0;
+    let lastTick = -999;
     let running = false;
+
+    const finalize = () => {
+      el.textContent = text;
+      el.style.minWidth = "";
+      el.style.display = "";
+      el.classList.remove("decrypting");
+    };
 
     const frame = (t: number) => {
       if (!startT) startT = t;
       const e = t - startT;
-      let out = "";
-      let done = true;
-      for (let i = 0; i < chars.length; i++) {
-        const c = chars[i]!;
-        if (c === " ") out += " ";
-        else if (e >= lockAt[i]!) out += c;
-        else {
-          out += rand();
-          done = false;
+      const settled = e >= duration + 250;
+      // Re-scramble ~14x/sec so the glyphs read as distinct letters, not a blur.
+      if (t - lastTick >= 70 || settled) {
+        lastTick = t;
+        let out = "";
+        let done = true;
+        for (let i = 0; i < chars.length; i++) {
+          const c = chars[i]!;
+          if (c === " ") out += " ";
+          else if (e >= lockAt[i]!) out += c;
+          else {
+            out += rand();
+            done = false;
+          }
+        }
+        el.textContent = out;
+        if (done || settled) {
+          finalize();
+          return;
         }
       }
-      el.textContent = out;
-      if (!done && e < duration + 200) {
-        raf = requestAnimationFrame(frame);
-      } else {
-        el.textContent = text;
-        el.style.minWidth = "";
-        el.style.display = "";
-        el.classList.remove("decrypting");
-      }
+      raf = requestAnimationFrame(frame);
     };
 
     const run = () => {
