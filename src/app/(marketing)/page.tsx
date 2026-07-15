@@ -9,7 +9,6 @@ import { getFeaturedEvent, listEvents } from "@/lib/firestore/events";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
-import { DecryptText } from "@/components/motion/DecryptText";
 import { HeroGrid } from "@/components/home/HeroGrid";
 import { EventCard } from "@/components/cards/EventCard";
 
@@ -123,7 +122,7 @@ function TracksSection() {
       <Reveal className="mx-auto max-w-2xl text-center">
         <p className="eyebrow-pixel mb-4">{"// pick a track"}</p>
         <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-          <DecryptText text="Follow the path" trigger="view" duration={1500} />
+          Follow the path
         </h2>
         <p className="text-muted-foreground mt-4 text-lg">
           Five domains, each a route through the AWS services that matter —
@@ -179,11 +178,7 @@ function ProgramsSection() {
       <Reveal className="max-w-2xl">
         <p className="eyebrow-pixel mb-4">{"// what we run"}</p>
         <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-          <DecryptText
-            text="Programs, not one-off meetups"
-            trigger="view"
-            duration={1600}
-          />
+          Programs, not one-off meetups
         </h2>
         <p className="text-muted-foreground mt-4 text-lg">
           A repeating calendar built to move you forward — foundations, camps,
@@ -235,11 +230,7 @@ function EventsSection({
           <Reveal>
             <p className="eyebrow-pixel mb-4">{"// next up"}</p>
             <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-              <DecryptText
-                text="Something is always on"
-                trigger="view"
-                duration={1500}
-              />
+              Something is always on
             </h2>
             <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
               Workshops, camps, and community days — open to every student who
@@ -270,11 +261,7 @@ function PerksSection() {
       <Reveal className="max-w-2xl">
         <p className="eyebrow-pixel mb-4">{"// why join"}</p>
         <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-          <DecryptText
-            text="What you actually get"
-            trigger="view"
-            duration={1500}
-          />
+          What you actually get
         </h2>
         <p className="text-muted-foreground mt-4 text-lg">
           Beyond the community — the concrete things that move your cloud
