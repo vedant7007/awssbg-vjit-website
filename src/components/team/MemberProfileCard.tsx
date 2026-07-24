@@ -11,10 +11,11 @@ import {
 } from "@/lib/constants/team";
 
 /**
- * A member's ID card. Shows their real photo when we have one, a team-coloured
- * initials plate otherwise. Tilts toward the pointer in 3D on hover, with a
- * moving sheen and the team's accent glow — the depth the placeholder version
- * only faked. Pure pointer maths, no engine.
+ * A member's ID card. Real photo when we have one, a team-coloured initials
+ * plate otherwise. On hover it tilts in 3D toward the pointer, a light sweep
+ * crosses the surface, and the team's own symbol lights up — tech </>, design
+ * palette, production camera, events ticket, marketing megaphone. Pure pointer
+ * maths, no engine.
  */
 export function MemberProfileCard({
   member,
@@ -27,6 +28,7 @@ export function MemberProfileCard({
   showContactButton?: boolean;
 }) {
   const team = TEAM_BY_KEY[member.team];
+  const Icon = team.icon;
   const ref = React.useRef<HTMLDivElement>(null);
 
   const onMove = React.useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -105,13 +107,23 @@ export function MemberProfileCard({
           }}
         />
 
-        {/* pointer sheen, only on hover */}
+        {/* diagonal light sweep on hover */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-700 ease-out group-hover:translate-x-full"
+          style={{
+            background:
+              "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.28) 50%, transparent 60%)",
+          }}
+        />
+
+        {/* soft pointer sheen */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity duration-200 group-hover:opacity-100"
           style={{
             background:
-              "radial-gradient(220px circle at var(--mx,50%) var(--my,0%), rgba(255,255,255,0.55), transparent 60%)",
+              "radial-gradient(220px circle at var(--mx,50%) var(--my,0%), rgba(255,255,255,0.5), transparent 60%)",
           }}
         />
 
@@ -125,9 +137,23 @@ export function MemberProfileCard({
           }}
         />
 
-        {/* team tag */}
+        {/* team symbol — lights up + lifts on hover */}
+        <div
+          className="absolute top-3 left-3 grid size-9 place-items-center rounded-lg backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-0.5"
+          style={{
+            color: team.color,
+            background:
+              "color-mix(in oklab, var(--accent) 16%, rgba(0,0,0,0.4))",
+            boxShadow:
+              "inset 0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent)",
+          }}
+        >
+          <Icon className="size-4 transition-transform duration-300 group-hover:scale-110" />
+        </div>
+
+        {/* team label, top-right */}
         <span
-          className="absolute top-3 left-3 font-mono text-[0.62rem] tracking-[0.16em] uppercase"
+          className="absolute top-4 right-3 font-mono text-[0.6rem] tracking-[0.14em] uppercase"
           style={{ color: team.color, textShadow: "0 1px 6px rgba(0,0,0,0.8)" }}
         >
           {team.wrap[0]}

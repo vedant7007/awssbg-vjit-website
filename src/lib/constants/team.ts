@@ -7,6 +7,15 @@
  * and the UI hides them until filled.
  */
 
+import {
+  Code2,
+  Palette,
+  Video,
+  Ticket,
+  Megaphone,
+  type LucideIcon,
+} from "lucide-react";
+
 export type TeamKey = "tech" | "design" | "production" | "marketing" | "events";
 
 export type Socials = {
@@ -56,11 +65,14 @@ export type TeamMeta = {
   glyph: string;
   /** Whether the glyph reads as an outline rather than a solid shape. */
   stroke: boolean;
+  /** The team's symbol icon, shown on member cards. */
+  icon: LucideIcon;
 };
 
 export const TEAMS: TeamMeta[] = [
   {
     key: "tech",
+    icon: Code2,
     label: "Tech",
     charter: "Runs the workshops, builds the labs, keeps this site deploying.",
     color: "#43B4FF",
@@ -71,6 +83,7 @@ export const TEAMS: TeamMeta[] = [
   },
   {
     key: "design",
+    icon: Palette,
     label: "Design",
     charter:
       "Posters, decks, and the visual language of everything we put out.",
@@ -82,6 +95,7 @@ export const TEAMS: TeamMeta[] = [
   },
   {
     key: "production",
+    icon: Video,
     label: "Production",
     charter:
       "Shoots, edits and ships the recaps, reels and session recordings.",
@@ -93,6 +107,7 @@ export const TEAMS: TeamMeta[] = [
   },
   {
     key: "marketing",
+    icon: Megaphone,
     label: "Marketing",
     charter: "Brings in speakers, partners and the students who fill the room.",
     color: "#FF9900",
@@ -104,6 +119,7 @@ export const TEAMS: TeamMeta[] = [
   },
   {
     key: "events",
+    icon: Ticket,
     label: "Event Management",
     charter: "Venue, schedule, check-in — the reason things start on time.",
     color: "#AD5CFF",
@@ -197,25 +213,30 @@ export const LEADS: RosterMember[] = [
   },
   {
     id: "l-design",
-    name: "Sai Medha",
+    name: "Medha",
     role: "Design Lead",
     team: "design",
     branch: "ECE",
     year: "3rd Year",
     handle: "saimedha",
     bio: null,
-    about: null,
+    about:
+      "Turning ideas into meaningful designs. Trusting my Spidey Sense and moving ahead. 🕸️",
     photo: "/team/members/saimedha.jpg",
-    socials: { linkedin: null, github: null, instagram: null },
+    socials: {
+      linkedin: "https://www.linkedin.com/in/medha-maddirala-a965b9335",
+      github: "https://github.com/medsssssss1111",
+      instagram: "https://instagram.com/_saimedha_",
+    },
   },
   {
     id: "l-production",
-    name: "Jeethendra",
+    name: "Jithendra",
     role: "Production Lead",
     team: "production",
     branch: "",
     year: "",
-    handle: "jeethendra",
+    handle: "jithendra",
     bio: null,
     about: null,
     photo: null,

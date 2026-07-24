@@ -13,6 +13,7 @@ type Panel = {
   key: string;
   index: string;
   kicker: string;
+  eyebrow: string;
   title: string;
   body: string;
   color: string;
@@ -23,30 +24,34 @@ const PANELS: Panel[] = [
     key: "what",
     index: "01",
     kicker: "What",
+    eyebrow: "what we are",
     title: "A student cloud community.",
-    body: "AWS Student Builder Group at VJIT — students who'd rather build on the cloud than just read about it. Workshops, projects, hackathons, all run by students.",
+    body: "AWS Student Builder Group at VJIT — students who'd rather build on the cloud than just read about it. Workshops, projects and hackathons, all run by students.",
     color: "#FF9900",
   },
   {
     key: "why",
     index: "02",
     kicker: "Why",
+    eyebrow: "why we exist",
     title: "Cloud, made approachable.",
-    body: "Cloud sounds intimidating from the outside. We make it something you do with your own hands in a room full of people doing the same — not another slide deck.",
+    body: "Cloud sounds intimidating from the outside. We make it something you do with your own hands, in a room full of people doing the same — not another slide deck.",
     color: "#43B4FF",
   },
   {
     key: "who",
     index: "03",
     kicker: "Who",
+    eyebrow: "who it's for",
     title: "Every branch. Every year.",
-    body: "No gatekeeping and no prior AWS experience required. First-years and final-years, CSE to Mechanical — if you're curious, you belong here.",
+    body: "No gatekeeping and no prior AWS experience required. First-years to final-years, CSE to Mechanical — if you're curious, you belong here.",
     color: "#FF57EA",
   },
   {
     key: "how",
     index: "04",
     kicker: "How",
+    eyebrow: "how we work",
     title: "Learn by shipping.",
     body: "Hands-on sessions, real projects, hackathons and challenges — then we show what we built. You leave having deployed something, not just heard about it.",
     color: "#2EE6A0",
@@ -92,28 +97,41 @@ export function WhatWeDoScroller() {
             return (
               <div
                 key={p.key}
-                className="relative flex h-full flex-col justify-end overflow-hidden border-l border-white/10 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.7,0,0.3,1)]"
+                className="relative flex h-full flex-col overflow-hidden border-l border-white/10 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.7,0,0.3,1)]"
                 style={{
-                  flexGrow: isActive ? 7 : 0.7,
+                  flexGrow: isActive ? 7 : 0.72,
                   flexBasis: 0,
                   background: isActive
-                    ? `linear-gradient(160deg, color-mix(in oklab, ${p.color} 14%, #080a10) 0%, #080a10 60%)`
-                    : "#0a0d14",
+                    ? `radial-gradient(120% 80% at 0% 0%, color-mix(in oklab, ${p.color} 18%, #06080e) 0%, #06080e 55%)`
+                    : "#0b0e15",
                 }}
               >
-                {/* index rail — always visible */}
-                <div className="absolute top-8 left-8">
+                {/* giant ghost kicker fills the space when active */}
+                <span
+                  aria-hidden
+                  className="font-display pointer-events-none absolute -top-[6%] right-[-2%] text-[26vh] leading-none font-black tracking-tighter whitespace-nowrap transition-opacity duration-500 select-none"
+                  style={{ color: p.color, opacity: isActive ? 0.07 : 0 }}
+                >
+                  {p.kicker}
+                </span>
+
+                {/* top rail: index + tick */}
+                <div className="relative flex items-center gap-3 p-8 lg:p-12">
                   <span
                     className="font-mono text-sm font-bold"
                     style={{ color: p.color }}
                   >
                     {p.index}
                   </span>
+                  <span
+                    className="h-px flex-1 transition-opacity duration-500"
+                    style={{ background: p.color, opacity: isActive ? 0.4 : 0 }}
+                  />
                 </div>
 
-                {/* collapsed label — vertical */}
+                {/* collapsed label — vertical, centered */}
                 <div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300"
+                  className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300"
                   style={{ opacity: isActive ? 0 : 1 }}
                 >
                   <span
@@ -124,11 +142,12 @@ export function WhatWeDoScroller() {
                   </span>
                 </div>
 
-                {/* expanded content */}
+                {/* expanded content — pinned to the bottom */}
                 <div
-                  className="relative max-w-xl p-10 transition-opacity duration-500 lg:p-14"
+                  className="relative mt-auto max-w-xl p-8 transition-all duration-500 lg:p-14"
                   style={{
                     opacity: isActive ? 1 : 0,
+                    transform: isActive ? "translateY(0)" : "translateY(16px)",
                     pointerEvents: isActive ? "auto" : "none",
                   }}
                 >
@@ -136,12 +155,12 @@ export function WhatWeDoScroller() {
                     className="font-mono text-xs tracking-[0.22em] uppercase"
                     style={{ color: p.color }}
                   >
-                    {p.kicker} we do
+                    {p.eyebrow}
                   </p>
-                  <h3 className="font-display mt-4 text-[clamp(2rem,3.4vw,3.5rem)] leading-[0.98] font-bold tracking-[-0.03em] text-balance text-white">
+                  <h3 className="font-display mt-4 text-[clamp(2.25rem,3.6vw,4rem)] leading-[0.98] font-bold tracking-[-0.03em] text-balance text-white">
                     {p.title}
                   </h3>
-                  <p className="mt-5 max-w-md leading-relaxed text-white/60">
+                  <p className="mt-5 max-w-md text-lg leading-relaxed text-white/60">
                     {p.body}
                   </p>
                 </div>
@@ -176,7 +195,7 @@ export function WhatWeDoScroller() {
               className="mt-3 font-mono text-xs tracking-[0.22em] uppercase"
               style={{ color: p.color }}
             >
-              {p.kicker} we do
+              {p.eyebrow}
             </p>
             <h3 className="font-display mt-2 text-3xl leading-tight font-bold tracking-[-0.03em] text-balance text-white">
               {p.title}
