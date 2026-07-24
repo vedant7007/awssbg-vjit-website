@@ -661,7 +661,7 @@ export const CORE: RosterMember[] = [
     handle: "venkatasaibhav",
     bio: null,
     about: "Student",
-    photo: null,
+    photo: "/team/members/venkatasaibhav.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/bhavya-koduri",
       github: null,
@@ -806,7 +806,7 @@ export const CORE: RosterMember[] = [
     handle: "dudaykiranredd",
     bio: null,
     about: "CHASING EXCELLENCE",
-    photo: null,
+    photo: "/team/members/dudaykiranredd.jpg",
     socials: { linkedin: null, github: null, instagram: null },
   },
 ];

@@ -6,17 +6,15 @@ import dynamic from "next/dynamic";
 import { PerspectiveGrid } from "@/components/motion/PerspectiveGrid";
 
 /**
- * WebGL "strands" backdrop for the closing CTA — but only on pointer-capable
- * desktops. OGL WebGL is exactly what lagged mobile last time, so phones and
- * reduced-motion users get the lightweight perspective grid instead and never
- * load the shader. Lazy + ssr:false keeps it out of the initial bundle.
+ * PixelBlast backdrop for the closing CTA — desktop + pointer only. WebGL is
+ * what lagged mobile before, so phones and reduced-motion users get the light
+ * CSS grid and never load the shader. Lazy + ssr:false keeps it out of the
+ * initial bundle.
  */
-const Strands = dynamic(() => import("@/components/motion/strands/Strands"), {
+const PixelBlast = dynamic(() => import("@/components/motion/PixelBlast"), {
   ssr: false,
   loading: () => null,
 });
-
-const BRAND_COLORS = ["#FF9900", "#FF57EA", "#43B4FF", "#AD5CFF"];
 
 function useDesktopMotion(): boolean {
   const [ok, setOk] = React.useState(false);
@@ -38,22 +36,24 @@ function useDesktopMotion(): boolean {
   return ok;
 }
 
-export function StrandsBackdrop() {
+export function CtaBackdrop() {
   const desktop = useDesktopMotion();
-
-  if (!desktop) {
-    return <PerspectiveGrid cols={30} rows={30} />;
-  }
-
+  if (!desktop) return <PerspectiveGrid cols={30} rows={30} />;
   return (
-    <Strands
-      colors={BRAND_COLORS}
-      count={3}
-      speed={0.4}
-      amplitude={1.1}
-      glow={2.4}
-      intensity={0.55}
-      className="h-full w-full"
+    <PixelBlast
+      variant="circle"
+      pixelSize={6}
+      color="#FF9900"
+      patternScale={3}
+      patternDensity={1.1}
+      pixelSizeJitter={0.4}
+      enableRipples
+      rippleSpeed={0.4}
+      rippleThickness={0.12}
+      rippleIntensityScale={1.4}
+      speed={0.5}
+      edgeFade={0.3}
+      transparent
     />
   );
 }
