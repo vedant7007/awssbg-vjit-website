@@ -50,3 +50,9 @@ yarn-error.log*
 # internal working files
 aws-content.pdf
 /ruthvik.png
+# raw working photos/docs (processed copies live in public/)
+/*.jpg
+/*.jpeg
+/*.png
+/*.docx
+FILL-ME-links-and-details.md

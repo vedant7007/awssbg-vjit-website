@@ -27,10 +27,13 @@ export const FOOTER_EXPLORE: NavLink[] = [
  * dead link. TODO(Vedant): fill in the official AWS SBG VJIT handles.
  */
 export const SOCIAL_LINKS: { label: string; href: string | null }[] = [
-  { label: "LinkedIn", href: null },
-  { label: "Instagram", href: null },
-  { label: "GitHub", href: null },
+  { label: "Instagram", href: "https://www.instagram.com/awssbg_vjit" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/awssbgvjit" },
+  { label: "Discord", href: "https://discord.gg/AP7d9hkbyF" },
 ];
+
+/** The club's Discord invite — used by the Join CTA. */
+export const DISCORD_INVITE = "https://discord.gg/AP7d9hkbyF";
 
 export const LEGAL_LINKS: NavLink[] = [
   { label: "Privacy", href: "/privacy" },

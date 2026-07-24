@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
+import { DISCORD_INVITE } from "@/lib/constants/nav";
 import {
   CLUB,
   WHAT_WE_DO,
@@ -16,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { HeroGrid } from "@/components/home/HeroGrid";
-import { PerspectiveGrid } from "@/components/motion/PerspectiveGrid";
+import { StrandsBackdrop } from "@/components/motion/StrandsBackdrop";
 import { MomentsSection } from "@/components/home/MomentsSection";
 import { EventCard } from "@/components/cards/EventCard";
 
@@ -258,14 +259,14 @@ function ImpactSection() {
  * The club's Discord invite. Null until the real link lands — the CTA points at
  * the join form meanwhile, since the flow is form first, then invite.
  */
-const DISCORD_URL: string | null = null;
+const DISCORD_URL: string | null = DISCORD_INVITE;
 
 /** Full-screen closer — bookends the hero with the same perspective grid. */
 function JoinSection() {
   return (
     <section className="bg-background relative flex min-h-[100dvh] items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-70">
-        <PerspectiveGrid cols={30} rows={30} />
+      <div className="absolute inset-0 z-0 opacity-80">
+        <StrandsBackdrop />
       </div>
       <div
         className="pointer-events-none absolute inset-0 z-[1]"

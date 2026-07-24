@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { Github, Linkedin, Instagram, Quote } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
@@ -9,12 +8,12 @@ import {
   FACULTY,
   TEAM_BY_KEY,
   TEAM_COUNTS,
-  initialsOf,
 } from "@/lib/constants/team";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/button";
 import { CaptainLanyard } from "@/components/team/CaptainLanyard";
+import { FacultyCard } from "@/components/team/FacultyCard";
 import { LeadsGrid } from "@/components/team/LeadsGrid";
 
 export const metadata: Metadata = {
@@ -95,35 +94,7 @@ function Faculty() {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {FACULTY.map((f, i) => (
             <Reveal key={f.id} delay={i * 0.06}>
-              <article className="ring-border/60 hover:ring-orange/40 flex h-full flex-col overflow-hidden rounded-2xl ring-1 transition-colors duration-300">
-                {/* Portrait slot — swaps to a real photo once we have them. */}
-                <div className="bg-muted/40 relative aspect-[4/5] w-full">
-                  {f.photo ? (
-                    <Image
-                      src={f.photo}
-                      alt={f.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 25vw"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <span className="text-muted-foreground/50 font-display absolute inset-0 grid place-items-center text-5xl font-bold">
-                      {initialsOf(f.name)}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-display text-xl leading-snug font-semibold text-balance">
-                    {f.name}
-                  </h3>
-                  <p className="text-orange mt-2 font-mono text-xs tracking-wide">
-                    {f.designation}
-                  </p>
-                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
-                    {f.department}
-                  </p>
-                </div>
-              </article>
+              <FacultyCard faculty={f} />
             </Reveal>
           ))}
         </div>

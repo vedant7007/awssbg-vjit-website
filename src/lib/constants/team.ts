@@ -130,28 +130,28 @@ export const FACULTY: Faculty[] = [
     name: "Dr. A. Srujana",
     designation: "Principal",
     department: "Vidya Jyothi Institute of Technology",
-    photo: null,
+    photo: "/team/faculty/principal.jpg",
   },
   {
     id: "f-hod",
     name: "Dr. D. Aruna Kumari",
     designation: "Professor & Head of Department",
     department: "Computer Science & Engineering",
-    photo: null,
+    photo: "/team/faculty/hod.jpg",
   },
   {
     id: "f-advisor-1",
     name: "Mr. P. Rajashekar",
     designation: "Faculty Advisor",
     department: "Computer Science & Engineering",
-    photo: null,
+    photo: "/team/faculty/advisor-1.jpg",
   },
   {
     id: "f-advisor-2",
     name: "Mr. Subbaraya Sarma PKV",
     designation: "Faculty Advisor",
     department: "Computer Science & Engineering",
-    photo: null,
+    photo: "/team/faculty/advisor-2.jpg",
   },
 ];
 
@@ -169,9 +169,9 @@ export const CAPTAIN: RosterMember & { quote: string } = {
   about:
     "Started the AWS Student Builder Group at VJIT and runs it end to end — sessions, partnerships, and the core team.",
   quote:
-    "You don't need permission or prior experience to start building on the cloud. You need a room full of people doing it with you.",
+    "A single event can spark curiosity. A strong community can ignite a career. That's the future we're building at AWS SBG VJIT.",
   photo: "/team/ruthvik.png",
-  socials: { linkedin: "#", github: "#", instagram: "#" },
+  socials: { linkedin: null, github: null, instagram: null },
 };
 
 /* -------------------------------- leads --------------------------------- */
@@ -183,25 +183,29 @@ export const LEADS: RosterMember[] = [
     name: "Vedant M Idlgave",
     role: "Tech Lead",
     team: "tech",
-    branch: "",
-    year: "",
+    branch: "CSE",
+    year: "3rd Year",
     handle: "vedantidlgave",
     bio: null,
     about: null,
-    photo: null,
-    socials: { linkedin: null, github: null, instagram: null },
+    photo: "/team/members/vedantidlgave.jpg",
+    socials: {
+      linkedin: "https://www.linkedin.com/in/vedant-idlgave-1514323063103vtsd",
+      github: "https://github.com/vedant7007",
+      instagram: "https://www.instagram.com/vedxnt.fr",
+    },
   },
   {
     id: "l-design",
     name: "Sai Medha",
     role: "Design Lead",
     team: "design",
-    branch: "",
-    year: "",
+    branch: "ECE",
+    year: "3rd Year",
     handle: "saimedha",
     bio: null,
     about: null,
-    photo: null,
+    photo: "/team/members/saimedha.jpg",
     socials: { linkedin: null, github: null, instagram: null },
   },
   {
@@ -227,7 +231,7 @@ export const LEADS: RosterMember[] = [
     handle: "shaiksameera",
     bio: null,
     about: "stay iconic ⭐️🪩🧸💿🌙",
-    photo: null,
+    photo: "/team/members/shaiksameera.jpg",
     socials: {
       linkedin: null,
       github: null,
@@ -239,13 +243,17 @@ export const LEADS: RosterMember[] = [
     name: "Sai Srujan",
     role: "Event Management Lead",
     team: "events",
-    branch: "",
-    year: "",
+    branch: "IT",
+    year: "3rd Year",
     handle: "saisrujan",
     bio: null,
     about: null,
-    photo: null,
-    socials: { linkedin: null, github: null, instagram: null },
+    photo: "/team/members/saisrujan.jpg",
+    socials: {
+      linkedin: "https://linkedin.com/in/saisrujanpunati",
+      github: "https://github.com/saiusesgithub",
+      instagram: "https://www.instagram.com/__saisrujan__/",
+    },
   },
 ];
 
@@ -268,7 +276,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "Hi, I'm Tenneti Bhavani Devi, a B.Tech IT student at Vidya Jyoti Institute of Technology and a member of the AWS Cloud Production Team. I enjoy working behind the scenes to ensure events run smoothly and believe in teamwork, creativity, and continuous learning.",
-    photo: null,
+    photo: "/team/members/tennetibhavani.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/tenneti-bhavani-devi-a2a24932a?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -305,7 +313,7 @@ export const CORE: RosterMember[] = [
     handle: "hanuverma",
     bio: null,
     about: "touching some grass 😌",
-    photo: null,
+    photo: "/team/members/hanuverma.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/hanuverma22/",
       github: "https://github.com/hanuverma537-netizen",
@@ -322,7 +330,7 @@ export const CORE: RosterMember[] = [
     handle: "jaswanthreddy",
     bio: null,
     about: "I am Jaswanth",
-    photo: null,
+    photo: "/team/members/jaswanthreddy.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/jasreaug/",
       github: "https://github.com/Jaswanth-Reddy-2006",
@@ -340,7 +348,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I'm a Computer Science undergraduate and frontend developer passionate about building modern, user-friendly web applications. I enjoy working with React, Next.js, and AI-powered technologies to create impactful projects. I'm also an active learner in cloud computing and open-source, always exploring AWS services and collaborating with developer communities through hackathons, events, and real-world projects.",
-    photo: null,
+    photo: "/team/members/abhinav.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/abhinav-nakka-5133b1356?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -359,7 +367,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "AWS is a leading cloud computing platform that provides services such as computing, storage, databases, networking, and AI. It helps businesses build scalable, secure, and cost-effective applications. I am interested in learning AWS because cloud computing is an essential skill for the future, and I want to gain hands-on experience with services like EC2, S3, Lambda, and VPC through the AWS Cloud Club",
-    photo: null,
+    photo: "/team/members/plintoff.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/plintoff-d-435b98332?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
@@ -397,7 +405,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "plot twist: still figuring it out creating and designing the aws sbg club<3",
-    photo: null,
+    photo: "/team/members/vthanishka.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/v-thanishka-422b85318?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
@@ -416,7 +424,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I'm Sahithi Reddy, a B.Tech student who loves technology, design, and continuous learning. I enjoy creating creative designs, exploring new ideas, and improving my technical skills through projects and teamwork.",
-    photo: null,
+    photo: "/team/members/rsahithireddy.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/sahithi-reddy-70abb0355?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -435,7 +443,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I am Eshwar sai , a B.Tech student at Vidya Jyothi Institute of Technology (VJIT) and an active member of the AWS Cloud Club VJIT Event Management Team. I am passionate about technology, cloud computing, and organizing impactful technical events. I enjoy working with teams to plan workshops, hackathons, and community initiatives that inspire learning and innovation. I am always eager to develop new skills, take on challenges, and contribute to creating a vibrant tech community.",
-    photo: null,
+    photo: "/team/members/eshwarsai.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/eshwar-sai-7428aa3a7?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -454,7 +462,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I am RUSHI KESHAVA, a B.Tech student at Vidya Jyothi Institute of Technology (VJIT) and an active member of the AWS SBG VJIT Event Management Team. I am passionate about technology, cloud computing, and organizing impactful technical events. I enjoy working with teams to plan workshops, hackathons, and community initiatives that inspire learning and innovation. I am always eager to develop new skills, take on challenges, and contribute to creating a vibrant tech community.",
-    photo: null,
+    photo: "/team/members/addisherlarush.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/addisherla-rushi-keshava-42a18a412?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -472,7 +480,7 @@ export const CORE: RosterMember[] = [
     handle: "ayushkumar",
     bio: null,
     about: "Designing with purpose and precision",
-    photo: null,
+    photo: "/team/members/ayushkumar.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/ayush-kumar-j",
       github: "https://github.com/ayushkujha",
@@ -490,7 +498,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I'm Anjana, a CSE student who loves blending creativity with technology. Whether it's designing posters, building projects, or learning something new, I enjoy bringing ideas to life and working with others to create meaningful experiences.",
-    photo: null,
+    photo: "/team/members/anjanasaripell.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/anjana-saripella-846798353",
       github: null,
@@ -508,7 +516,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I'm Varsha, and I'm part of the Event Management team at AWS SBG. I love being involved in creative ideas. I'm someone who enjoys learning, trying new things, and working with people to create meaningful experiences.",
-    photo: null,
+    photo: "/team/members/nvarsha.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/varsha-510090380?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -526,7 +534,7 @@ export const CORE: RosterMember[] = [
     handle: "akshithaa",
     bio: null,
     about: "Growing through what i go through",
-    photo: null,
+    photo: "/team/members/akshithaa.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/akshitha-a-381117392?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -544,7 +552,7 @@ export const CORE: RosterMember[] = [
     handle: "chiluverivarsh",
     bio: null,
     about: "Chasing Excellence",
-    photo: null,
+    photo: "/team/members/chiluverivarsh.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/chiluveri-varshith-a98bb3365?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -563,7 +571,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I'm Akhil, a B.Tech Computer Science (CSE) student at Vidya Jyoti Institute of Technology. I'm passionate about AI, full-stack development, hackathons, and building innovative web applications. I enjoy creating modern UI/UX designs, exploring new technologies, and working on real-world projects like AI-powered platforms.My goal is to become a skilled software engineer and build impactful AI solutions.",
-    photo: null,
+    photo: "/team/members/vaddineniakhil.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/v-akhil-0086a4383?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -582,7 +590,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "Quietly learning, consistently building, and always looking for ways to turn imagination into meaningful innovation",
-    photo: null,
+    photo: "/team/members/laasyakavuri.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/laasya-kavuri-a297a4374?",
       github: "https://github.com/laasyakavuri",
@@ -600,7 +608,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "A passionate web developer and AI enthusiast dedicated to building impactful digital experiences through clean design, innovative ideas, and scalable solutions.",
-    photo: null,
+    photo: "/team/members/mohammedmohiud.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/mohammed-mohi-uddin-aa4ba934b?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -618,7 +626,7 @@ export const CORE: RosterMember[] = [
     handle: "siribeesu",
     bio: null,
     about: "tech enthusiast",
-    photo: null,
+    photo: "/team/members/siribeesu.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/siri-beesu-96a6b730a/",
       github: "https://github.com/siribeesu/",
@@ -636,7 +644,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I am an aspiring developer part of the AWS Tech team who is good in working with UI/UX. I love to Explore the world of designs, colors and portray them through my work.",
-    photo: null,
+    photo: "/team/members/akshithidudeku.jpg",
     socials: {
       linkedin: null,
       github: "https://github.com/mail2akshithi-ops",
@@ -670,7 +678,7 @@ export const CORE: RosterMember[] = [
     handle: "ananyal",
     bio: null,
     about: "professional onion hater",
-    photo: null,
+    photo: "/team/members/ananyal.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/ananya-l-72889539b?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -688,7 +696,7 @@ export const CORE: RosterMember[] = [
     handle: "aarushj",
     bio: null,
     about: "In the darkest hours, I shine the brightest ⭐",
-    photo: null,
+    photo: "/team/members/aarushj.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/aarush-jangam-64a452380?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -724,7 +732,7 @@ export const CORE: RosterMember[] = [
     handle: "arohan",
     bio: null,
     about: "I like cool stuff !",
-    photo: null,
+    photo: "/team/members/arohan.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/rohan-mudiraj-a291163b0?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -743,7 +751,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "Passionate about creating seamless event experiences through planning, coordination, and execution",
-    photo: null,
+    photo: "/team/members/akaranpawar.jpg",
     socials: {
       linkedin: null,
       github: null,
@@ -761,7 +769,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I'm Manoj Achari, a B.Tech Information Technology student at VJIT. I enjoy teamwork, communication, and contributing to meaningful activities.",
-    photo: null,
+    photo: "/team/members/manojachari.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/p-manoj-achari-774045356?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -780,7 +788,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I am k Bharath reddy a B.Tech student at Vidya Jyothi Institute of Technology (VJIT) and an active member of the AWS Cloud Club VJIT Event Management Team. I am passionate about technology, cloud computing, and organizing impactful technical events. I enjoy working with teams to plan workshops, hackathons, and community initiatives that inspire learning and innovation. I am always eager to develop new skills, take on challenges, and contribute to creating a vibrant tech community.",
-    photo: null,
+    photo: "/team/members/bharathreddyko.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/bharath-reddy-kodiganti-a0348a3ab?utm_source=share_via&utm_content=profile&utm_medium=member_android",
