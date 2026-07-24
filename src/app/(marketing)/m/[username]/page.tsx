@@ -17,6 +17,8 @@ import { QRDisplay } from "@/components/qr/QRDisplay";
 import { EventCard } from "@/components/cards/EventCard";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import type { Member } from "@/lib/types";
+import { CAPTAIN, CORE, LEADS, type RosterMember } from "@/lib/constants/team";
+import { MemberProfile } from "@/components/team/MemberProfile";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +30,19 @@ async function loadMember(username: string): Promise<Member | null> {
   return safe(getMemberByUsername(username), null, "profile:member");
 }
 
+/**
+ * The QR codes on the physical badges point here. Until every member exists in
+ * Firestore, fall back to the static roster so a scan still lands on a real
+ * profile instead of a 404. Firestore wins whenever it has the record.
+ */
+function rosterMember(username: string): RosterMember | null {
+  return (
+    [CAPTAIN, ...LEADS, ...CORE].find(
+      (m) => m.handle.toLowerCase() === username,
+    ) ?? null
+  );
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -35,6 +50,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { username } = await params;
   const member = await loadMember(username.toLowerCase());
+  if (!member) {
+    const fromRoster = rosterMember(username.toLowerCase());
+    if (fromRoster) {
+      return {
+        title: `${fromRoster.name} — ${fromRoster.role}`,
+        description: fromRoster.about ?? `${fromRoster.name}, AWS SBG VJIT.`,
+      };
+    }
+  }
   if (!member || !member.isPublic) {
     return { title: "Member", robots: { index: false } };
   }
@@ -65,7 +89,11 @@ export default async function MemberProfilePage({
   }
 
   const member = await loadMember(username);
-  if (!member) notFound();
+  if (!member) {
+    const fromRoster = rosterMember(username);
+    if (fromRoster) return <RosterProfilePage member={fromRoster} />;
+    notFound();
+  }
 
   if (!member.isPublic) {
     return <PrivateProfile member={member} />;
@@ -257,6 +285,25 @@ function PrivateProfile({ member }: { member: Member }) {
           <p className="text-muted-foreground">
             This member has chosen not to make their profile public.
           </p>
+        </div>
+      </Container>
+    </div>
+  );
+}
+
+/** Roster-backed profile, shown when Firestore has no record for this handle. */
+function RosterProfilePage({ member }: { member: RosterMember }) {
+  return (
+    <div className="pt-28 md:pt-36">
+      <Container>
+        <Link
+          href={routes.team}
+          className="text-muted-foreground hover:text-foreground font-mono text-xs tracking-[0.15em] uppercase transition-colors"
+        >
+          ← Team
+        </Link>
+        <div className="max-w-3xl py-10">
+          <MemberProfile member={member} />
         </div>
       </Container>
     </div>

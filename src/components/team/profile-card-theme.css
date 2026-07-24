@@ -1,0 +1,147 @@
+/**
+ * Brand overrides for the ReactBits ProfileCard.
+ *
+ * The upstream component sizes itself off the viewport (`80svh`) because it is
+ * built to be shown one at a time. We show five side by side, so `.pc-lead`
+ * re-anchors every dimension to the card's own width and swaps the stock
+ * indigo text gradient for the member's team colour (`--member-accent`).
+ */
+
+/* Square corners — the roster grid reads sharper without the pill radius. */
+.pc-lead .pc-card {
+  height: auto;
+  max-height: none;
+  width: 100%;
+  border-radius: 0;
+  animation: none;
+}
+
+.pc-lead .pc-card * {
+  border-radius: 0;
+}
+
+.pc-lead .pc-details {
+  top: 1.6em;
+  padding-inline: 1rem;
+}
+
+/* Two-line names (e.g. "Rohan Deshmukh") must not push the role out of line
+   with the other cards, so the name block reserves height for two lines. */
+.pc-lead .pc-details h3 {
+  font-size: clamp(1rem, 1.1vw + 0.55rem, 1.35rem);
+  line-height: 1.15;
+  min-height: 2.3em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+  background-image: linear-gradient(
+    to bottom,
+    #fff,
+    var(--member-accent, #6f6fbe)
+  );
+  background-size: 1em 1.4em;
+}
+
+.pc-lead .pc-details p {
+  font-size: 11px;
+  top: -6px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background-image: linear-gradient(
+    to bottom,
+    #fff,
+    var(--member-accent, #4a4ac0)
+  );
+}
+
+/* Upstream expects a full-bleed photo cutout. Our placeholder is a figure, so
+   it is inset and lifted clear of the handle pill instead of sitting under it. */
+.pc-lead .pc-avatar-content .avatar {
+  width: 66%;
+  bottom: 72px;
+}
+
+/* The handle pill keeps its radius; only the card itself goes square. */
+.pc-lead .pc-user-info {
+  border-radius: 50px;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  padding: 8px 8px 8px 8px;
+  border-radius: 50px;
+}
+
+.pc-lead .pc-mini-avatar {
+  height: 34px;
+  width: 34px;
+}
+
+.pc-lead .pc-handle {
+  font-size: 12px;
+}
+
+.pc-lead .pc-status {
+  font-size: 10px;
+}
+
+.pc-lead .pc-contact-btn {
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 50px;
+}
+
+/* Keep the holographic layer as glints rather than a wash. */
+.pc-lead .pc-shine,
+.pc-captain .pc-shine {
+  filter: brightness(0.6) contrast(1.25) saturate(0.4) opacity(0.42);
+}
+
+/* A full roster page can hold ~50 of these. Leaving every shine animating
+   forever burns frames for an effect nobody is looking at, so it only runs
+   under the pointer. */
+.pc-lead .pc-shine {
+  animation-play-state: paused;
+}
+
+.pc-lead:hover .pc-shine,
+.pc-lead.active .pc-shine,
+.pc-lead:focus-within .pc-shine {
+  animation-play-state: running;
+}
+
+.pc-lead .pc-glare,
+.pc-captain .pc-glare {
+  filter: brightness(0.62) contrast(1.15);
+}
+
+/* The captain gets the one oversized card on the page. */
+.pc-captain .pc-card {
+  height: auto;
+  max-height: none;
+  width: 100%;
+  animation: none;
+}
+
+.pc-captain .pc-details h3 {
+  font-size: clamp(1.75rem, 2.4vw + 1rem, 3rem);
+  background-image: linear-gradient(to bottom, #fff, var(--member-accent));
+  background-size: 1em 1.4em;
+}
+
+.pc-captain .pc-details p {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background-image: linear-gradient(to bottom, #fff, var(--member-accent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-card,
+  .pc-shine,
+  .pc-glare {
+    animation: none !important;
+    transition: none !important;
+  }
+}

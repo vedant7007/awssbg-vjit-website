@@ -2,14 +2,14 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils/cn";
 
-/** Centered content column capped at the brand max width. */
+/** Content column: full width on mobile, 80% with 10% gutters from md up. */
 export function Container({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("mx-auto w-full max-w-[1240px] px-6 md:px-8", className)}
+      className={cn("mx-auto w-full px-6 md:w-4/5 md:px-0", className)}
       {...props}
     />
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, LayoutDashboard, LogOut } from "lucide-react";
 
@@ -12,7 +13,6 @@ import { useUser, signOut } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/Logo";
 import { LogoMark } from "@/components/brand/LogoMark";
-import { TransitionLink } from "@/components/transition/TransitionLink";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -45,15 +45,18 @@ export function Nav() {
     <header className="fixed inset-x-0 top-4 z-40 px-3 md:px-5">
       <div className="relative mx-auto flex max-w-[1320px] items-center justify-between gap-3">
         {/* Left corner: logo, on its own. */}
-        <TransitionLink
+        <Link
           href={routes.home}
-          className="glass focus-visible:ring-ring flex shrink-0 items-center gap-2 rounded-full py-2 pr-3.5 pl-2.5 focus-visible:ring-2 focus-visible:outline-none"
+          className="glass focus-visible:ring-ring flex shrink-0 items-center gap-2 rounded-full px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
         >
-          <LogoMark id="site-logo-mark" className="size-6 shrink-0" />
-          <span className="font-pixel text-[0.58rem] leading-none tracking-tight">
-            AWS<span className="text-orange">SBG</span>
+          <span className="font-display text-[1.05rem] leading-none font-extrabold tracking-[-0.02em]">
+            AWS
           </span>
-        </TransitionLink>
+          <LogoMark id="site-logo-mark" className="size-9 shrink-0" />
+          <span className="font-display text-orange text-[1.05rem] leading-none font-extrabold tracking-[-0.02em]">
+            SBG
+          </span>
+        </Link>
 
         {/* Centre: glass pill with only the sections. */}
         <nav
@@ -61,9 +64,13 @@ export function Nav() {
           className="glass absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded-full p-1.5 md:flex"
         >
           {NAV_LINKS.map((link) => {
-            const active = pathname.startsWith(link.href);
+            // "/" would prefix-match everything, so home is an exact test.
+            const active =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
             return (
-              <TransitionLink
+              <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
@@ -74,7 +81,7 @@ export function Nav() {
                 )}
               >
                 {link.label}
-              </TransitionLink>
+              </Link>
             );
           })}
         </nav>
@@ -106,10 +113,10 @@ export function Nav() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <TransitionLink href={routes.console}>
+                  <Link href={routes.console}>
                     <LayoutDashboard className="size-4" />
                     Console
-                  </TransitionLink>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => {
@@ -122,13 +129,21 @@ export function Nav() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button
-              asChild
-              size="sm"
-              className="hidden rounded-full md:inline-flex"
-            >
-              <TransitionLink href={routes.signin}>Sign in</TransitionLink>
-            </Button>
+            <>
+              <Link
+                href={routes.signin}
+                className="text-muted-foreground hover:text-foreground hidden rounded-full px-3 py-1.5 text-sm font-medium transition-colors lg:inline-flex"
+              >
+                Builder Login
+              </Link>
+              <Button
+                asChild
+                size="sm"
+                className="hidden rounded-full md:inline-flex"
+              >
+                <Link href={routes.join}>Join Community</Link>
+              </Button>
+            </>
           )}
 
           <MobileMenu />
@@ -160,21 +175,29 @@ function MobileMenu() {
         <nav aria-label="Mobile" className="mt-8 flex flex-col gap-1">
           {NAV_LINKS.map((link) => (
             <SheetClose asChild key={link.href}>
-              <TransitionLink
+              <Link
                 href={link.href}
                 className="hover:bg-accent rounded-sm px-3 py-2.5 text-base font-medium"
               >
                 {link.label}
-              </TransitionLink>
+              </Link>
             </SheetClose>
           ))}
           <SheetClose asChild>
-            <TransitionLink
-              href={routes.signin}
-              className="bg-primary text-primary-foreground mt-4 rounded-sm px-3 py-2.5 text-center text-base font-medium"
+            <Link
+              href={routes.join}
+              className="bg-primary text-primary-foreground mt-4 rounded-full px-3 py-2.5 text-center text-base font-medium"
             >
-              Sign in
-            </TransitionLink>
+              Join Community
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              href={routes.signin}
+              className="text-muted-foreground hover:text-foreground mt-1 rounded-sm px-3 py-2.5 text-center text-sm font-medium"
+            >
+              Builder Login
+            </Link>
           </SheetClose>
         </nav>
       </SheetContent>

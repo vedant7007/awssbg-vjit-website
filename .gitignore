@@ -46,3 +46,7 @@ yarn-error.log*
 
 .vercel
 .env*
+
+# internal working files
+aws-content.pdf
+/ruthvik.png

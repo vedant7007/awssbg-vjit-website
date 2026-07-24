@@ -8,9 +8,13 @@ export const routes = {
   projects: "/projects",
   project: (slug: string) => `/projects/${slug}`,
   team: "/team",
+  teamAll: "/team/all",
+  teamPage: (key: string) => `/team/${key}`,
   members: "/members",
   member: (username: string) => `/m/${username.toLowerCase()}`,
   roadmap: "/roadmap",
+  playground: "/playground",
+  tools: "/tools",
   join: "/join",
 
   signin: "/signin",

@@ -462,15 +462,6 @@
   }
 }
 
-/* Clouds read as one giant blob on phones — shrink the fields and tile them so
- * several clouds show and they still cover the full (tall) screen. */
-@media (max-width: 767px) {
-  #cloud-transition .cloud {
-    background-size: 150vw auto !important;
-    background-repeat: repeat !important;
-  }
-}
-
 /* Theme wave: the toggle drives an expanding circular clip on the new theme
  * snapshot (see ThemeToggle). Disable the default cross-fade so only the
  * circle animates. */
@@ -496,60 +487,6 @@ html[data-intro="skip"] #logo-intro {
 #logo-intro .intro-piece {
   transform-box: fill-box;
   transform-origin: center;
-}
-
-/* Cloud/fog page transition overlay. Layers animate transform + opacity only. */
-#cloud-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  visibility: hidden;
-  pointer-events: none;
-  overflow: hidden;
-}
-#cloud-transition .cloud {
-  position: absolute;
-  inset: -45%;
-  background-repeat: no-repeat;
-  background-size: 160% 160%;
-}
-/* Eight fields (two waves of four) reuse three sprites at varied positions. */
-#cloud-transition .c-1 {
-  background-image: url("/transition/cloud-a.png");
-  background-position: 18% 12%;
-}
-#cloud-transition .c-2 {
-  background-image: url("/transition/cloud-b.png");
-  background-position: 85% 25%;
-}
-#cloud-transition .c-3 {
-  background-image: url("/transition/cloud-c.png");
-  background-position: 45% 88%;
-}
-#cloud-transition .c-4 {
-  background-image: url("/transition/cloud-a.png");
-  background-position: 90% 62%;
-  background-size: 180% 180%;
-}
-#cloud-transition .c-5 {
-  background-image: url("/transition/cloud-b.png");
-  background-position: 10% 55%;
-  background-size: 172% 172%;
-}
-#cloud-transition .c-6 {
-  background-image: url("/transition/cloud-c.png");
-  background-position: 62% 15%;
-  background-size: 176% 176%;
-}
-#cloud-transition .c-7 {
-  background-image: url("/transition/cloud-a.png");
-  background-position: 50% 45%;
-  background-size: 190% 190%;
-}
-#cloud-transition .c-8 {
-  background-image: url("/transition/cloud-b.png");
-  background-position: 35% 82%;
-  background-size: 184% 184%;
 }
 
 /* Incoming-page fade (app/template.tsx). Opacity only — safe for fixed nav. */

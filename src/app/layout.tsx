@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { fontVariables } from "@/lib/fonts";
 import { Providers } from "@/components/providers";
-import { CloudTransitionProvider } from "@/components/transition/CloudTransitionProvider";
 import { LogoIntro } from "@/components/preloader/LogoIntro";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -55,9 +54,7 @@ export default function RootLayout({
       <body className="bg-background text-foreground min-h-dvh antialiased">
         <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
         <LogoIntro />
-        <Providers>
-          <CloudTransitionProvider>{children}</CloudTransitionProvider>
-        </Providers>
+        <Providers>{children}</Providers>
         <Toaster position="top-center" richColors />
       </body>
     </html>

@@ -2,23 +2,24 @@ import { routes } from "./routes";
 
 export type NavLink = { label: string; href: string };
 
-/** Primary navigation shown in the header. */
+/** Primary navigation, in the order the site is meant to be read. */
 export const NAV_LINKS: NavLink[] = [
+  { label: "Home", href: routes.home },
   { label: "Events", href: routes.events },
-  { label: "Projects", href: routes.projects },
-  { label: "Members", href: routes.members },
-  { label: "Roadmap", href: routes.roadmap },
-  { label: "About", href: routes.about },
+  { label: "Team", href: routes.team },
+  { label: "Playground", href: routes.playground },
+  { label: "Toolkit", href: routes.tools },
+  { label: "Roadmaps", href: routes.roadmap },
 ];
 
 /** Grouped links for the footer. */
 export const FOOTER_EXPLORE: NavLink[] = [
   { label: "Events", href: routes.events },
-  { label: "Projects", href: routes.projects },
   { label: "Team", href: routes.team },
-  { label: "Members", href: routes.members },
-  { label: "Roadmap", href: routes.roadmap },
-  { label: "Services", href: routes.services },
+  { label: "Playground", href: routes.playground },
+  { label: "Toolkit", href: routes.tools },
+  { label: "Roadmaps", href: routes.roadmap },
+  { label: "About", href: routes.about },
 ];
 
 /*

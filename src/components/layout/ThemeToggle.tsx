@@ -35,21 +35,16 @@ export function ThemeToggle({ className }: { className?: string }) {
       return;
     }
 
-    // Wave from the centre of the screen outward.
-    const x = window.innerWidth / 2;
-    const y = window.innerHeight / 2;
-    const endRadius = Math.hypot(x, y);
-
     const transition = doc.startViewTransition(() => {
       flushSync(() => setTheme(next));
     });
     transition.ready.then(() => {
       document.documentElement.animate(
         {
-          clipPath: [
-            `circle(0px at ${x}px ${y}px)`,
-            `circle(${endRadius}px at ${x}px ${y}px)`,
-          ],
+          // Percentages resolve against the snapshot box, so this is exactly
+          // centred on every viewport — no scrollbar / mobile-chrome offset.
+          // 75% clears the ~70.7% needed to reach a corner.
+          clipPath: ["circle(0% at 50% 50%)", "circle(75% at 50% 50%)"],
         },
         {
           duration: 950,
