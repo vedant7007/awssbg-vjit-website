@@ -213,7 +213,9 @@ export function LaunchSequence() {
       {/* CURTAINS — theatre panels that part over the live site. */}
       {phase === "curtains" ? (
         <div
-          className={`launch-curtains${curtainsOpen ? "is-open" : ""}`}
+          className={
+            curtainsOpen ? "launch-curtains is-open" : "launch-curtains"
+          }
           aria-hidden
         >
           <div className="launch-curtain left">
@@ -222,7 +224,7 @@ export function LaunchSequence() {
           <div className="launch-curtain right">
             <span className="launch-curtain-trim" />
           </div>
-          <div className={`launch-flash${curtainsOpen ? "go" : ""}`} />
+          <div className={curtainsOpen ? "launch-flash go" : "launch-flash"} />
         </div>
       ) : null}
     </div>
