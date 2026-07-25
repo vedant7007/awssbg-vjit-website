@@ -43,6 +43,56 @@ export function GamePanel({
   );
 }
 
+/**
+ * Layout for games whose board is naturally narrow (a word grid, a card grid).
+ * Left rail carries the briefing and live counters, the board sits on the
+ * right — otherwise a 320px board floats in a 1100px panel with dead space
+ * either side. On mobile the rail stacks above the board, which is where you
+ * want live counters anyway.
+ */
+export function GameStage({
+  aside,
+  children,
+}: {
+  aside: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,15rem)_1fr] lg:gap-14">
+      <div>{aside}</div>
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+}
+
+/**
+ * A rail entry: a big number over its label on desktop, and a compact inline
+ * pair on mobile where the rail becomes a single row.
+ */
+export function RailStat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: React.ReactNode;
+  accent?: string | undefined;
+}) {
+  return (
+    <div className="flex items-baseline gap-2 lg:flex-col lg:items-start lg:gap-1.5">
+      <span
+        className="font-display text-2xl leading-none font-bold tabular-nums lg:text-4xl"
+        style={accent ? { color: accent } : undefined}
+      >
+        {value}
+      </span>
+      <span className="text-muted-foreground font-mono text-[0.6rem] tracking-[0.16em] uppercase">
+        {label}
+      </span>
+    </div>
+  );
+}
+
 /** The "← Arcade" control shared by every game's header. */
 export function ExitButton({ onExit }: { onExit: () => void }) {
   return (

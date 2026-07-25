@@ -5,7 +5,7 @@ import { RotateCcw } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
 import { GAMES, MEMORY_PAIRS, sample, shuffle } from "./games";
-import { ExitButton, GamePanel, Stat } from "./shared";
+import { ExitButton, GamePanel, GameStage, RailStat, Stat } from "./shared";
 
 const META = GAMES.find((g) => g.id === "memory-match")!;
 
@@ -183,18 +183,27 @@ export function MemoryMatch({ onExit }: { onExit: () => void }) {
           </button>
         </div>
       ) : (
-        <div className="mt-8">
-          <div className="text-muted-foreground flex items-center justify-between gap-4 font-mono text-xs tracking-[0.14em] uppercase tabular-nums">
-            <span>
-              Pairs{" "}
-              <span style={{ color: META.accent }}>
-                {matched.length}/{PAIRS_PER_ROUND}
-              </span>
-            </span>
-            <span>Moves {moves}</span>
-          </div>
-
-          <div className="mt-5 grid grid-cols-4 gap-2 sm:gap-3">
+        <GameStage
+          aside={
+            <div>
+              <div className="flex items-baseline justify-between gap-6 lg:flex-col lg:items-start lg:gap-8">
+                <RailStat
+                  label="Pairs found"
+                  value={`${matched.length}/${PAIRS_PER_ROUND}`}
+                  accent={META.accent}
+                />
+                <RailStat label="Moves" value={moves} />
+              </div>
+              <p className="text-muted-foreground mt-8 hidden font-mono text-[0.65rem] leading-relaxed lg:block">
+                Every card has a partner: a service on one, the job it does on
+                the other. Only the clock is scored.
+              </p>
+            </div>
+          }
+        >
+          {/* Capped so four columns stay card-sized instead of stretching into
+              billboards on a wide panel. */}
+          <div className="mx-auto grid max-w-lg grid-cols-4 gap-2 sm:gap-3">
             {deck.map((card) => {
               const isMatched = matched.includes(card.pairId);
               const isFlipped = flipped.includes(card.key) || isMatched;
@@ -290,7 +299,7 @@ export function MemoryMatch({ onExit }: { onExit: () => void }) {
               </div>
             </div>
           ) : null}
-        </div>
+        </GameStage>
       )}
     </GamePanel>
   );

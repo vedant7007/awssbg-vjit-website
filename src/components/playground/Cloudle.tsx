@@ -6,7 +6,7 @@ import { Delete, CornerDownLeft } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { CLOUDLE_WORDS, GAMES, cloudleWordForDate } from "./games";
 import { useBestScore } from "./useBestScore";
-import { ExitButton, GamePanel, Stat } from "./shared";
+import { ExitButton, GamePanel, GameStage, RailStat, Stat } from "./shared";
 
 const META = GAMES.find((g) => g.id === "cloudle")!;
 
@@ -267,101 +267,136 @@ export function Cloudle({ onExit }: { onExit: () => void }) {
         </div>
       </div>
 
-      <p className="text-muted-foreground mt-6 font-mono text-xs tracking-[0.14em] uppercase">
-        Word of the day · {CLOUDLE_WORDS.length} in rotation
-      </p>
+      <GameStage
+        aside={
+          <div>
+            <p className="text-muted-foreground font-mono text-[0.65rem] tracking-[0.14em] uppercase">
+              Word of the day
+            </p>
+            <p className="text-muted-foreground/70 mt-1.5 font-mono text-[0.65rem]">
+              {CLOUDLE_WORDS.length} in rotation
+            </p>
 
-      {/* board */}
-      <div className="mx-auto mt-6 grid max-w-xs gap-1.5">
-        {rows.map((row, r) => (
-          <div
-            key={r}
-            className={cn(
-              "grid grid-cols-5 gap-1.5",
-              shake && r === guesses.length && "animate-[cloudle-shake_0.35s]",
-            )}
-          >
-            {Array.from({ length: WORD_LENGTH }, (_, c) => {
-              const ch = row.letters[c] ?? "";
-              const v = row.verdicts?.[c];
-              const tint = v ? TINT[v] : null;
-              return (
-                <div
-                  key={c}
-                  className={cn(
-                    "font-display grid aspect-square place-items-center rounded-md text-xl font-bold uppercase ring-1 transition-colors sm:text-2xl",
-                    tint && v !== "absent"
-                      ? "ring-transparent"
-                      : ch
-                        ? "ring-foreground/30"
-                        : "ring-border/50",
-                    v === "absent" && "text-muted-foreground/45 ring-border/40",
-                  )}
-                  style={
-                    tint && v !== "absent"
-                      ? { backgroundColor: tint.bg, color: tint.fg }
-                      : undefined
-                  }
-                >
-                  {ch}
-                </div>
-              );
-            })}
+            <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-3 lg:flex-col lg:gap-3">
+              <Legend swatch={TINT.correct.bg} label="In the right place" />
+              <Legend swatch={TINT.present.bg} label="In the word, elsewhere" />
+              <Legend swatch={null} label="Not in the word" />
+            </ul>
+
+            <div className="border-border/60 mt-8 hidden border-t pt-6 lg:block">
+              <RailStat label="Day streak" value={best} accent={META.accent} />
+            </div>
           </div>
-        ))}
-      </div>
-
-      {done ? (
-        <div className="mt-8 text-center">
-          <p
-            className="font-display text-2xl font-bold tracking-tight"
-            style={{ color: solved ? "#2EE6A0" : undefined }}
-          >
-            {solved ? "Solved" : answer}
-          </p>
-          <p className="text-muted-foreground mx-auto mt-3 max-w-sm text-sm leading-relaxed">
-            {hint}
-          </p>
-          <p className="text-muted-foreground mt-6 font-mono text-[0.7rem] tracking-wide">
-            A new word unlocks at midnight.
-          </p>
-          <button
-            type="button"
-            onClick={onExit}
-            className="ring-border/60 hover:bg-foreground/[0.04] focus-visible:ring-ring mt-7 rounded-full px-7 py-3 font-mono text-xs tracking-[0.16em] uppercase ring-1 transition-colors focus-visible:ring-2 focus-visible:outline-none"
-          >
-            Back to arcade
-          </button>
-        </div>
-      ) : (
-        <div className="mx-auto mt-8 grid max-w-md gap-1.5">
-          {ROWS.map((row, i) => (
-            <div key={row} className="flex justify-center gap-1.5">
-              {i === 2 ? (
-                <KeyCap wide onClick={() => press("ENTER")} label="Enter">
-                  <CornerDownLeft className="size-4" />
-                </KeyCap>
-              ) : null}
-              {row.split("").map((ch) => (
-                <KeyCap
-                  key={ch}
-                  onClick={() => press(ch)}
-                  label={ch}
-                  verdict={keyState.get(ch)}
-                >
-                  {ch}
-                </KeyCap>
-              ))}
-              {i === 2 ? (
-                <KeyCap wide onClick={() => press("BACK")} label="Backspace">
-                  <Delete className="size-4" />
-                </KeyCap>
-              ) : null}
+        }
+      >
+        {/* board */}
+        <div className="mx-auto grid max-w-xs gap-1.5">
+          {rows.map((row, r) => (
+            <div
+              key={r}
+              className={cn(
+                "grid grid-cols-5 gap-1.5",
+                shake &&
+                  r === guesses.length &&
+                  "animate-[cloudle-shake_0.35s]",
+              )}
+            >
+              {Array.from({ length: WORD_LENGTH }, (_, c) => {
+                const ch = row.letters[c] ?? "";
+                const v = row.verdicts?.[c];
+                const tint = v ? TINT[v] : null;
+                return (
+                  <div
+                    key={c}
+                    className={cn(
+                      "font-display grid aspect-square place-items-center rounded-md text-xl font-bold uppercase ring-1 transition-colors sm:text-2xl",
+                      tint && v !== "absent"
+                        ? "ring-transparent"
+                        : ch
+                          ? "ring-foreground/30"
+                          : "ring-border/50",
+                      v === "absent" &&
+                        "text-muted-foreground/45 ring-border/40",
+                    )}
+                    style={
+                      tint && v !== "absent"
+                        ? { backgroundColor: tint.bg, color: tint.fg }
+                        : undefined
+                    }
+                  >
+                    {ch}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
-      )}
+
+        {done ? (
+          <div className="mt-8 text-center">
+            <p
+              className="font-display text-2xl font-bold tracking-tight"
+              style={{ color: solved ? "#2EE6A0" : undefined }}
+            >
+              {solved ? "Solved" : answer}
+            </p>
+            <p className="text-muted-foreground mx-auto mt-3 max-w-sm text-sm leading-relaxed">
+              {hint}
+            </p>
+            <p className="text-muted-foreground mt-6 font-mono text-[0.7rem] tracking-wide">
+              A new word unlocks at midnight.
+            </p>
+            <button
+              type="button"
+              onClick={onExit}
+              className="ring-border/60 hover:bg-foreground/[0.04] focus-visible:ring-ring mt-7 rounded-full px-7 py-3 font-mono text-xs tracking-[0.16em] uppercase ring-1 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            >
+              Back to arcade
+            </button>
+          </div>
+        ) : (
+          <div className="mx-auto mt-8 grid max-w-md gap-1.5">
+            {ROWS.map((row, i) => (
+              <div key={row} className="flex justify-center gap-1.5">
+                {i === 2 ? (
+                  <KeyCap wide onClick={() => press("ENTER")} label="Enter">
+                    <CornerDownLeft className="size-4" />
+                  </KeyCap>
+                ) : null}
+                {row.split("").map((ch) => (
+                  <KeyCap
+                    key={ch}
+                    onClick={() => press(ch)}
+                    label={ch}
+                    verdict={keyState.get(ch)}
+                  >
+                    {ch}
+                  </KeyCap>
+                ))}
+                {i === 2 ? (
+                  <KeyCap wide onClick={() => press("BACK")} label="Backspace">
+                    <Delete className="size-4" />
+                  </KeyCap>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
+      </GameStage>
     </GamePanel>
+  );
+}
+
+function Legend({ swatch, label }: { swatch: string | null; label: string }) {
+  return (
+    <li className="text-muted-foreground flex items-center gap-2.5 font-mono text-[0.65rem]">
+      <span
+        aria-hidden
+        className="ring-border/60 size-3 shrink-0 rounded-[3px] ring-1"
+        style={swatch ? { backgroundColor: swatch } : undefined}
+      />
+      {label}
+    </li>
   );
 }
 

@@ -89,9 +89,8 @@ export const TEAMS: TeamMeta[] = [
       "Posters, decks, and the visual language of everything we put out.",
     color: "#FF57EA",
     wrap: ["{", "}"],
-    // artist palette
-    glyph:
-      "M0-11c6 0 11 4 11 10 0 4-3 6-6 6-2 0-3 1-3 3 0 2-1 3-3 3-6 0-11-5-11-11S-6-11 0-11ZM-5-3a2 2 0 1 0 0.01 0ZM4-4a2 2 0 1 0 0.01 0ZM5 3a2 2 0 1 0 0.01 0Z",
+    // sparkle (4-point star)
+    glyph: "M0-11 2.6-2.6 11 0 2.6 2.6 0 11-2.6 2.6-11 0-2.6-2.6Z",
     stroke: false,
   },
   {
@@ -102,9 +101,8 @@ export const TEAMS: TeamMeta[] = [
       "Shoots, edits and ships the recaps, reels and session recordings.",
     color: "#2EE6A0",
     wrap: ["(", ")"],
-    // video camera
-    glyph:
-      "M-11-6h13a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2ZM6-1 12-5v10 -6-4z",
+    // play triangle
+    glyph: "M-6-9 10 0-6 9Z",
     stroke: false,
   },
   {
@@ -114,9 +112,10 @@ export const TEAMS: TeamMeta[] = [
     charter: "Brings in speakers, partners and the students who fill the room.",
     color: "#FF9900",
     wrap: ["@", ""],
-    // megaphone
-    glyph: "M-12-1 6-9v18 -18-5h-2a3 3 0 0 1 0-6zM-8 6v6a2 2 0 0 0 4 0v-4z",
-    stroke: false,
+    // signal waves
+    glyph:
+      "M-11 2a15 15 0 0 1 22 0M-6.5 7a8.5 8.5 0 0 1 13 0M-1.8 12a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0",
+    stroke: true,
   },
   {
     key: "events",

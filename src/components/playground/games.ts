@@ -148,7 +148,7 @@ export const GAMES: readonly GameMeta[] = [
     teaches: "Cloud vocabulary",
     blurb:
       "One five-letter cloud word, six guesses, a new word every day. Green means placed, amber means somewhere else. Keep the streak alive.",
-    accent: "#43B4FF",
+    accent: "#22D3EE",
     rounds: 6,
     bestKey: "awssbg:playground:cloudle:streak",
     bestLabel: "Best streak",
