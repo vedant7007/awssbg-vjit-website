@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { LogoMark } from "@/components/brand/LogoMark";
+import { LaunchLogo } from "./LaunchLogo";
 
 /**
  * The launch sequence — a hidden, presenter-driven reveal for the site's
@@ -140,10 +141,10 @@ export function LaunchSequence() {
   React.useEffect(() => {
     if (phase !== "reveal") return;
 
-    const showMs = reduce ? 700 : 4200;
+    const showMs = reduce ? 900 : 5200;
     const stop = reduce
       ? () => {}
-      : startConfetti(canvasRef.current, showMs - 400);
+      : startConfettiBlast(canvasRef.current, showMs - 500);
 
     const done = window.setTimeout(() => {
       setPhase("idle");
@@ -208,15 +209,24 @@ export function LaunchSequence() {
           </div>
         </div>
       ) : null}
+
+      {/* REVEAL — the mark assembles (homepage-style) as confetti blasts and
+          the backdrop clears to the live site. */}
+      {phase === "reveal" ? (
+        <div className="launch-reveal-logo" aria-hidden>
+          <LaunchLogo />
+        </div>
+      ) : null}
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/* Soft confetti: flat rounded rectangles drifting down on a DPR-scaled canvas.
- * No shadowBlur, no additive blending — cheap enough to run over the live page
- * without jank. Returns a stop() cleanup. */
-function startConfetti(
+/* Confetti BLAST: bursts pop at random points across the screen, throwing
+ * pieces out in every direction that then arc down under gravity. Flat fills,
+ * no blur or additive blending, so it stays smooth over the live page. Returns
+ * a stop() cleanup. */
+function startConfettiBlast(
   canvas: HTMLCanvasElement | null,
   durationMs: number,
 ): () => void {
@@ -250,32 +260,53 @@ function startConfetti(
     y: number;
     w: number;
     h: number;
-    vy: number;
     vx: number;
+    vy: number;
     rot: number;
     vr: number;
-    sway: number;
+    life: number;
+    decay: number;
     color: string;
   };
 
-  const spawn = (top: boolean): Piece => ({
-    x: Math.random() * W(),
-    y: top ? -20 - Math.random() * 40 : -20 - Math.random() * H() * 0.6,
-    w: 6 + Math.random() * 6,
-    h: 9 + Math.random() * 7,
-    vy: 40 + Math.random() * 55, // px/sec — gentle
-    vx: (Math.random() - 0.5) * 26,
-    rot: Math.random() * Math.PI,
-    vr: (Math.random() - 0.5) * 3,
-    sway: Math.random() * Math.PI * 2,
-    color: COLORS[(Math.random() * COLORS.length) | 0] ?? "#FF9900",
-  });
+  let pieces: Piece[] = [];
 
-  const pieces: Piece[] = Array.from({ length: 150 }, () => spawn(false));
+  const burst = (cx: number, cy: number) => {
+    const n = 42 + ((Math.random() * 34) | 0);
+    for (let i = 0; i < n; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const sp = 260 + Math.random() * 660; // px/sec
+      pieces.push({
+        x: cx,
+        y: cy,
+        w: 6 + Math.random() * 6,
+        h: 8 + Math.random() * 8,
+        vx: Math.cos(ang) * sp,
+        vy: Math.sin(ang) * sp - 140, // slight upward kick
+        rot: Math.random() * Math.PI,
+        vr: (Math.random() - 0.5) * 12,
+        life: 1,
+        decay: 0.5 + Math.random() * 0.5,
+        color: COLORS[(Math.random() * COLORS.length) | 0] ?? "#FF9900",
+      });
+    }
+  };
+
+  const fireWave = () => {
+    const k = 3 + ((Math.random() * 3) | 0);
+    for (let i = 0; i < k; i++) {
+      burst(
+        W() * (0.1 + Math.random() * 0.8),
+        H() * (0.15 + Math.random() * 0.55),
+      );
+    }
+  };
 
   let raf = 0;
   let prev = 0;
   let elapsed = 0;
+  let lastFire = 0;
+  fireWave(); // immediate opening blast
 
   const frame = (ts: number) => {
     if (!prev) prev = ts;
@@ -283,26 +314,34 @@ function startConfetti(
     prev = ts;
     elapsed += dt * 1000;
 
+    // Keep popping new bursts across the screen for the first stretch.
+    if (elapsed < durationMs - 1400 && ts - lastFire > 240) {
+      lastFire = ts;
+      fireWave();
+    }
+
     ctx.clearRect(0, 0, W(), H());
     for (const p of pieces) {
-      p.sway += dt * 2.2;
-      p.x += (p.vx + Math.sin(p.sway) * 14) * dt;
+      p.vy += 900 * dt; // gravity
+      p.vx *= 1 - 1.1 * dt; // air drag
+      p.vy *= 1 - 0.35 * dt;
+      p.x += p.vx * dt;
       p.y += p.vy * dt;
       p.rot += p.vr * dt;
-      if (p.y > H() + 24) {
-        // Keep raining until near the end, then let them fall out.
-        if (elapsed < durationMs - 1200) Object.assign(p, spawn(true));
-        else continue;
-      }
+      p.life -= p.decay * dt;
+      if (p.life <= 0) continue;
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(p.life, 0);
       ctx.fillStyle = p.color;
       ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
       ctx.restore();
     }
+    ctx.globalAlpha = 1;
+    pieces = pieces.filter((p) => p.life > 0 && p.y < H() + 60);
 
-    if (elapsed < durationMs) {
+    if (elapsed < durationMs || pieces.length) {
       raf = requestAnimationFrame(frame);
     }
   };
