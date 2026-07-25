@@ -1,3 +1,13 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  Braces,
+  Brain,
+  Crosshair,
+  Layers,
+  ScanSearch,
+  Timer,
+} from "lucide-react";
+
 /**
  * Question banks for the Playground arcade. Every AWS fact here is checked
  * against how the service actually works — nothing is invented. Pools are
@@ -29,7 +39,13 @@ export type MythQuestion = {
 
 /* ----------------------------- game metadata ---------------------------- */
 
-export type GameId = "service-match" | "myth-or-fact" | "which-service";
+export type GameId =
+  | "service-match"
+  | "myth-or-fact"
+  | "which-service"
+  | "cloud-catch"
+  | "memory-match"
+  | "cloudle";
 
 export type GameMeta = {
   id: GameId;
@@ -42,6 +58,16 @@ export type GameMeta = {
   bestKey: string;
   /** How the persisted best reads in the UI. */
   bestLabel: string;
+  /** Shown as a chip on the arcade card. */
+  difficulty: "Easy" | "Medium" | "Hard";
+  /** Rough time for one run, shown as a chip. */
+  duration: string;
+  icon: LucideIcon;
+  /**
+   * True when the best score is a time or similar "lower is better" number, so
+   * the card can label it correctly and the hub can skip it in point totals.
+   */
+  lowerIsBetter?: boolean;
 };
 
 export const GAMES: readonly GameMeta[] = [
@@ -55,6 +81,9 @@ export const GAMES: readonly GameMeta[] = [
     rounds: 10,
     bestKey: "awssbg:playground:service-match:best",
     bestLabel: "High score",
+    difficulty: "Easy",
+    duration: "~90s",
+    icon: ScanSearch,
   },
   {
     id: "myth-or-fact",
@@ -66,6 +95,9 @@ export const GAMES: readonly GameMeta[] = [
     rounds: 10,
     bestKey: "awssbg:playground:myth-or-fact:best",
     bestLabel: "Best streak",
+    difficulty: "Easy",
+    duration: "~2 min",
+    icon: Brain,
   },
   {
     id: "which-service",
@@ -77,6 +109,52 @@ export const GAMES: readonly GameMeta[] = [
     rounds: 8,
     bestKey: "awssbg:playground:which-service:best",
     bestLabel: "High score",
+    difficulty: "Medium",
+    duration: "~2 min",
+    icon: Layers,
+  },
+  {
+    id: "cloud-catch",
+    title: "Cloud Catch",
+    teaches: "Service categories",
+    blurb:
+      "Service names rain down and one category is called out. Catch what belongs to it, dodge everything else. Three lives, and it only gets faster.",
+    accent: "#2EE6A0",
+    rounds: 60,
+    bestKey: "awssbg:playground:cloud-catch:best",
+    bestLabel: "High score",
+    difficulty: "Hard",
+    duration: "60s",
+    icon: Crosshair,
+  },
+  {
+    id: "memory-match",
+    title: "Memory Match",
+    teaches: "Recall drilling",
+    blurb:
+      "Sixteen face-down cards, eight services and the job each one does. Flip two at a time and pair them up. The clock is the only opponent.",
+    accent: "#AD5CFF",
+    rounds: 8,
+    bestKey: "awssbg:playground:memory-match:best",
+    bestLabel: "Best time",
+    difficulty: "Medium",
+    duration: "~2 min",
+    icon: Braces,
+    lowerIsBetter: true,
+  },
+  {
+    id: "cloudle",
+    title: "Cloudle",
+    teaches: "Cloud vocabulary",
+    blurb:
+      "One five-letter cloud word, six guesses, a new word every day. Green means placed, amber means somewhere else. Keep the streak alive.",
+    accent: "#43B4FF",
+    rounds: 6,
+    bestKey: "awssbg:playground:cloudle:streak",
+    bestLabel: "Best streak",
+    difficulty: "Medium",
+    duration: "~3 min",
+    icon: Timer,
   },
 ] as const;
 
@@ -364,4 +442,156 @@ export function shuffle<T>(input: readonly T[]): T[] {
 /** Take up to `n` items from a freshly shuffled copy of the pool. */
 export function sample<T>(pool: readonly T[], n: number): T[] {
   return shuffle(pool).slice(0, n);
+}
+
+/* ---------------------------- Cloud Catch pool --------------------------- */
+
+export const CATCH_CATEGORIES = [
+  "Storage",
+  "Compute",
+  "Database",
+  "Networking",
+  "Security",
+] as const;
+
+export type CatchCategory = (typeof CATCH_CATEGORIES)[number];
+
+export type CatchService = {
+  name: string;
+  category: CatchCategory;
+};
+
+/**
+ * Services grouped by the category AWS itself files them under. Eight per
+ * category keeps every round winnable no matter which one is called.
+ */
+export const CATCH_SERVICES: readonly CatchService[] = [
+  { name: "S3", category: "Storage" },
+  { name: "EBS", category: "Storage" },
+  { name: "EFS", category: "Storage" },
+  { name: "FSx", category: "Storage" },
+  { name: "S3 Glacier", category: "Storage" },
+  { name: "Storage Gateway", category: "Storage" },
+  { name: "Snowball", category: "Storage" },
+  { name: "AWS Backup", category: "Storage" },
+
+  { name: "EC2", category: "Compute" },
+  { name: "Lambda", category: "Compute" },
+  { name: "Fargate", category: "Compute" },
+  { name: "ECS", category: "Compute" },
+  { name: "EKS", category: "Compute" },
+  { name: "AWS Batch", category: "Compute" },
+  { name: "Lightsail", category: "Compute" },
+  { name: "App Runner", category: "Compute" },
+
+  { name: "RDS", category: "Database" },
+  { name: "DynamoDB", category: "Database" },
+  { name: "Aurora", category: "Database" },
+  { name: "Redshift", category: "Database" },
+  { name: "ElastiCache", category: "Database" },
+  { name: "DocumentDB", category: "Database" },
+  { name: "Neptune", category: "Database" },
+  { name: "Timestream", category: "Database" },
+
+  { name: "VPC", category: "Networking" },
+  { name: "Route 53", category: "Networking" },
+  { name: "CloudFront", category: "Networking" },
+  { name: "API Gateway", category: "Networking" },
+  { name: "Load Balancing", category: "Networking" },
+  { name: "Direct Connect", category: "Networking" },
+  { name: "Transit Gateway", category: "Networking" },
+  { name: "Global Accelerator", category: "Networking" },
+
+  { name: "IAM", category: "Security" },
+  { name: "KMS", category: "Security" },
+  { name: "Shield", category: "Security" },
+  { name: "WAF", category: "Security" },
+  { name: "GuardDuty", category: "Security" },
+  { name: "Secrets Manager", category: "Security" },
+  { name: "Cognito", category: "Security" },
+  { name: "Inspector", category: "Security" },
+] as const;
+
+/* --------------------------- Memory Match pool --------------------------- */
+
+/** One service paired with the job it does — the two halves of a match. */
+export type MemoryPair = {
+  id: string;
+  service: string;
+  job: string;
+};
+
+export const MEMORY_PAIRS: readonly MemoryPair[] = [
+  { id: "mm-s3", service: "S3", job: "Object storage" },
+  { id: "mm-ec2", service: "EC2", job: "Virtual servers" },
+  { id: "mm-lambda", service: "Lambda", job: "Run code, no servers" },
+  { id: "mm-rds", service: "RDS", job: "Managed SQL database" },
+  { id: "mm-dynamodb", service: "DynamoDB", job: "NoSQL key-value store" },
+  { id: "mm-cloudfront", service: "CloudFront", job: "Global CDN" },
+  { id: "mm-route53", service: "Route 53", job: "DNS and domains" },
+  { id: "mm-vpc", service: "VPC", job: "Isolated virtual network" },
+  { id: "mm-iam", service: "IAM", job: "Users and permissions" },
+  { id: "mm-sqs", service: "SQS", job: "Message queue" },
+  { id: "mm-cloudwatch", service: "CloudWatch", job: "Metrics, logs, alarms" },
+  { id: "mm-kms", service: "KMS", job: "Encryption keys" },
+  { id: "mm-redshift", service: "Redshift", job: "Data warehouse" },
+  { id: "mm-eks", service: "EKS", job: "Managed Kubernetes" },
+] as const;
+
+/* ------------------------------ Cloudle pool ----------------------------- */
+
+/** A five-letter answer plus the one-line reason it belongs in a cloud game. */
+export type CloudleWord = {
+  word: string;
+  hint: string;
+};
+
+/** Every entry is exactly five letters — the grid depends on it. */
+export const CLOUDLE_WORDS: readonly CloudleWord[] = [
+  { word: "CLOUD", hint: "Someone else's computer, rented by the hour." },
+  { word: "SCALE", hint: "Add capacity as demand grows — up, out, or both." },
+  { word: "STACK", hint: "What CloudFormation deploys as one unit." },
+  { word: "QUEUE", hint: "What SQS holds so producers outrun consumers." },
+  { word: "CACHE", hint: "Keep the answer close so you don't recompute it." },
+  { word: "PROXY", hint: "Sits in front and forwards the request onward." },
+  { word: "TOKEN", hint: "Short-lived proof that you are who you claim." },
+  { word: "VAULT", hint: "Where secrets live instead of in your source code." },
+  { word: "SHARD", hint: "One slice of a dataset split across nodes." },
+  { word: "BATCH", hint: "Work queued up and processed together, not live." },
+  { word: "ROUTE", hint: "The path a packet takes — see also table, 53." },
+  { word: "IMAGE", hint: "The frozen template an instance boots from." },
+  { word: "INDEX", hint: "The structure that stops a full table scan." },
+  { word: "PATCH", hint: "The update that closes the vulnerability." },
+  { word: "NODES", hint: "The members of your cluster." },
+  { word: "REDIS", hint: "The in-memory store behind ElastiCache." },
+  { word: "LINUX", hint: "What most EC2 instances are running." },
+  { word: "NGINX", hint: "Web server and reverse proxy, everywhere." },
+  { word: "QUOTA", hint: "The ceiling AWS puts on a resource per account." },
+  { word: "TRACE", hint: "Follow one request across every service it hits." },
+  { word: "ALARM", hint: "What CloudWatch raises when a threshold breaks." },
+  { word: "QUERY", hint: "The request you send a database." },
+  { word: "LAYER", hint: "Shared code Lambda functions can pull in." },
+  { word: "BYTES", hint: "What egress charges are measured in." },
+  { word: "BLOCK", hint: "The storage type EBS gives you." },
+  { word: "TIERS", hint: "S3 has several, and they price very differently." },
+  { word: "ADMIN", hint: "The role you should not use day to day." },
+  { word: "MOUNT", hint: "What you do to an EFS file system." },
+  { word: "GRAPH", hint: "The data model Neptune is built for." },
+  { word: "LIMIT", hint: "Rate ceiling an API Gateway stage enforces." },
+] as const;
+
+/**
+ * The word of the day, identical for everyone in the same local date. Uses the
+ * local calendar date so the puzzle turns over at the player's midnight.
+ */
+export function cloudleWordForDate(date: Date): CloudleWord {
+  const days = Math.floor(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000,
+  );
+  const index =
+    ((days % CLOUDLE_WORDS.length) + CLOUDLE_WORDS.length) %
+    CLOUDLE_WORDS.length;
+  // The modulo above keeps this in range; the fallback satisfies strict index
+  // checking without ever being reached.
+  return CLOUDLE_WORDS[index] ?? { word: "CLOUD", hint: "Fallback word." };
 }

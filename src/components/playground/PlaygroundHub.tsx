@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Play } from "lucide-react";
+import { Play, Trophy } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
 import { Reveal } from "@/components/motion/Reveal";
@@ -10,11 +10,14 @@ import { useBestScore } from "./useBestScore";
 import { ServiceMatch } from "./ServiceMatch";
 import { MythOrFact } from "./MythOrFact";
 import { WhichService } from "./WhichService";
+import { CloudCatch } from "./CloudCatch";
+import { MemoryMatch } from "./MemoryMatch";
+import { Cloudle } from "./Cloudle";
 
 /**
- * The arcade: a grid of game cards, one of which can be launched into a live
- * panel that replaces the grid. Selecting a game is the only interaction — the
- * "coming soon" card is deliberately not a button, so nothing clickable is dead.
+ * The arcade: a grid of game cards, one of which launches into a live panel
+ * that replaces the grid. Each card carries its own accent, so the six games
+ * read as six distinct machines rather than one repeated template.
  */
 export function PlaygroundHub() {
   const [active, setActive] = React.useState<GameId | null>(null);
@@ -36,11 +39,14 @@ export function PlaygroundHub() {
           {active === "service-match" ? <ServiceMatch onExit={exit} /> : null}
           {active === "myth-or-fact" ? <MythOrFact onExit={exit} /> : null}
           {active === "which-service" ? <WhichService onExit={exit} /> : null}
+          {active === "cloud-catch" ? <CloudCatch onExit={exit} /> : null}
+          {active === "memory-match" ? <MemoryMatch onExit={exit} /> : null}
+          {active === "cloudle" ? <Cloudle onExit={exit} /> : null}
         </div>
       ) : (
         <div>
           <Reveal>
-            <div className="flex items-end justify-between gap-4">
+            <div className="border-border/60 flex items-end justify-between gap-4 border-b pb-5">
               <p className="text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">
                 The arcade
               </p>
@@ -50,15 +56,12 @@ export function PlaygroundHub() {
             </div>
           </Reveal>
 
-          <div className="mt-8 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {GAMES.map((game, i) => (
-              <Reveal key={game.id} delay={i * 0.05}>
+              <Reveal key={game.id} delay={Math.min(i, 3) * 0.06}>
                 <GameCard game={game} onPlay={() => setActive(game.id)} />
               </Reveal>
             ))}
-            <Reveal delay={GAMES.length * 0.05}>
-              <SoonCard />
-            </Reveal>
           </div>
         </div>
       )}
@@ -66,52 +69,94 @@ export function PlaygroundHub() {
   );
 }
 
+function formatBest(game: GameMeta, best: number): string {
+  if (!game.lowerIsBetter) return String(best);
+  const m = Math.floor(best / 60);
+  const s = best % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+/**
+ * One machine in the arcade. The accent drives the icon tile, the hairline and
+ * the wash that ignites on hover, so each card has its own identity while the
+ * type stays in the site's editorial voice.
+ */
 function GameCard({ game, onPlay }: { game: GameMeta; onPlay: () => void }) {
   const { best, ready } = useBestScore(game.bestKey);
+  const Icon = game.icon;
+  const hasBest = ready && best > 0;
 
   return (
     <button
       type="button"
       onClick={onPlay}
       style={{ "--accent": game.accent } as React.CSSProperties}
-      className="group ring-border/60 focus-visible:ring-ring relative flex h-full cursor-pointer flex-col p-7 text-left ring-1 transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none"
+      className={cn(
+        "group ring-border/60 focus-visible:ring-ring relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl p-6 text-left ring-1 transition-all duration-300 focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none sm:p-7",
+        "hover:-translate-y-1 hover:ring-[color-mix(in_oklab,var(--accent)_55%,transparent)]",
+        "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+      )}
     >
+      {/* accent wash, lit on hover */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(110% 90% at 50% 0%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 70%)",
+            "radial-gradient(120% 85% at 50% 0%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 68%)",
         }}
       />
-      <div className="relative flex items-center justify-between gap-3">
+      {/* top hairline in the accent */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ backgroundColor: game.accent }}
+      />
+
+      <div className="relative flex items-start justify-between gap-4">
         <span
-          className="font-mono text-[0.65rem] tracking-[0.18em] uppercase"
-          style={{ color: game.accent }}
+          className="grid size-12 shrink-0 place-items-center rounded-xl transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          style={{
+            backgroundColor: `color-mix(in oklab, ${game.accent} 14%, transparent)`,
+            color: game.accent,
+          }}
         >
-          {game.teaches}
+          <Icon className="size-5" aria-hidden />
         </span>
-        {ready && best > 0 ? (
-          <span className="text-muted-foreground font-mono text-[0.6rem] tracking-wide uppercase tabular-nums">
-            {game.bestLabel}: {best}
+
+        {hasBest ? (
+          <span className="text-muted-foreground inline-flex items-center gap-1.5 font-mono text-[0.6rem] tracking-wide uppercase tabular-nums">
+            <Trophy className="size-3" aria-hidden />
+            {game.bestLabel} {formatBest(game, best)}
           </span>
         ) : null}
       </div>
 
-      <h3 className="font-display relative mt-8 text-2xl font-bold tracking-tight">
+      <p
+        className="relative mt-6 font-mono text-[0.62rem] tracking-[0.18em] uppercase"
+        style={{ color: game.accent }}
+      >
+        {game.teaches}
+      </p>
+      <h3 className="font-display relative mt-2 text-2xl font-bold tracking-[-0.02em]">
         {game.title}
       </h3>
       <p className="text-muted-foreground relative mt-3 text-sm leading-relaxed">
         {game.blurb}
       </p>
 
+      <div className="relative mt-6 flex flex-wrap items-center gap-2">
+        <Chip>{game.difficulty}</Chip>
+        <Chip>{game.duration}</Chip>
+      </div>
+
       <span
-        className="relative mt-6 inline-flex items-center gap-2 font-mono text-xs tracking-[0.12em] uppercase transition-colors"
+        className="relative mt-6 inline-flex items-center gap-2 font-mono text-xs tracking-[0.14em] uppercase"
         style={{ color: game.accent }}
       >
-        <Play className="size-3.5 fill-current" />
+        <Play className="size-3.5 fill-current" aria-hidden />
         Play
-        <span className="transition-transform group-hover:translate-x-0.5">
+        <span className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none">
           →
         </span>
       </span>
@@ -119,30 +164,10 @@ function GameCard({ game, onPlay }: { game: GameMeta; onPlay: () => void }) {
   );
 }
 
-function SoonCard() {
+function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className={cn(
-        "ring-border/60 relative flex h-full flex-col p-7 ring-1",
-        "opacity-70",
-      )}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-muted-foreground font-mono text-[0.65rem] tracking-[0.18em] uppercase">
-          Cost &amp; scale
-        </span>
-        <span className="text-muted-foreground border-border/70 rounded-full border px-2.5 py-1 font-mono text-[0.6rem] tracking-wide uppercase">
-          Coming soon
-        </span>
-      </div>
-      <h3 className="font-display mt-8 text-2xl font-bold tracking-tight">
-        Cloud Tycoon
-      </h3>
-      <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-        Run a startup on a budget: traffic spikes, you pick the architecture,
-        the bill decides whether you survive the quarter. In the workshop, still
-        being built into a game.
-      </p>
-    </div>
+    <span className="border-border/70 text-muted-foreground rounded-full border px-2.5 py-1 font-mono text-[0.6rem] tracking-[0.1em] uppercase">
+      {children}
+    </span>
   );
 }

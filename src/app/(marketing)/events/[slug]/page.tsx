@@ -160,11 +160,26 @@ function Meta({
 
 /* ------------------------------- stat band -------------------------------- */
 
-/** Hardcoded dark, like the other feature strips — a deliberate contrast band. */
+/**
+ * Hardcoded dark, like the other feature strips. In light mode the fill alone
+ * makes the band; in dark mode it sits too close to the page colour, so the
+ * hairline edges and the orange wash are what keep it reading as a band.
+ */
 function StatBand({ event }: { event: ClubEvent }) {
   return (
-    <section className="mt-16 md:mt-24" style={{ backgroundColor: "#06080e" }}>
-      <Container>
+    <section
+      className="relative mt-16 border-y border-white/10 md:mt-24"
+      style={{ backgroundColor: "#06080e" }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 140% at 12% 0%, color-mix(in oklab, var(--orange) 12%, transparent), transparent 62%)",
+        }}
+      />
+      <Container className="relative">
         <dl className="grid grid-cols-2 gap-x-8 gap-y-10 py-14 md:grid-cols-4 md:py-20">
           {event.stats.map((stat, i) => (
             <Reveal key={stat.label} delay={i * 0.07}>

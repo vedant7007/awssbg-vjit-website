@@ -77,8 +77,8 @@ export const TEAMS: TeamMeta[] = [
     charter: "Runs the workshops, builds the labs, keeps this site deploying.",
     color: "#43B4FF",
     wrap: ["<", "/>"],
-    // chevrons
-    glyph: "M-11-6 -4 0-11 6M11-6 4 0 11 6",
+    // code brackets  </>
+    glyph: "M-7-6-13 0-7 6M-1 8 1-8M7-6 13 0 7 6",
     stroke: true,
   },
   {
@@ -89,8 +89,9 @@ export const TEAMS: TeamMeta[] = [
       "Posters, decks, and the visual language of everything we put out.",
     color: "#FF57EA",
     wrap: ["{", "}"],
-    // pen nib
-    glyph: "M0 12-7-4 0-12 7-4Z",
+    // artist palette
+    glyph:
+      "M0-11c6 0 11 4 11 10 0 4-3 6-6 6-2 0-3 1-3 3 0 2-1 3-3 3-6 0-11-5-11-11S-6-11 0-11ZM-5-3a2 2 0 1 0 0.01 0ZM4-4a2 2 0 1 0 0.01 0ZM5 3a2 2 0 1 0 0.01 0Z",
     stroke: false,
   },
   {
@@ -101,8 +102,9 @@ export const TEAMS: TeamMeta[] = [
       "Shoots, edits and ships the recaps, reels and session recordings.",
     color: "#2EE6A0",
     wrap: ["(", ")"],
-    // play head
-    glyph: "M-6-10 10 0-6 10Z",
+    // video camera
+    glyph:
+      "M-11-6h13a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2ZM6-1 12-5v10 -6-4z",
     stroke: false,
   },
   {
@@ -112,10 +114,9 @@ export const TEAMS: TeamMeta[] = [
     charter: "Brings in speakers, partners and the students who fill the room.",
     color: "#FF9900",
     wrap: ["@", ""],
-    // broadcast signal
-    glyph:
-      "M-11 3a14 14 0 0 1 22 0M-6.5 8a8 8 0 0 1 13 0M-1.7 12.4a1.7 1.7 0 1 0 3.4 0a1.7 1.7 0 1 0-3.4 0",
-    stroke: true,
+    // megaphone
+    glyph: "M-12-1 6-9v18 -18-5h-2a3 3 0 0 1 0-6zM-8 6v6a2 2 0 0 0 4 0v-4z",
+    stroke: false,
   },
   {
     key: "events",
@@ -853,6 +854,58 @@ export const CORE: RosterMember[] = [
     bio: null,
     about: "CHASING EXCELLENCE",
     photo: "/team/members/dudaykiranredd.jpg",
+    socials: { linkedin: null, github: null, instagram: null },
+  },
+  {
+    id: "m-32",
+    name: "Mary Krithika",
+    role: "Core Member",
+    team: "events",
+    branch: "",
+    year: "",
+    handle: "marykrithika",
+    bio: null,
+    about: null,
+    photo: "/team/members/marykrithika.jpg",
+    socials: { linkedin: null, github: null, instagram: null },
+  },
+  {
+    id: "m-33",
+    name: "Govardhan",
+    role: "Core Member",
+    team: "events",
+    branch: "",
+    year: "",
+    handle: "govardhan",
+    bio: null,
+    about: null,
+    photo: "/team/members/govardhan.jpg",
+    socials: { linkedin: null, github: null, instagram: null },
+  },
+  {
+    id: "m-34",
+    name: "Dhanush",
+    role: "Core Member",
+    team: "events",
+    branch: "",
+    year: "",
+    handle: "dhanush",
+    bio: null,
+    about: null,
+    photo: "/team/members/dhanush.jpg",
+    socials: { linkedin: null, github: null, instagram: null },
+  },
+  {
+    id: "m-35",
+    name: "Pavan Karthik",
+    role: "Core Member",
+    team: "events",
+    branch: "",
+    year: "",
+    handle: "pavanakarthikeya",
+    bio: null,
+    about: null,
+    photo: "/team/members/pavanakarthikeya.jpg",
     socials: { linkedin: null, github: null, instagram: null },
   },
 ];
