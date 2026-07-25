@@ -108,7 +108,7 @@ function JoinSection() {
         }}
       />
 
-      <Container className="relative z-10 text-center">
+      <Container className="pointer-events-none relative z-10 text-center">
         <Reveal>
           <p className="eyebrow-pixel text-orange mb-7">{"// join us"}</p>
           <h2 className="font-display text-foreground text-[clamp(2.75rem,11vw,8rem)] leading-[0.86] font-extrabold tracking-[-0.045em] uppercase">
@@ -122,7 +122,7 @@ function JoinSection() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="mt-10 flex justify-center">
+          <div className="pointer-events-auto mt-10 flex justify-center">
             <Button
               asChild
               size="lg"

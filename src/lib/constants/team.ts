@@ -208,7 +208,11 @@ export const CAPTAIN: RosterMember & { quote: string } = {
   quote:
     "A single event can spark curiosity. A strong community can ignite a career. That's the future we're building at AWS SBG VJIT.",
   photo: "/team/ruthvik.png",
-  socials: { linkedin: null, github: null, instagram: null },
+  socials: {
+    linkedin: "https://www.linkedin.com/in/ruthvik-reddy-devidi-205638298",
+    github: "https://github.com/ruthvikreddydevidi",
+    instagram: "https://www.instagram.com/ruthvikreddy.devidi",
+  },
 };
 
 /* -------------------------------- leads --------------------------------- */
