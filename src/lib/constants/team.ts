@@ -149,6 +149,27 @@ export const FACULTY: Faculty[] = [
     photo: "/team/faculty/principal.jpg",
   },
   {
+    id: "f-dean",
+    name: "Dr. A. Padmaja",
+    designation: "Dean — Accreditation & Rankings",
+    department: "Vidya Jyothi Institute of Technology",
+    photo: "/team/faculty/padmaja.jpg",
+  },
+  {
+    id: "f-director-tp",
+    name: "Mr. R. Venkatachalam",
+    designation: "Director — Training & Placement Cell",
+    department: "Vidya Jyothi Institute of Technology",
+    photo: "/team/faculty/venkatachalam.jpg",
+  },
+  {
+    id: "f-director-acad",
+    name: "Mrs. G. Srilatha",
+    designation: "Director — Academics",
+    department: "Vidya Jyothi Institute of Technology",
+    photo: "/team/faculty/srilatha.jpg",
+  },
+  {
     id: "f-hod",
     name: "Dr. D. Aruna Kumari",
     designation: "Professor & Head of Department",
@@ -239,7 +260,7 @@ export const LEADS: RosterMember[] = [
     handle: "jithendra",
     bio: null,
     about: null,
-    photo: null,
+    photo: "/team/members/jithendra.jpg",
     socials: { linkedin: null, github: null, instagram: null },
   },
   {
@@ -407,7 +428,7 @@ export const CORE: RosterMember[] = [
     bio: null,
     about:
       "I create cinematic edits, public reaction videos, and Instagram Reels, and digital /content creator",
-    photo: null,
+    photo: "/team/members/tarunn.jpg",
     socials: {
       linkedin:
         "https://www.linkedin.com/in/tarun-kumar-518961388?utm_source=share_via&utm_content=profile&utm_medium=member_ios",

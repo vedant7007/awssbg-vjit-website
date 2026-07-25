@@ -130,12 +130,6 @@ export function Nav() {
             </DropdownMenu>
           ) : (
             <>
-              <Link
-                href={routes.signin}
-                className="text-muted-foreground hover:text-foreground hidden rounded-full px-3 py-1.5 text-sm font-medium transition-colors lg:inline-flex"
-              >
-                Builder Login
-              </Link>
               <Button
                 asChild
                 size="sm"
@@ -189,14 +183,6 @@ function MobileMenu() {
               className="bg-primary text-primary-foreground mt-4 rounded-full px-3 py-2.5 text-center text-base font-medium"
             >
               Join Community
-            </Link>
-          </SheetClose>
-          <SheetClose asChild>
-            <Link
-              href={routes.signin}
-              className="text-muted-foreground hover:text-foreground mt-1 rounded-sm px-3 py-2.5 text-center text-sm font-medium"
-            >
-              Builder Login
             </Link>
           </SheetClose>
         </nav>
