@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { LogoMark } from "@/components/brand/LogoMark";
+
 /**
  * The launch sequence — a hidden, presenter-driven reveal for the site's
  * go-live moment.
@@ -11,22 +13,22 @@ import * as React from "react";
  *   • add #launch to the URL and reload / press Enter in the address bar, or
  *   • press the key combo Ctrl/Cmd + Shift + L.
  *
- * Flow: a full-screen black stage with a "Launch the website?" button →
- * Space (or click) starts a 10 → 0 countdown → theatre curtains part over the
- * live site while fireworks burst across it. Esc cancels before launch.
+ * Flow: a black stage where the AWS SBG mark assembles itself → a "Launch the
+ * website" button → Space (or click) starts a 10 → 0 countdown → the stage
+ * fades away over the live site while soft confetti drifts down. Esc cancels
+ * before launch.
  *
- * Everything is self-contained (no libraries); fireworks run on a DPR-scaled
- * canvas. Honors reduced motion with a shorter, calmer reveal.
+ * Kept deliberately light: confetti is flat fills (no per-particle blur or
+ * additive blending), so the reveal never drags the page.
  */
 
-type Phase = "idle" | "armed" | "counting" | "curtains";
+type Phase = "idle" | "armed" | "counting" | "reveal";
 
 const SECRET_WORD = "launch";
 
 export function LaunchSequence() {
   const [phase, setPhase] = React.useState<Phase>("idle");
   const [count, setCount] = React.useState(10);
-  const [curtainsOpen, setCurtainsOpen] = React.useState(false);
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const phaseRef = React.useRef<Phase>("idle");
   phaseRef.current = phase;
@@ -42,7 +44,6 @@ export function LaunchSequence() {
 
   const cancel = React.useCallback(() => {
     setPhase("idle");
-    setCurtainsOpen(false);
     setCount(10);
   }, []);
 
@@ -68,7 +69,6 @@ export function LaunchSequence() {
     };
 
     const onKey = (e: KeyboardEvent) => {
-      // Ctrl/Cmd + Shift + L
       if (
         (e.ctrlKey || e.metaKey) &&
         e.shiftKey &&
@@ -79,7 +79,6 @@ export function LaunchSequence() {
         return;
       }
       if (isField(e.target)) return;
-      // Typed secret word.
       if (/^[a-z]$/i.test(e.key)) {
         typed = (typed + e.key.toLowerCase()).slice(-SECRET_WORD.length);
         if (typed === SECRET_WORD) {
@@ -106,7 +105,7 @@ export function LaunchSequence() {
   React.useEffect(() => {
     if (phase === "idle") return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && phase !== "curtains") {
+      if (e.key === "Escape" && phase !== "reveal") {
         e.preventDefault();
         cancel();
       }
@@ -116,9 +115,9 @@ export function LaunchSequence() {
       }
     };
     window.addEventListener("keydown", onKey);
-    // Lock background scroll while the stage is up.
+    // Lock background scroll while the stage covers the page.
     const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    if (phase !== "reveal") document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
@@ -129,36 +128,30 @@ export function LaunchSequence() {
   React.useEffect(() => {
     if (phase !== "counting") return;
     if (count <= 0) {
-      // Reveal the top of the page, then part the curtains + fire.
       window.scrollTo({ top: 0, behavior: "auto" });
-      setPhase("curtains");
+      setPhase("reveal");
       return;
     }
     const id = window.setTimeout(() => setCount((c) => c - 1), 1000);
     return () => clearTimeout(id);
   }, [phase, count]);
 
-  /* --------------------- curtains + fireworks + finish ------------------- */
+  /* ---------------------- reveal: confetti + finish ---------------------- */
   React.useEffect(() => {
-    if (phase !== "curtains") return;
+    if (phase !== "reveal") return;
 
-    // Part the curtains on the next frame so the CSS transition runs.
-    const raf = requestAnimationFrame(() => setCurtainsOpen(true));
-
-    const showMs = reduce ? 1400 : 4600;
-    const stopFireworks = reduce
+    const showMs = reduce ? 700 : 4200;
+    const stop = reduce
       ? () => {}
-      : startFireworks(canvasRef.current, showMs - 900);
+      : startConfetti(canvasRef.current, showMs - 400);
 
     const done = window.setTimeout(() => {
       setPhase("idle");
-      setCurtainsOpen(false);
       setCount(10);
     }, showMs);
 
     return () => {
-      cancelAnimationFrame(raf);
-      stopFireworks();
+      stop();
       clearTimeout(done);
     };
   }, [phase, reduce]);
@@ -173,13 +166,19 @@ export function LaunchSequence() {
       aria-modal="true"
       aria-label="Website launch"
     >
-      {/* Fireworks canvas — only meaningful during the reveal. */}
+      {/* Black backdrop — fades away during the reveal so the site shows. */}
+      <div className="launch-backdrop" aria-hidden />
+
+      {/* Confetti canvas sits above everything, never blocks clicks. */}
       <canvas ref={canvasRef} className="launch-fx" aria-hidden />
 
-      {/* ARMED — the black stage with the launch button. */}
+      {/* ARMED — the mark assembles, then the launch button. */}
       {phase === "armed" ? (
         <div className="launch-panel">
           <div className="launch-stars" aria-hidden />
+          <div className="launch-logo" aria-hidden>
+            <LogoMark />
+          </div>
           <p className="launch-kicker">AWS · SBG · VJIT</p>
           <h2 className="launch-title">Ready for lift-off?</h2>
           <button
@@ -209,33 +208,15 @@ export function LaunchSequence() {
           </div>
         </div>
       ) : null}
-
-      {/* CURTAINS — theatre panels that part over the live site. */}
-      {phase === "curtains" ? (
-        <div
-          className={
-            curtainsOpen ? "launch-curtains is-open" : "launch-curtains"
-          }
-          aria-hidden
-        >
-          <div className="launch-curtain left">
-            <span className="launch-curtain-trim" />
-          </div>
-          <div className="launch-curtain right">
-            <span className="launch-curtain-trim" />
-          </div>
-          <div className={curtainsOpen ? "launch-flash go" : "launch-flash"} />
-        </div>
-      ) : null}
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/* Fireworks: additive glowing particle bursts on a DPR-scaled canvas. Returns
- * a stop() cleanup. Draws nothing but the bursts, so it layers over the live
- * page revealed between the curtains. */
-function startFireworks(
+/* Soft confetti: flat rounded rectangles drifting down on a DPR-scaled canvas.
+ * No shadowBlur, no additive blending — cheap enough to run over the live page
+ * without jank. Returns a stop() cleanup. */
+function startConfetti(
   canvas: HTMLCanvasElement | null,
   durationMs: number,
 ): () => void {
@@ -254,91 +235,74 @@ function startFireworks(
 
   const COLORS = [
     "#FF9900",
+    "#FFD54A",
     "#43B4FF",
     "#AD5CFF",
     "#FF57EA",
     "#2EE6A0",
-    "#FFD54A",
     "#FFFFFF",
   ];
-  type P = {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    life: number;
-    decay: number;
-    color: string;
-    size: number;
-  };
-  let particles: P[] = [];
-
   const W = () => window.innerWidth;
   const H = () => window.innerHeight;
 
-  const burst = (x: number, y: number) => {
-    const color = COLORS[(Math.random() * COLORS.length) | 0] ?? "#FF9900";
-    const n = 55 + ((Math.random() * 55) | 0);
-    for (let i = 0; i < n; i++) {
-      const a = Math.PI * 2 * (i / n) + Math.random() * 0.35;
-      const sp = 1.6 + Math.random() * 5.4;
-      particles.push({
-        x,
-        y,
-        vx: Math.cos(a) * sp,
-        vy: Math.sin(a) * sp,
-        life: 1,
-        decay: 0.008 + Math.random() * 0.014,
-        color,
-        size: 1.4 + Math.random() * 2,
-      });
-    }
+  type Piece = {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    vy: number;
+    vx: number;
+    rot: number;
+    vr: number;
+    sway: number;
+    color: string;
   };
 
+  const spawn = (top: boolean): Piece => ({
+    x: Math.random() * W(),
+    y: top ? -20 - Math.random() * 40 : -20 - Math.random() * H() * 0.6,
+    w: 6 + Math.random() * 6,
+    h: 9 + Math.random() * 7,
+    vy: 40 + Math.random() * 55, // px/sec — gentle
+    vx: (Math.random() - 0.5) * 26,
+    rot: Math.random() * Math.PI,
+    vr: (Math.random() - 0.5) * 3,
+    sway: Math.random() * Math.PI * 2,
+    color: COLORS[(Math.random() * COLORS.length) | 0] ?? "#FF9900",
+  });
+
+  const pieces: Piece[] = Array.from({ length: 150 }, () => spawn(false));
+
   let raf = 0;
-  let last = 0;
+  let prev = 0;
   let elapsed = 0;
-  let prevTs = 0;
 
   const frame = (ts: number) => {
-    if (!prevTs) prevTs = ts;
-    const dt = ts - prevTs;
-    prevTs = ts;
-    elapsed += dt;
+    if (!prev) prev = ts;
+    const dt = Math.min((ts - prev) / 1000, 0.04);
+    prev = ts;
+    elapsed += dt * 1000;
 
     ctx.clearRect(0, 0, W(), H());
-    ctx.globalCompositeOperation = "lighter";
-
-    if (elapsed < durationMs && ts - last > 240) {
-      last = ts;
-      const bx = W() * (0.12 + Math.random() * 0.76);
-      const by = H() * (0.12 + Math.random() * 0.42);
-      burst(bx, by);
-      if (Math.random() < 0.4)
-        burst(W() * (0.3 + Math.random() * 0.4), H() * 0.3);
-    }
-
-    for (const p of particles) {
-      p.vy += 0.03; // gravity
-      p.vx *= 0.985;
-      p.vy *= 0.985;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life -= p.decay;
-      if (p.life <= 0) continue;
-      ctx.globalAlpha = Math.max(p.life, 0);
+    for (const p of pieces) {
+      p.sway += dt * 2.2;
+      p.x += (p.vx + Math.sin(p.sway) * 14) * dt;
+      p.y += p.vy * dt;
+      p.rot += p.vr * dt;
+      if (p.y > H() + 24) {
+        // Keep raining until near the end, then let them fall out.
+        if (elapsed < durationMs - 1200) Object.assign(p, spawn(true));
+        else continue;
+      }
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
       ctx.fillStyle = p.color;
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
     }
-    ctx.globalAlpha = 1;
-    ctx.shadowBlur = 0;
-    particles = particles.filter((p) => p.life > 0);
 
-    if (elapsed < durationMs || particles.length) {
+    if (elapsed < durationMs) {
       raf = requestAnimationFrame(frame);
     }
   };
