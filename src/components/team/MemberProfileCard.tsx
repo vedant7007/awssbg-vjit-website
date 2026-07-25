@@ -4,7 +4,11 @@ import * as React from "react";
 
 import ProfileCard from "./ProfileCard";
 import "./profile-card-theme.css";
-import { TEAM_BY_KEY, initialsOf, type RosterMember } from "@/lib/constants/team";
+import {
+  TEAM_BY_KEY,
+  initialsOf,
+  type RosterMember,
+} from "@/lib/constants/team";
 
 /**
  * The member ID card — the ReactBits holographic ProfileCard: 3D tilt toward
