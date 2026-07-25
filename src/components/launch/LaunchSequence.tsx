@@ -137,14 +137,19 @@ export function LaunchSequence() {
     return () => clearTimeout(id);
   }, [phase, count]);
 
-  /* ---------------------- reveal: confetti + finish ---------------------- */
+  /* ---------------------- reveal: logo, THEN confetti -------------------- */
   React.useEffect(() => {
     if (phase !== "reveal") return;
 
-    const showMs = reduce ? 900 : 5200;
-    const stop = reduce
-      ? () => {}
-      : startConfettiBlast(canvasRef.current, showMs - 500);
+    // Let the mark finish assembling first, then fire the confetti blast.
+    const delay = reduce ? 250 : 2050;
+    const blastMs = reduce ? 600 : 3400;
+    const showMs = delay + blastMs + 500;
+
+    let stop = () => {};
+    const startTimer = window.setTimeout(() => {
+      if (!reduce) stop = startConfettiBlast(canvasRef.current, blastMs);
+    }, delay);
 
     const done = window.setTimeout(() => {
       setPhase("idle");
@@ -152,6 +157,7 @@ export function LaunchSequence() {
     }, showMs);
 
     return () => {
+      clearTimeout(startTimer);
       stop();
       clearTimeout(done);
     };
