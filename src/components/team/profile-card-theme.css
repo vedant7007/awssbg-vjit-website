@@ -56,11 +56,17 @@
   );
 }
 
-/* Upstream expects a full-bleed photo cutout. Our placeholder is a figure, so
-   it is inset and lifted clear of the handle pill instead of sitting under it. */
-.pc-lead .pc-avatar-content .avatar {
-  width: 66%;
-  bottom: 72px;
+/* Real photos fill the whole card (the demo uses a cut-out PNG; we use a full
+   frame). The parent keeps `mix-blend-mode: luminosity`, which is what gives
+   the signature holographic tint. */
+.pc-lead .pc-avatar-content .avatar,
+.pc-captain .pc-avatar-content .avatar {
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  bottom: 0;
+  object-fit: cover;
+  transform: none;
 }
 
 /* The handle pill keeps its radius; only the card itself goes square. */

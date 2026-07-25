@@ -231,25 +231,15 @@ const CLOUD_TYCOON: ClubEvent = {
   venue: "C-203 Lab",
   department: "Computer Science and Engineering",
   organiser: "AWS Cloud Clubs — VJIT",
-  audience: "2nd year B.Tech students, in teams of three",
+  audience: "2nd year B.Tech · teams of three",
   cover: "/events/cloud-tycoon/cover.jpg",
   coverAlt: "The AWS Cloud Clubs table set up for the Cloud Tycoon simulation",
   coverNote:
     "Photography from this session is limited to the setup — the round footage was recorded on video.",
-  gallery: [
-    {
-      src: "/events/cloud-tycoon/cover.jpg",
-      alt: "The AWS Cloud Clubs table set up before the simulation",
-    },
-    {
-      src: "/events/cloud-tycoon/01.jpg",
-      alt: "Laptops laid out at the AWS Cloud Clubs table ahead of the rounds",
-    },
-    {
-      src: "/events/cloud-tycoon/02.jpg",
-      alt: "The C-203 lab set up for the Cloud Tycoon simulation",
-    },
-  ],
+  // Only setup photography exists for this session, and it is all the same
+  // frame — the cover carries it. A gallery of near-duplicates would read as
+  // padding, so there isn't one until real round photos turn up.
+  gallery: [],
   stats: [
     { value: "05", label: "Rounds played" },
     { value: "03", label: "Roles per team" },
