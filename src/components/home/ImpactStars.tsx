@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils/cn";
+import { RollingText } from "@/components/motion/RollingText";
 
 /**
  * The numbers — a restrained, premium counter band. Figures tick up from zero
@@ -128,9 +129,11 @@ export function ImpactStars() {
           <p className="font-pixel text-orange text-[0.6rem] tracking-[0.25em]">
             {"// the numbers"}
           </p>
-          <h2 className="font-display mt-5 text-[clamp(1.9rem,4.2vw,3.25rem)] leading-[1.02] font-bold tracking-[-0.035em] text-balance text-white">
-            Small club. Real dents.
-          </h2>
+          <RollingText
+            as="h2"
+            text="Small club. Real dents."
+            className="font-display mt-5 text-[clamp(1.9rem,4.2vw,3.25rem)] leading-[1.02] font-bold tracking-[-0.035em] text-balance text-white"
+          />
           <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/50">
             Every figure is one we can point at — nothing rounded up for show.
           </p>

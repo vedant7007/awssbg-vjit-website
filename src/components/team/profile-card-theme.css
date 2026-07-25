@@ -195,6 +195,27 @@
   background-image: linear-gradient(to bottom, #fff, var(--member-accent));
 }
 
+/* Touch devices never fire :hover, so the holographic sparkle — and with it the
+ * team glyph riding the shine mask — would stay invisible on phones. Switch it
+ * on ambiently there: light the card, run the shine, and reveal the glint
+ * layers so every card shows its symbol without needing a pointer. */
+@media (hover: none) {
+  .pc-lead,
+  .pc-captain {
+    --card-opacity: 1;
+  }
+  .pc-lead .pc-shine,
+  .pc-captain .pc-shine {
+    animation-play-state: running;
+  }
+  .pc-lead .pc-shine::before,
+  .pc-lead .pc-shine::after,
+  .pc-captain .pc-shine::before,
+  .pc-captain .pc-shine::after {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pc-card,
   .pc-shine,

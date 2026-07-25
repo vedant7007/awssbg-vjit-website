@@ -13,6 +13,7 @@ import {
 } from "@/lib/constants/events";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -40,9 +41,11 @@ function Hero() {
       <div className="border-b pb-10 text-center lg:pb-14">
         <Reveal>
           <p className="eyebrow-pixel text-orange mb-6">{"// what we run"}</p>
-          <h1 className="font-display text-[clamp(2.75rem,9vw,7rem)] leading-[0.88] font-bold tracking-[-0.045em] uppercase">
-            <span className="headline-shimmer">Events</span>
-          </h1>
+          <RollingText
+            as="h1"
+            text="Events"
+            className="font-display text-[clamp(2.75rem,9vw,7rem)] leading-[0.88] font-bold tracking-[-0.045em] uppercase"
+          />
           <p className="text-muted-foreground mx-auto mt-5 max-w-xl leading-relaxed text-balance">
             Hands-on sessions, simulations and quizzes for students who want to
             actually use the cloud — not just read about it. Every event here

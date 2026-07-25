@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { FadeUp } from "@/components/motion/FadeUp";
+import { RollingText } from "@/components/motion/RollingText";
 import { BrandIcon, type BrandIconName } from "@/components/brand/BrandIcon";
 
 export const metadata: Metadata = {
@@ -219,9 +220,11 @@ export default function ServicesPage() {
         <Container>
           <FadeUp>
             <p className="eyebrow mb-6">What we do</p>
-            <h1 className="font-display max-w-3xl text-[clamp(2.5rem,5vw+1rem,5rem)] leading-[0.95] font-bold tracking-[-0.03em]">
-              Five pillars. One community.
-            </h1>
+            <RollingText
+              as="h1"
+              text="Five pillars. One community."
+              className="font-display max-w-3xl text-[clamp(2.5rem,5vw+1rem,5rem)] leading-[0.95] font-bold tracking-[-0.03em]"
+            />
             <p className="text-muted-foreground mt-6 max-w-xl text-lg leading-relaxed">
               Every event, workshop, and project at AWS SBG VJIT ladders up to
               one of these five pillars. Together they define how we learn,

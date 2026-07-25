@@ -5,6 +5,7 @@ import { routes } from "@/lib/constants/routes";
 import { GAMES } from "@/components/playground/games";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 import { Button } from "@/components/ui/button";
 import { PlaygroundHub } from "@/components/playground/PlaygroundHub";
 
@@ -35,9 +36,12 @@ export default function PlaygroundPage() {
               PLAY · TO · LEARN
             </p>
             <h1 className="font-display text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.92] font-bold tracking-[-0.035em] text-balance">
-              Nobody learns
-              <br />
-              AWS from a slide.
+              <RollingText as="span" className="block" text="Nobody learns" />
+              <RollingText
+                as="span"
+                className="block"
+                text="AWS from a slide."
+              />
             </h1>
             <p className="text-muted-foreground mt-7 max-w-xl text-lg leading-relaxed">
               Short browser games that put one cloud concept in your hands at a

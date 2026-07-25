@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 
 /**
  * "Moments" — the dome gallery. Heavy interactive client component, loaded only
@@ -30,9 +31,11 @@ export function MomentsSection() {
       <Container>
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="eyebrow-pixel mb-4 text-white/70">{"// moments"}</p>
-          <h2 className="font-display text-[clamp(2rem,5vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.035em] text-balance text-white">
-            The room, when it&apos;s full.
-          </h2>
+          <RollingText
+            as="h2"
+            text={"The room, when it's full."}
+            className="font-display text-[clamp(2rem,5vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.035em] text-balance text-white"
+          />
           <p className="mt-4 text-base leading-relaxed text-white/60">
             Real photos from our sessions — drag the dome to look around.
           </p>

@@ -6,6 +6,7 @@ import { routes } from "@/lib/constants/routes";
 import { CAPTAIN, CORE, LEADS, TEAM_COUNTS } from "@/lib/constants/team";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 import { CoreRoster } from "@/components/team/CoreRoster";
 
 export const metadata: Metadata = {
@@ -30,9 +31,11 @@ export default function FullTeamPage() {
             Back to team
           </Link>
 
-          <h1 className="font-display mt-7 text-[clamp(2.25rem,6vw,4.5rem)] leading-[0.92] font-bold tracking-[-0.04em] uppercase">
-            Everyone
-          </h1>
+          <RollingText
+            as="h1"
+            text="Everyone"
+            className="font-display mt-7 text-[clamp(2.25rem,6vw,4.5rem)] leading-[0.92] font-bold tracking-[-0.04em] uppercase"
+          />
           <p className="text-muted-foreground mt-5 max-w-xl leading-relaxed">
             All {EVERYONE.length} of us — the captain, {TEAM_COUNTS.leads} team
             leads and {TEAM_COUNTS.core} core members. Tap anyone to see their

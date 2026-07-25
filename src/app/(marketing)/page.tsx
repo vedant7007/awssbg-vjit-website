@@ -7,6 +7,7 @@ import { CLUB, ABOUT, CLOSING_CTA } from "@/lib/constants/club";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 import { HeroGrid } from "@/components/home/HeroGrid";
 import { CtaBackdrop } from "@/components/motion/CtaBackdrop";
 import { WhatWeDoScroller } from "@/components/home/WhatWeDoScroller";
@@ -112,9 +113,12 @@ function JoinSection() {
         <Reveal>
           <p className="eyebrow-pixel text-orange mb-7">{"// join us"}</p>
           <h2 className="font-display text-foreground text-[clamp(2.75rem,11vw,8rem)] leading-[0.86] font-extrabold tracking-[-0.045em] uppercase">
-            Come build
-            <br />
-            <span className="text-orange">with us.</span>
+            <RollingText as="span" className="block" text="Come build" />
+            <RollingText
+              as="span"
+              className="text-orange block"
+              text="with us."
+            />
           </h2>
           <p className="text-muted-foreground mx-auto mt-7 max-w-lg text-lg leading-relaxed">
             {CLOSING_CTA.blurb}

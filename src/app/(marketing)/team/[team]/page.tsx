@@ -7,6 +7,7 @@ import { routes } from "@/lib/constants/routes";
 import { CORE, LEADS, TEAMS, type TeamKey } from "@/lib/constants/team";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 import { TeamLeadCard } from "@/components/team/TeamLeadCard";
 import { CoreRoster } from "@/components/team/CoreRoster";
 
@@ -76,9 +77,11 @@ export default async function TeamSubPage({
             {meta.label}
             {meta.wrap[1]}
           </p>
-          <h1 className="font-display mt-3 text-[clamp(2.25rem,6vw,4.5rem)] leading-[0.92] font-bold tracking-[-0.04em] uppercase">
-            {meta.label}
-          </h1>
+          <RollingText
+            as="h1"
+            text={meta.label}
+            className="font-display mt-3 text-[clamp(2.25rem,6vw,4.5rem)] leading-[0.92] font-bold tracking-[-0.04em] uppercase"
+          />
           <p className="text-muted-foreground mt-5 max-w-xl text-lg leading-relaxed">
             {meta.charter}
           </p>

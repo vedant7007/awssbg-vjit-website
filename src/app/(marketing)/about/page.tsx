@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
 import { Section, SectionHeader } from "@/components/layout/Section";
 import { FadeUp } from "@/components/motion/FadeUp";
+import { RollingText } from "@/components/motion/RollingText";
 
 export const metadata: Metadata = {
   title: "About",
@@ -48,9 +49,11 @@ export default function AboutPage() {
         <Container>
           <FadeUp>
             <p className="eyebrow mb-6">About</p>
-            <h1 className="font-display max-w-3xl text-[clamp(2.5rem,5vw+1rem,4.5rem)] leading-[0.98] font-bold tracking-[-0.03em]">
-              A student community learning to build on the cloud.
-            </h1>
+            <RollingText
+              as="h1"
+              text="A student community learning to build on the cloud."
+              className="font-display max-w-3xl text-[clamp(2.5rem,5vw+1rem,4.5rem)] leading-[0.98] font-bold tracking-[-0.03em]"
+            />
             <p className="text-muted-foreground mt-6 max-w-2xl text-lg leading-relaxed">
               AWS SBG VJIT is the AWS Student Builder Group at Vidya Jyothi
               Institute of Technology, Hyderabad. We are students who want to go

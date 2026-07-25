@@ -1,4 +1,5 @@
 import { PerspectiveGrid } from "@/components/motion/PerspectiveGrid";
+import { RollingText } from "@/components/motion/RollingText";
 
 /**
  * Minimal hero: wordmark + one line over a 3D perspective grid that glows in
@@ -27,9 +28,13 @@ export function HeroGrid() {
         <p className="font-pixel text-orange mb-7 text-[0.55rem] tracking-[0.25em] sm:text-[0.7rem]">
           AWS · STUDENT · BUILDERS
         </p>
-        <h1 className="font-display text-foreground text-[clamp(2.75rem,10vw,7rem)] leading-[0.95] font-bold tracking-[-0.04em] [text-shadow:0_2px_34px_var(--background)]">
-          <span className="headline-shimmer">AWS SBG VJIT</span>
-        </h1>
+        <RollingText
+          as="h1"
+          text="AWS SBG VJIT"
+          className="font-display text-foreground text-[clamp(2.75rem,10vw,7rem)] leading-[0.95] font-bold tracking-[-0.04em] [text-shadow:0_2px_34px_var(--background)]"
+          trigger="inview"
+          startDelay={200}
+        />
         <p className="text-muted-foreground mx-auto mt-6 max-w-xl text-base leading-relaxed md:text-lg">
           AWS Student Builder Group at Vidya Jyothi Institute of Technology — a
           student community learning, building, and shipping on the cloud.

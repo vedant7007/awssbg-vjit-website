@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 import { ToolkitHub } from "@/components/tools/ToolkitHub";
 
 export const metadata: Metadata = {
@@ -20,9 +21,12 @@ export default function ToolsPage() {
               Student toolkit
             </p>
             <h1 className="font-display mt-3 text-[clamp(2.25rem,6vw,4.5rem)] leading-[0.92] font-bold tracking-[-0.04em]">
-              Small tools that
-              <br />
-              actually work.
+              <RollingText
+                as="span"
+                className="block"
+                text="Small tools that"
+              />
+              <RollingText as="span" className="block" text="actually work." />
             </h1>
             <p className="text-muted-foreground mt-5 max-w-xl text-lg leading-relaxed text-balance">
               The utilities you keep opening a random ad-filled site for —

@@ -11,6 +11,7 @@ import {
 } from "@/lib/constants/team";
 import { Container } from "@/components/layout/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { RollingText } from "@/components/motion/RollingText";
 import { Button } from "@/components/ui/button";
 import { CaptainLanyard } from "@/components/team/CaptainLanyard";
 import { FacultyCard } from "@/components/team/FacultyCard";
@@ -52,9 +53,11 @@ function Hero() {
     <Container>
       <div className="border-b pb-10 text-center lg:pb-14">
         <Reveal>
-          <h1 className="font-display text-[clamp(2.75rem,9vw,7rem)] leading-[0.88] font-bold tracking-[-0.045em] uppercase">
-            <span className="headline-shimmer">The Team</span>
-          </h1>
+          <RollingText
+            as="h1"
+            text="The Team"
+            className="font-display text-[clamp(2.75rem,9vw,7rem)] leading-[0.88] font-bold tracking-[-0.045em] uppercase"
+          />
           <p className="text-muted-foreground mx-auto mt-5 max-w-xl leading-relaxed text-balance">
             The students and faculty who run AWS SBG VJIT — writing the labs,
             designing the posters, filling the seats.

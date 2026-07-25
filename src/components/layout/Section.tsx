@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils/cn";
+import { RollingText } from "@/components/motion/RollingText";
 import { Container } from "./Container";
 
 type SectionProps = React.HTMLAttributes<HTMLElement> & {
@@ -36,10 +37,14 @@ export function SectionHeader({
 }) {
   return (
     <div className={cn("max-w-2xl", className)}>
-      {eyebrow ? <p className="eyebrow mb-3">{eyebrow}</p> : null}
-      <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">
-        {title}
-      </h2>
+      {eyebrow ? (
+        <RollingText as="p" className="eyebrow mb-3" text={eyebrow} />
+      ) : null}
+      <RollingText
+        as="h2"
+        className="font-display text-3xl font-semibold tracking-tight md:text-4xl"
+        text={title}
+      />
       {description ? (
         <p className="text-muted-foreground mt-4 text-base leading-relaxed">
           {description}

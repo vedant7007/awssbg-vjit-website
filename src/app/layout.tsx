@@ -4,6 +4,7 @@ import "./globals.css";
 import { fontVariables } from "@/lib/fonts";
 import { Providers } from "@/components/providers";
 import { LogoIntro } from "@/components/preloader/LogoIntro";
+import { LaunchSequence } from "@/components/launch/LaunchSequence";
 import { Toaster } from "@/components/ui/sonner";
 
 // Runs before first paint so the overlay never flashes. Plays on every load of
@@ -55,6 +56,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
         <LogoIntro />
         <Providers>{children}</Providers>
+        <LaunchSequence />
         <Toaster position="top-center" richColors />
       </body>
     </html>
