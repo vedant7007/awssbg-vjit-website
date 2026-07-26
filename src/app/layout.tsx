@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 import { fontVariables } from "@/lib/fonts";
+import { SITE_URL } from "@/lib/constants/site";
 import { Providers } from "@/components/providers";
 import { LogoIntro } from "@/components/preloader/LogoIntro";
 import { LaunchSequence } from "@/components/launch/LaunchSequence";
@@ -10,8 +11,6 @@ import { Toaster } from "@/components/ui/sonner";
 // Runs before first paint so the overlay never flashes. Plays on every load of
 // the homepage; skips elsewhere and for reduced motion. LogoIntro re-checks.
 const INTRO_SCRIPT = `(function(){try{var home=location.pathname==='/';var r=false;try{r=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}document.documentElement.setAttribute('data-intro',(home&&!r)?'play':'skip');}catch(e){document.documentElement.setAttribute('data-intro','skip');}})();`;
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

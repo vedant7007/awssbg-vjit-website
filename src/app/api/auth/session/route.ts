@@ -47,8 +47,20 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/** Clear the session cookie. */
-export async function DELETE() {
+/** Clear the session cookie and revoke the underlying Firebase session so a
+ * captured cookie can't be replayed until its natural 7-day expiry. */
+export async function DELETE(request: NextRequest) {
+  const session = request.cookies.get(SESSION_COOKIE)?.value;
+  if (session) {
+    try {
+      const decoded = await getAdminAuth().verifySessionCookie(session);
+      await getAdminAuth().revokeRefreshTokens(decoded.sub);
+    } catch (error) {
+      // Already invalid/expired — nothing to revoke, still clear the cookie.
+      logger.warn("session revoke on logout failed", error);
+    }
+  }
+
   const response = NextResponse.json({ status: "ok" });
   response.cookies.set(SESSION_COOKIE, "", {
     httpOnly: true,

@@ -391,6 +391,30 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
   const threeRef = useRef<ThreeState | null>(null);
   const prevConfigRef = useRef<ReinitConfig | null>(null);
 
+  // Dispose the WebGL context on true unmount. The config effect below rebuilds
+  // in-place on config changes (and tears down the old instance itself), so its
+  // own cleanup must NOT dispose — otherwise a first-mount unmount would leak a
+  // GPU context (browsers cap ~16). This empty-deps cleanup only runs on the
+  // real unmount, independent of the config effect's re-run cleanups.
+  useEffect(
+    () => () => {
+      const t = threeRef.current;
+      if (!t) return;
+      t.resizeObserver?.disconnect();
+      cancelAnimationFrame(t.raf!);
+      t.quad?.geometry.dispose();
+      t.material.dispose();
+      t.composer?.dispose();
+      t.renderer.dispose();
+      t.renderer.forceContextLoss();
+      const container = containerRef.current;
+      if (container && t.renderer.domElement.parentElement === container)
+        container.removeChild(t.renderer.domElement);
+      threeRef.current = null;
+    },
+    [],
+  );
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -615,21 +639,11 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       { threshold: 0 },
     );
     visObserver.observe(container);
+    // Only tear down this run's visibility observer here. WebGL disposal on a
+    // config-driven rebuild is handled by the effect body above; disposal on a
+    // real unmount is handled by the dedicated empty-deps effect near the top.
     return () => {
       visObserver.disconnect();
-      if (threeRef.current && mustReinit) return;
-      if (!threeRef.current) return;
-      const t = threeRef.current;
-      t.resizeObserver?.disconnect();
-      cancelAnimationFrame(t.raf!);
-      t.quad?.geometry.dispose();
-      t.material.dispose();
-      t.composer?.dispose();
-      t.renderer.dispose();
-      t.renderer.forceContextLoss();
-      if (t.renderer.domElement.parentElement === container)
-        container.removeChild(t.renderer.domElement);
-      threeRef.current = null;
     };
   }, [
     antialias,

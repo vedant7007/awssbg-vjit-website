@@ -2,15 +2,13 @@
 export const routes = {
   home: "/",
   about: "/about",
-  services: "/services",
   events: "/events",
   event: (slug: string) => `/events/${slug}`,
-  projects: "/projects",
-  project: (slug: string) => `/projects/${slug}`,
   team: "/team",
   teamAll: "/team/all",
   teamPage: (key: string) => `/team/${key}`,
-  members: "/members",
+  // Individual public profile (kept — the Team page and physical badge QR codes
+  // point here). The browse-all directory and projects showcase were removed.
   member: (username: string) => `/m/${username.toLowerCase()}`,
   roadmap: "/roadmap",
   playground: "/playground",

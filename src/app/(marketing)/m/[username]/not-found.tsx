@@ -18,7 +18,7 @@ export default function MemberNotFound() {
           </p>
           <div className="mt-8 flex justify-center gap-3">
             <Button asChild>
-              <Link href={routes.members}>Browse members</Link>
+              <Link href={routes.team}>Meet the team</Link>
             </Button>
             <Button asChild variant="outline">
               <Link href={routes.home}>Home</Link>

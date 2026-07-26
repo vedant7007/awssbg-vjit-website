@@ -78,14 +78,20 @@ export async function updateRoadmapItem(
 /** Delete a roadmap item and associated votes. Admin-only. */
 export async function deleteRoadmapItem(id: string): Promise<void> {
   const db = getAdminDb();
-  // delete votes for the item (batched simple delete)
   const votesSnap = await db
     .collection(VOTES_COLLECTION)
     .where("itemId", "==", id)
     .get();
-  const batch = db.batch();
-  votesSnap.docs.forEach((d) => batch.delete(d.ref));
-  await batch.commit();
+
+  // Firestore caps a batch at 500 writes; chunk so a popular item (>500 votes)
+  // can't overflow a single commit and leave the delete half-applied.
+  const docs = votesSnap.docs;
+  for (let i = 0; i < docs.length; i += 450) {
+    const batch = db.batch();
+    for (const d of docs.slice(i, i + 450)) batch.delete(d.ref);
+    await batch.commit();
+  }
+
   await db.collection(COLLECTION).doc(id).delete();
 }
 

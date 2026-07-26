@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
+import { requireAdmin } from "@/lib/auth/server";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,10 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // await requireAdmin(routes.admin);
+  // Server-side admin-claim gate. The middleware only checks a cookie exists;
+  // this verifies the session and the `admin` custom claim before any admin
+  // page renders (which read via the Admin SDK, bypassing Firestore rules).
+  await requireAdmin(routes.admin);
 
   return (
     <div className="min-h-dvh">

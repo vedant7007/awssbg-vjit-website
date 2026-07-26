@@ -24,7 +24,15 @@ service cloud.firestore {
 
     match /members/{uid} {
       allow read: if resource.data.isPublic == true || isOwner(uid) || isAdmin();
-      allow create: if isAdmin() || (isOwner(uid) && request.resource.data.id == uid);
+      // Self-serve profile creation may NOT elevate role/team — the onboarding
+      // form only ever sends role:'member', team:null. Only an admin can mint a
+      // member with a leadership role or a team. Prevents a tampered client from
+      // appearing as leadership on public profiles.
+      allow create: if isAdmin()
+        || (isOwner(uid)
+            && request.resource.data.id == uid
+            && request.resource.data.role == 'member'
+            && request.resource.data.team == null);
       allow update: if isAdmin()
         || (isOwner(uid) && memberProtectedUnchanged());
       allow delete: if isAdmin();

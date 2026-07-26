@@ -25,7 +25,13 @@ import {
 export function SignInClient() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") ?? routes.console;
+  // Only honor internal, single-slash paths — never an absolute/`//host` URL —
+  // so a crafted ?next= can't drive a post-login redirect to another site.
+  const rawNext = params.get("next");
+  const next =
+    rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//")
+      ? rawNext
+      : routes.console;
   const [pending, setPending] = React.useState(false);
 
   async function handleSignIn() {
