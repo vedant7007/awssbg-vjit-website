@@ -1,20 +1,13 @@
 "use server";
 
 import { headers } from "next/headers";
-import { z } from "zod";
 
 import {
-  JOIN_YEARS,
-  JOIN_BRANCHES,
-  JOIN_SECTIONS,
-  JOIN_DOMAINS,
-  JOIN_FOCUSING,
-  JOIN_WANTS,
-  JOIN_PROJECTS,
   JOIN_HONEYPOT_FIELD,
   JOIN_RENDERED_AT_FIELD,
   JOIN_MIN_FILL_MS,
 } from "@/lib/constants/join";
+import { joinSchema } from "@/lib/validation/join";
 import { createApplication } from "@/lib/firestore/applications";
 import { logger } from "@/lib/utils/logger";
 
@@ -22,32 +15,6 @@ export type JoinState = { ok: boolean; error?: string };
 
 const str = (v: FormDataEntryValue | null): string =>
   typeof v === "string" ? v.trim() : "";
-
-/** Build a Zod enum from one of the readonly option tuples. */
-const asEnum = (arr: readonly string[]) =>
-  z.enum(arr as unknown as [string, ...string[]]);
-
-const schema = z.object({
-  name: z.string().trim().min(1).max(80),
-  email: z.string().trim().toLowerCase().email().max(120),
-  whatsapp: z
-    .string()
-    .trim()
-    .min(7)
-    .max(20)
-    .regex(/^[0-9+\-\s()]+$/, "invalid phone"),
-  year: asEnum(JOIN_YEARS),
-  branch: asEnum(JOIN_BRANCHES),
-  section: asEnum(JOIN_SECTIONS),
-  domains: asEnum(JOIN_DOMAINS).array().min(1).max(JOIN_DOMAINS.length),
-  focusing: asEnum(JOIN_FOCUSING).array().max(JOIN_FOCUSING.length),
-  wants: asEnum(JOIN_WANTS).array().max(JOIN_WANTS.length),
-  projects: asEnum(JOIN_PROJECTS),
-  linkedin: z.string().trim().max(200),
-  github: z.string().trim().max(200),
-  learn: z.string().trim().min(1).max(1000),
-  why: z.string().trim().max(1000),
-});
 
 /* Best-effort per-IP rate limit. In-memory, so it resets on cold start and is
  * per-instance — a lightweight speed bump, not a hard guarantee. Combined with
@@ -117,7 +84,7 @@ export async function submitApplication(
   }
 
   // 4. Strict validation.
-  const parsed = schema.safeParse({
+  const parsed = joinSchema.safeParse({
     name: str(formData.get("name")),
     email: str(formData.get("email")),
     whatsapp: str(formData.get("whatsapp")),
