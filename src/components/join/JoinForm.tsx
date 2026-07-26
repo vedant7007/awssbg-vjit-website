@@ -11,58 +11,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  JOIN_YEARS as YEARS,
+  JOIN_BRANCHES as BRANCHES,
+  JOIN_SECTIONS as SECTIONS,
+  JOIN_DOMAINS as DOMAINS,
+  JOIN_FOCUSING as FOCUSING,
+  JOIN_WANTS as WANTS,
+  JOIN_PROJECTS as PROJECTS,
+  JOIN_HONEYPOT_FIELD,
+  JOIN_RENDERED_AT_FIELD,
+} from "@/lib/constants/join";
 import { submitApplication } from "@/app/(marketing)/join/actions";
-
-const YEARS = ["1", "2", "3", "4"];
-const BRANCHES = [
-  "CSE",
-  "CSE AI&ML",
-  "CSE DS",
-  "IT",
-  "ECE",
-  "EEE",
-  "MECH",
-  "CIVIL",
-];
-const SECTIONS = ["A", "B", "C", "D"];
-const DOMAINS = [
-  "AI / Generative AI",
-  "Cloud Computing",
-  "Web Development",
-  "App Development",
-  "Cybersecurity",
-  "Data Science",
-  "UI/UX Design",
-  "Business & Management",
-  "DevOps",
-  "Game Development",
-  "Blockchain",
-];
-const FOCUSING = [
-  "Learning new skills",
-  "Building projects",
-  "Hackathons",
-  "Internships",
-  "Certifications",
-  "Freelancing",
-  "Open Source",
-  "Placements",
-  "Networking",
-  "Exploring domains",
-];
-const WANTS = [
-  "Learning resources",
-  "Internship opportunities",
-  "Networking",
-  "Workshops",
-  "Hackathons",
-  "Project collaborations",
-  "Career guidance",
-  "Certification guidance",
-  "Tech discussions",
-  "Community activities",
-];
-const PROJECTS = ["Yes", "No", "Currently Working"];
 
 type Data = {
   name: string;
@@ -107,6 +67,14 @@ export function JoinForm() {
   const [done, setDone] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
 
+  // Anti-bot: an off-screen honeypot input (a real user never fills it) and the
+  // time the form mounted (submissions faster than a human are rejected).
+  const honeypotRef = React.useRef<HTMLInputElement>(null);
+  const renderedAtRef = React.useRef<number>(0);
+  React.useEffect(() => {
+    renderedAtRef.current = Date.now();
+  }, []);
+
   const set = <K extends keyof Data>(k: K, v: Data[K]) =>
     setData((d) => ({ ...d, [k]: v }));
 
@@ -150,6 +118,8 @@ export function JoinForm() {
     fd.set("github", data.github);
     fd.set("learn", data.learn);
     fd.set("why", data.why);
+    fd.set(JOIN_HONEYPOT_FIELD, honeypotRef.current?.value ?? "");
+    fd.set(JOIN_RENDERED_AT_FIELD, String(renderedAtRef.current));
 
     startTransition(async () => {
       const res = await submitApplication(fd);
@@ -162,6 +132,22 @@ export function JoinForm() {
 
   return (
     <div className="mx-auto w-full max-w-2xl">
+      {/* Honeypot — hidden from real users, catches naive bots. */}
+      <input
+        ref={honeypotRef}
+        type="text"
+        name={JOIN_HONEYPOT_FIELD}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          width: 1,
+          height: 1,
+          opacity: 0,
+        }}
+      />
       {/* progress */}
       <div className="mb-10 flex items-center gap-2">
         {STEPS.map((label, i) => (
@@ -457,7 +443,7 @@ function Pills({
   required,
 }: {
   label: string;
-  options: string[];
+  options: readonly string[];
   value: string;
   onChange: (v: string) => void;
   required?: boolean;
@@ -501,7 +487,7 @@ function Checks({
   required,
 }: {
   label: string;
-  options: string[];
+  options: readonly string[];
   values: string[];
   onToggle: (v: string) => void;
   required?: boolean;

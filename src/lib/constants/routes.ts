@@ -37,6 +37,7 @@ export const routes = {
   adminRoadmapNew: "/admin/roadmap/new",
   adminRoadmapEdit: (id: string) => `/admin/roadmap/${id}/edit`,
   adminCheckin: "/admin/checkin",
+  adminApplications: "/admin/applications",
 } as const;
 
 export const PROTECTED_PREFIXES = ["/console", "/admin"] as const;

@@ -15,6 +15,7 @@ const ADMIN_LINKS = [
   { label: "Projects", href: routes.adminProjects },
   { label: "Roadmap", href: routes.adminRoadmap },
   { label: "Check-in", href: routes.adminCheckin },
+  { label: "Applications", href: routes.adminApplications },
 ];
 
 /** Admin shell. Server-side admin-claim gate via requireAdmin. */
