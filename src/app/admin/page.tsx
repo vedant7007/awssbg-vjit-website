@@ -6,6 +6,7 @@ import {
   FolderGit2,
   Map,
   ScanLine,
+  Inbox,
   ArrowUpRight,
 } from "lucide-react";
 
@@ -28,28 +29,35 @@ const TILES = [
     title: "Events",
     description: "Create and manage events and registrations.",
     icon: CalendarDays,
-    ready: false,
+    ready: true,
   },
   {
     href: routes.adminProjects,
     title: "Projects",
-    description: "Curate the projects showcased on the site.",
+    description: "Manage the project entries shown on member profiles.",
     icon: FolderGit2,
-    ready: false,
+    ready: true,
   },
   {
     href: routes.adminRoadmap,
     title: "Roadmap",
     description: "Manage roadmap items and their status.",
     icon: Map,
-    ready: false,
+    ready: true,
   },
   {
     href: routes.adminCheckin,
     title: "Check-in",
     description: "Scan tickets to mark attendance at events.",
     icon: ScanLine,
-    ready: false,
+    ready: true,
+  },
+  {
+    href: routes.adminApplications,
+    title: "Applications",
+    description: "View community join-form submissions.",
+    icon: Inbox,
+    ready: true,
   },
 ];
 

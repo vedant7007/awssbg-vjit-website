@@ -801,7 +801,13 @@ export default function DomeGallery({
                   onPointerUp={onTilePointerUp}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={it.src} draggable={false} alt={it.alt} />
+                  <img
+                    src={it.src}
+                    draggable={false}
+                    alt={it.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               </div>
             ))}

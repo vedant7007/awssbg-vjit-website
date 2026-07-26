@@ -22,10 +22,8 @@ export const FOOTER_EXPLORE: NavLink[] = [
   { label: "About", href: routes.about },
 ];
 
-/*
- * Real club channels go here once confirmed. Left as null so nothing renders a
- * dead link. TODO(Vedant): fill in the official AWS SBG VJIT handles.
- */
+/* Official club channels. `href` is nullable so a not-yet-confirmed handle can
+ * render as disabled rather than a dead link; all current ones are live. */
 export const SOCIAL_LINKS: { label: string; href: string | null }[] = [
   { label: "Instagram", href: "https://www.instagram.com/awssbg_vjit" },
   { label: "LinkedIn", href: "https://www.linkedin.com/company/awssbgvjit" },

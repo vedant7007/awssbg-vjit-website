@@ -134,7 +134,7 @@ export function ImpactStars() {
             text="Small club. Real dents."
             className="font-display mt-5 text-[clamp(1.9rem,4.2vw,3.25rem)] leading-[1.02] font-bold tracking-[-0.035em] text-balance text-white"
           />
-          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/50">
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/70">
             Every figure is one we can point at — nothing rounded up for show.
           </p>
         </div>
@@ -203,7 +203,7 @@ export function ImpactStars() {
               <dt className="mt-5 font-mono text-xs tracking-[0.16em] text-white/75 uppercase">
                 {s.label}
               </dt>
-              <p className="mx-auto mt-2 max-w-[15rem] text-sm leading-relaxed text-white/45 lg:mx-0">
+              <p className="mx-auto mt-2 max-w-[15rem] text-sm leading-relaxed text-white/70 lg:mx-0">
                 {s.detail}
               </p>
             </div>

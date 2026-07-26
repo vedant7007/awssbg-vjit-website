@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
+import { DISCORD_INVITE, SOCIAL_LINKS } from "@/lib/constants/nav";
 import { PageShell } from "@/components/layout/PageShell";
 import { LegalBody, LegalSection } from "@/components/legal/LegalBody";
+
+const INSTAGRAM = SOCIAL_LINKS.find((s) => s.label === "Instagram")?.href;
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -40,6 +43,11 @@ export default function PrivacyPage() {
               <strong>Event registrations.</strong> Which events you register
               for and whether you attended, so we can issue tickets and check
               you in.
+            </li>
+            <li>
+              <strong>Join-form submissions.</strong> If you fill in the
+              community join form, we store the name, email, WhatsApp number,
+              and interests you provide so we can welcome you and follow up.
             </li>
           </ul>
         </LegalSection>
@@ -83,8 +91,21 @@ export default function PrivacyPage() {
 
         <LegalSection title="Contact">
           <p>
-            Questions about your data can go to any core member of AWS SBG VJIT.
-            We will help you access, correct, or delete it.
+            Questions about your data? Reach us on{" "}
+            <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
+              Discord
+            </a>
+            {INSTAGRAM ? (
+              <>
+                {" "}
+                or{" "}
+                <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+                  Instagram
+                </a>
+              </>
+            ) : null}
+            , or ask any core member. We will help you access, correct, or
+            delete it.
           </p>
         </LegalSection>
       </LegalBody>
