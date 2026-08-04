@@ -7,6 +7,7 @@ import {
   Map,
   ScanLine,
   Inbox,
+  ListChecks,
   ArrowUpRight,
 } from "lucide-react";
 
@@ -17,6 +18,13 @@ import { Container } from "@/components/layout/Container";
 export const metadata: Metadata = { title: "Admin" };
 
 const TILES = [
+  {
+    href: routes.adminTasks,
+    title: "Tasks",
+    description: "Assign tasks across teams and track status + overdue.",
+    icon: ListChecks,
+    ready: true,
+  },
   {
     href: routes.adminMembers,
     title: "Members",

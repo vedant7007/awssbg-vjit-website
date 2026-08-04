@@ -21,6 +21,7 @@ export const routes = {
   console: "/console",
   consoleProfile: "/console/profile",
   consoleMyEvents: "/console/my-events",
+  consoleTasks: "/console/tasks",
   consoleSettings: "/console/settings",
 
   admin: "/admin",
@@ -38,6 +39,7 @@ export const routes = {
   adminRoadmapEdit: (id: string) => `/admin/roadmap/${id}/edit`,
   adminCheckin: "/admin/checkin",
   adminApplications: "/admin/applications",
+  adminTasks: "/admin/tasks",
 } as const;
 
 export const PROTECTED_PREFIXES = ["/console", "/admin"] as const;

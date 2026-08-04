@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 
 const ADMIN_LINKS = [
   { label: "Home", href: routes.admin },
+  { label: "Tasks", href: routes.adminTasks },
   { label: "Members", href: routes.adminMembers },
   { label: "Events", href: routes.adminEvents },
   { label: "Projects", href: routes.adminProjects },

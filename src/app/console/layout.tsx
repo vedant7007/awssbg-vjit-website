@@ -8,6 +8,7 @@ import { Logo } from "@/components/brand/Logo";
 
 const CONSOLE_LINKS = [
   { label: "Overview", href: routes.console },
+  { label: "Tasks", href: routes.consoleTasks },
   { label: "Profile", href: routes.consoleProfile },
   { label: "My events", href: routes.consoleMyEvents },
   { label: "Settings", href: routes.consoleSettings },
