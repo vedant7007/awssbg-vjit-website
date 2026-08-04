@@ -219,6 +219,29 @@ export default function DomeGallery({
     }
   };
 
+  // Gentle idle auto-spin left → right. Pauses while dragging, coasting on
+  // inertia, or when a photo is opened; skipped for reduced-motion.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const SPEED = 0.03; // deg/frame ≈ 1.8°/s
+    let raf = 0;
+    const tick = () => {
+      const busy =
+        draggingRef.current ||
+        inertiaRAF.current !== null ||
+        openingRef.current ||
+        rootRef.current?.getAttribute("data-enlarging") === "true";
+      if (!busy) {
+        rotationRef.current.y = wrapAngleSigned(rotationRef.current.y + SPEED);
+        applyTransform(rotationRef.current.x, rotationRef.current.y);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const lockedRadiusRef = useRef<number | null>(null);
 
   useEffect(() => {

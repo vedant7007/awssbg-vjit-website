@@ -34,7 +34,6 @@ export const metadata: Metadata = {
     description:
       "AWS Student Builder Group at VJIT. Learn, build, and ship on the cloud.",
   },
-  icons: { icon: "/favicon.ico" },
 };
 
 export const viewport: Viewport = {
