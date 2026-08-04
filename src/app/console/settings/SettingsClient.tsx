@@ -7,9 +7,10 @@ import { LogOut } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
 import { updateMember, deleteMember } from "@/lib/firestore/members";
-import { signOut } from "@/lib/auth/client";
+import { signOut, changePassword } from "@/lib/auth/client";
 import type { MemberFormValues } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -54,6 +55,32 @@ export function SettingsClient({
     }
   }
 
+  const [pw1, setPw1] = React.useState("");
+  const [pw2, setPw2] = React.useState("");
+  const [savingPw, setSavingPw] = React.useState(false);
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (pw1.length < 8) {
+      toast.error("Use at least 8 characters.");
+      return;
+    }
+    if (pw1 !== pw2) {
+      toast.error("Passwords don't match.");
+      return;
+    }
+    setSavingPw(true);
+    const ok = await changePassword(pw1);
+    setSavingPw(false);
+    if (ok) {
+      setPw1("");
+      setPw2("");
+      toast.success("Password updated.");
+    } else {
+      toast.error("Couldn't update. Sign out and back in, then retry.");
+    }
+  }
+
   async function handleLeave() {
     try {
       await deleteMember(uid);
@@ -92,6 +119,43 @@ export function SettingsClient({
             Sign out
           </Button>
         </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="eyebrow">Password</h2>
+        <form
+          onSubmit={handleChangePassword}
+          className="space-y-3 rounded-sm border p-4"
+        >
+          <p className="text-muted-foreground text-sm">
+            Change the starting password your team gave you.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="pw1">New password</Label>
+              <Input
+                id="pw1"
+                type="password"
+                value={pw1}
+                onChange={(e) => setPw1(e.target.value)}
+                autoComplete="new-password"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="pw2">Confirm</Label>
+              <Input
+                id="pw2"
+                type="password"
+                value={pw2}
+                onChange={(e) => setPw2(e.target.value)}
+                autoComplete="new-password"
+              />
+            </div>
+          </div>
+          <Button type="submit" disabled={savingPw}>
+            {savingPw ? "Updating…" : "Update password"}
+          </Button>
+        </form>
       </section>
 
       {values ? (

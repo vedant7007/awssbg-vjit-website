@@ -18,6 +18,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "seed": "tsx scripts/seed.ts",
+    "provision": "tsx scripts/provision-team.ts",
     "prepare": "husky"
   },
   "dependencies": {
