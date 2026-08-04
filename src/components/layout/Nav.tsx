@@ -130,6 +130,12 @@ export function Nav() {
             </DropdownMenu>
           ) : (
             <>
+              <Link
+                href={routes.signin}
+                className="text-muted-foreground hover:text-foreground focus-visible:ring-ring hidden rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none md:inline-flex"
+              >
+                Sign in
+              </Link>
               <Button
                 asChild
                 size="sm"
@@ -179,8 +185,16 @@ function MobileMenu() {
           ))}
           <SheetClose asChild>
             <Link
+              href={routes.signin}
+              className="hover:bg-accent mt-4 rounded-sm px-3 py-2.5 text-base font-medium"
+            >
+              Sign in
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
               href={routes.join}
-              className="bg-primary text-primary-foreground mt-4 rounded-full px-3 py-2.5 text-center text-base font-medium"
+              className="bg-primary text-primary-foreground rounded-full px-3 py-2.5 text-center text-base font-medium"
             >
               Join Community
             </Link>
