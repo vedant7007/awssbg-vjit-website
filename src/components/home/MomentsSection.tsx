@@ -27,16 +27,18 @@ const GALLERY_IMAGES = Array.from({ length: 14 }, (_, i) => ({
 
 export function MomentsSection() {
   return (
-    <section className="relative overflow-hidden bg-[#080a10] pt-16 pb-6 lg:pt-20">
+    <section className="relative overflow-hidden bg-[var(--band)] pt-16 pb-6 lg:pt-20">
       <Container>
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow-pixel mb-4 text-white/70">{"// moments"}</p>
+          <p className="eyebrow-pixel text-muted-foreground mb-4">
+            {"// moments"}
+          </p>
           <RollingText
             as="h2"
             text={"The room, when it's full."}
-            className="font-display text-[clamp(2rem,5vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.035em] text-balance text-white"
+            className="font-display text-foreground text-[clamp(2rem,5vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.035em] text-balance"
           />
-          <p className="mt-4 text-base leading-relaxed text-white/60">
+          <p className="text-muted-foreground mt-4 text-base leading-relaxed">
             Real photos from our sessions — drag the dome to look around.
           </p>
         </Reveal>
@@ -49,7 +51,7 @@ export function MomentsSection() {
           images={GALLERY_IMAGES}
           fit={0.7}
           grayscale={false}
-          overlayBlurColor="#080a10"
+          overlayBlurColor="var(--band)"
           imageBorderRadius="2px"
           openedImageBorderRadius="4px"
           openedImageWidth="min(80vw, 460px)"

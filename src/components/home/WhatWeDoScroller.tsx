@@ -88,7 +88,7 @@ export function WhatWeDoScroller() {
   }, []);
 
   return (
-    <section className="bg-[#080a10]">
+    <section className="bg-[var(--band)]">
       {/* Desktop: pinned horizontal accordion. */}
       <div ref={wrapRef} className="relative hidden lg:block lg:h-[420vh]">
         <div className="sticky top-0 flex h-screen w-full overflow-hidden">
@@ -97,13 +97,13 @@ export function WhatWeDoScroller() {
             return (
               <div
                 key={p.key}
-                className="relative flex h-full flex-col overflow-hidden border-l border-white/10 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.7,0,0.3,1)]"
+                className="border-border relative flex h-full flex-col overflow-hidden border-l transition-[flex-grow] duration-700 ease-[cubic-bezier(0.7,0,0.3,1)]"
                 style={{
                   flexGrow: isActive ? 7 : 0.72,
                   flexBasis: 0,
                   background: isActive
-                    ? `radial-gradient(120% 80% at 0% 0%, color-mix(in oklab, ${p.color} 18%, #06080e) 0%, #06080e 55%)`
-                    : "#0b0e15",
+                    ? `radial-gradient(120% 80% at 0% 0%, color-mix(in oklab, ${p.color} 18%, var(--band)) 0%, var(--band) 55%)`
+                    : "var(--band-2)",
                 }}
               >
                 {/* giant ghost kicker fills the space when active */}
@@ -157,10 +157,10 @@ export function WhatWeDoScroller() {
                   >
                     {p.eyebrow}
                   </p>
-                  <h3 className="font-display mt-4 text-[clamp(2.25rem,3.6vw,4rem)] leading-[0.98] font-bold tracking-[-0.03em] text-balance text-white">
+                  <h3 className="font-display text-foreground mt-4 text-[clamp(2.25rem,3.6vw,4rem)] leading-[0.98] font-bold tracking-[-0.03em] text-balance">
                     {p.title}
                   </h3>
-                  <p className="mt-5 max-w-md text-lg leading-relaxed text-white/60">
+                  <p className="text-muted-foreground mt-5 max-w-md text-lg leading-relaxed">
                     {p.body}
                   </p>
                 </div>
@@ -180,9 +180,9 @@ export function WhatWeDoScroller() {
         {PANELS.map((p) => (
           <div
             key={p.key}
-            className="border-t border-white/10 px-6 py-10"
+            className="border-border border-t px-6 py-10"
             style={{
-              background: `linear-gradient(160deg, color-mix(in oklab, ${p.color} 12%, #080a10), #080a10 70%)`,
+              background: `linear-gradient(160deg, color-mix(in oklab, ${p.color} 12%, var(--band)), var(--band) 70%)`,
             }}
           >
             <span
@@ -197,10 +197,12 @@ export function WhatWeDoScroller() {
             >
               {p.eyebrow}
             </p>
-            <h3 className="font-display mt-2 text-3xl leading-tight font-bold tracking-[-0.03em] text-balance text-white">
+            <h3 className="font-display text-foreground mt-2 text-3xl leading-tight font-bold tracking-[-0.03em] text-balance">
               {p.title}
             </h3>
-            <p className="mt-4 leading-relaxed text-white/60">{p.body}</p>
+            <p className="text-muted-foreground mt-4 leading-relaxed">
+              {p.body}
+            </p>
           </div>
         ))}
       </div>

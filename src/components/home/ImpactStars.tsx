@@ -105,7 +105,7 @@ export function ImpactStars() {
   const inView = useInView(ref);
 
   return (
-    <section className="relative overflow-hidden bg-[#06080e] py-24 lg:py-32">
+    <section className="relative overflow-hidden bg-[var(--band)] py-24 lg:py-32">
       {/* drifting aurora */}
       <div
         aria-hidden
@@ -120,7 +120,7 @@ export function ImpactStars() {
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
         style={{
           background:
-            "linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent)",
+            "linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 16%, transparent), transparent)",
         }}
       />
 
@@ -132,9 +132,9 @@ export function ImpactStars() {
           <RollingText
             as="h2"
             text="Small club. Real dents."
-            className="font-display mt-5 text-[clamp(1.9rem,4.2vw,3.25rem)] leading-[1.02] font-bold tracking-[-0.035em] text-balance text-white"
+            className="font-display text-foreground mt-5 text-[clamp(1.9rem,4.2vw,3.25rem)] leading-[1.02] font-bold tracking-[-0.035em] text-balance"
           />
-          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/70">
+          <p className="text-muted-foreground mx-auto mt-4 max-w-md text-sm leading-relaxed">
             Every figure is one we can point at — nothing rounded up for show.
           </p>
         </div>
@@ -155,7 +155,7 @@ export function ImpactStars() {
               {i > 0 ? (
                 <span
                   aria-hidden
-                  className="absolute top-2 bottom-2 left-0 hidden w-px bg-white/10 lg:block"
+                  className="bg-foreground/10 absolute top-2 bottom-2 left-0 hidden w-px lg:block"
                 />
               ) : null}
 
@@ -168,7 +168,7 @@ export function ImpactStars() {
                 )}
                 style={{
                   color: "transparent",
-                  backgroundImage: `linear-gradient(180deg, #ffffff 30%, ${s.color})`,
+                  backgroundImage: `linear-gradient(180deg, var(--foreground) 25%, ${s.color})`,
                   WebkitBackgroundClip: "text",
                   backgroundClip: "text",
                   transform: inView ? "translateY(0)" : "translateY(14px)",
@@ -200,10 +200,10 @@ export function ImpactStars() {
                 }}
               />
 
-              <dt className="mt-5 font-mono text-xs tracking-[0.16em] text-white/75 uppercase">
+              <dt className="text-muted-foreground mt-5 font-mono text-xs tracking-[0.16em] uppercase">
                 {s.label}
               </dt>
-              <p className="mx-auto mt-2 max-w-[15rem] text-sm leading-relaxed text-white/70 lg:mx-0">
+              <p className="text-muted-foreground mx-auto mt-2 max-w-[15rem] text-sm leading-relaxed lg:mx-0">
                 {s.detail}
               </p>
             </div>

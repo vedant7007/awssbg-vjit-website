@@ -381,9 +381,16 @@
 /* Theme-aware faint grid line (dark lines in light mode, light in dark mode). */
 :root {
   --grid-line: rgba(11, 15, 23, 0.08);
+  /* Feature-band backgrounds — a soft warm band in light, near-black in dark.
+     Used by the home "what we do", stats and moments sections so they flip
+     with the theme instead of being permanently dark. */
+  --band: #f4f1ea;
+  --band-2: #ece7db;
 }
 .dark {
   --grid-line: rgba(255, 255, 255, 0.05);
+  --band: #06080e;
+  --band-2: #0b0e15;
 }
 
 /* Glassmorphism surface — background shows through, works in both themes. */
