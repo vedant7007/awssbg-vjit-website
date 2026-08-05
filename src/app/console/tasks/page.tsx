@@ -8,7 +8,7 @@ import { safe } from "@/lib/utils/safe";
 import { listTasksForAssignee, listTasksForTeam } from "@/lib/firestore/tasks";
 import { listMembers } from "@/lib/firestore/members.server";
 import { PageShell } from "@/components/layout/PageShell";
-import { TaskBoard } from "@/components/tasks/TaskBoard";
+import { KanbanBoard } from "@/components/tasks/KanbanBoard";
 import {
   AssignTaskForm,
   type AssignableMember,
@@ -27,6 +27,9 @@ export default async function ConsoleTasksPage() {
     "console:my-tasks",
   );
 
+  const done = myTasks.filter((t) => t.status === "done").length;
+  const pct = myTasks.length ? Math.round((done / myTasks.length) * 100) : 0;
+
   const showLead = viewer.isLead && !!viewer.team;
   const teamTasks = showLead
     ? await safe(listTasksForTeam(viewer.team!), [], "console:team-tasks")
@@ -43,25 +46,34 @@ export default async function ConsoleTasksPage() {
       title="Tasks"
       description={
         showLead
-          ? `Your tasks, and everything on the ${viewer.team} team board.`
-          : "Tasks assigned to you. Move each one through its stages as you go."
+          ? `Your work, and the ${viewer.team} team board.`
+          : "Your work — drag each card across as you go."
       }
     >
       <div className="space-y-12">
         <section>
-          <h2 className="font-display mb-4 text-xl font-semibold">My tasks</h2>
-          <TaskBoard
-            tasks={myTasks}
-            showAssignee={false}
-            emptyLabel="Nothing assigned to you right now."
-          />
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <h2 className="font-display text-xl font-semibold">My tasks</h2>
+            <span className="text-muted-foreground font-mono text-xs">
+              {done}/{myTasks.length} done
+            </span>
+          </div>
+          {myTasks.length > 0 ? (
+            <div className="bg-muted mb-6 h-1.5 overflow-hidden rounded-full">
+              <div
+                className="bg-success h-full rounded-full transition-[width] duration-700"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          ) : null}
+          <KanbanBoard tasks={myTasks} showAssignee={false} />
         </section>
 
         {showLead ? (
           <>
             <section>
               <h2 className="font-display mb-4 text-xl font-semibold">
-                Assign a task
+                Assign to {viewer.team}
               </h2>
               <AssignTaskForm members={teamMembers} />
             </section>
@@ -69,11 +81,7 @@ export default async function ConsoleTasksPage() {
               <h2 className="font-display mb-4 text-xl font-semibold">
                 {viewer.team} team board
               </h2>
-              <TaskBoard
-                tasks={teamTasks}
-                canManage
-                emptyLabel="No tasks on the team board yet."
-              />
+              <KanbanBoard tasks={teamTasks} canManage />
             </section>
           </>
         ) : null}
@@ -83,8 +91,8 @@ export default async function ConsoleTasksPage() {
             You&apos;re an admin —{" "}
             <Link href={routes.adminTasks} className="text-orange underline">
               open the full task dashboard
-            </Link>{" "}
-            to assign across every team and see reports.
+            </Link>
+            .
           </p>
         ) : null}
 
