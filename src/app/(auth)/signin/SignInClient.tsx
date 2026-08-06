@@ -4,11 +4,12 @@ import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-import { signInWithUsername, signInWithGoogle } from "@/lib/auth/client";
+import { signInWithUsername } from "@/lib/auth/client";
 import { routes } from "@/lib/constants/routes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogoMark } from "@/components/brand/LogoMark";
 import {
   Card,
   CardContent,
@@ -18,15 +19,14 @@ import {
 } from "@/components/ui/card";
 
 /*
- * Members sign in with their handle + password (provisioned by the team). Admins
- * can also use Google. On success we exchange the ID token for a server session
- * cookie, then route to `next` (or /console).
+ * Team-only sign-in. Members use the handle + password their team provided;
+ * there are no public accounts. On success we exchange the ID token for a
+ * server session cookie, then route to `next` (or /console).
  */
 export function SignInClient() {
   const router = useRouter();
   const params = useSearchParams();
-  // Only honor internal, single-slash paths — never an absolute/`//host` URL —
-  // so a crafted ?next= can't drive a post-login redirect to another site.
+  // Only honor internal, single-slash paths — never an absolute/`//host` URL.
   const rawNext = params.get("next");
   const next =
     rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//")
@@ -37,44 +37,34 @@ export function SignInClient() {
   const [password, setPassword] = React.useState("");
   const [pending, setPending] = React.useState(false);
 
-  const onSuccess = () => {
-    toast.success("Signed in");
-    router.replace(next);
-    router.refresh();
-  };
-
-  async function handlePassword(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!handle.trim() || !password) return;
     setPending(true);
     const ok = await signInWithUsername(handle, password);
-    if (ok) onSuccess();
-    else {
+    if (ok) {
+      toast.success("Signed in");
+      router.replace(next);
+      router.refresh();
+    } else {
       toast.error("Wrong handle or password.");
-      setPending(false);
-    }
-  }
-
-  async function handleGoogle() {
-    setPending(true);
-    const ok = await signInWithGoogle();
-    if (ok) onSuccess();
-    else {
-      toast.error("Google sign in failed. Please try again.");
       setPending(false);
     }
   }
 
   return (
     <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
+      <CardHeader className="items-center text-center">
+        <span className="bg-orange/10 mb-2 grid size-14 place-items-center rounded-2xl">
+          <LogoMark className="size-8" />
+        </span>
+        <CardTitle className="text-2xl">Team sign in</CardTitle>
         <CardDescription>
-          Sign in with the handle and password your team gave you.
+          Use the handle and password your team gave you.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <form onSubmit={handlePassword} className="space-y-3">
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="handle">Handle</Label>
             <Input
@@ -100,29 +90,21 @@ export function SignInClient() {
               required
             />
           </div>
-          <Button type="submit" disabled={pending} className="w-full" size="lg">
+          <Button
+            type="submit"
+            disabled={pending}
+            className="mt-1 w-full rounded-full"
+            size="lg"
+          >
             {pending ? "Signing in…" : "Sign in"}
           </Button>
         </form>
-
-        <div className="flex items-center gap-3">
-          <span className="bg-border h-px flex-1" />
-          <span className="text-muted-foreground text-xs">or</span>
-          <span className="bg-border h-px flex-1" />
-        </div>
-
-        <Button
-          type="button"
-          onClick={handleGoogle}
-          disabled={pending}
-          variant="outline"
-          className="w-full"
-        >
-          Continue with Google
-        </Button>
-
-        <p className="text-muted-foreground text-center text-xs">
-          By continuing you agree to the AWS SBG VJIT code of conduct.
+        <p className="text-muted-foreground mt-5 text-center text-xs leading-relaxed">
+          For core members only. Not on the team?{" "}
+          <a href={routes.join} className="text-orange hover:underline">
+            Join the community
+          </a>
+          .
         </p>
       </CardContent>
     </Card>

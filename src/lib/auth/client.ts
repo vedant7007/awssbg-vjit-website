@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import {
   onAuthStateChanged,
-  signInWithPopup,
   signInWithEmailAndPassword,
   updatePassword,
   signOut as fbSignOut,
   type User,
 } from "firebase/auth";
 
-import { auth, googleProvider } from "@/lib/firebase/client";
+import { auth } from "@/lib/firebase/client";
 import { handleToEmail } from "@/lib/constants/auth";
 import { logger } from "@/lib/utils/logger";
 
@@ -53,30 +52,6 @@ export function useUser(): UseUserState {
   }, []);
 
   return state;
-}
-
-/**
- * Sign in with Google, then exchange the ID token for a server session cookie.
- * Returns true on success.
- */
-export async function signInWithGoogle(): Promise<boolean> {
-  if (!auth) {
-    logger.error(
-      "Sign-in unavailable: Firebase Auth is not configured. Set NEXT_PUBLIC_FIREBASE_* in .env.local.",
-    );
-    return false;
-  }
-  try {
-    const cred = await signInWithPopup(auth, googleProvider);
-    if (!(await exchangeForSession(cred.user))) {
-      await fbSignOut(auth);
-      return false;
-    }
-    return true;
-  } catch (error) {
-    logger.error("google sign-in failed", error);
-    return false;
-  }
 }
 
 /**

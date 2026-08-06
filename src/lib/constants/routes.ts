@@ -20,7 +20,6 @@ export const routes = {
 
   console: "/console",
   consoleProfile: "/console/profile",
-  consoleMyEvents: "/console/my-events",
   consoleTasks: "/console/tasks",
   consoleSettings: "/console/settings",
 
