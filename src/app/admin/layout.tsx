@@ -7,17 +7,7 @@ import { requireAdmin } from "@/lib/auth/server";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
 import { Badge } from "@/components/ui/badge";
-
-const ADMIN_LINKS = [
-  { label: "Home", href: routes.admin },
-  { label: "Tasks", href: routes.adminTasks },
-  { label: "Members", href: routes.adminMembers },
-  { label: "Events", href: routes.adminEvents },
-  { label: "Projects", href: routes.adminProjects },
-  { label: "Roadmap", href: routes.adminRoadmap },
-  { label: "Check-in", href: routes.adminCheckin },
-  { label: "Applications", href: routes.adminApplications },
-];
+import { AdminNav } from "./AdminNav";
 
 /** Admin shell. Server-side admin-claim gate via requireAdmin. */
 export default async function AdminLayout({
@@ -32,10 +22,10 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-dvh">
-      <header className="bg-ink text-paper border-b">
+      <header className="bg-ink text-paper sticky top-0 z-30 border-b">
         <Container>
           <div className="flex h-16 items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-3">
               <Link href={routes.home} className="rounded-sm">
                 <Logo variant="mono" />
               </Link>
@@ -44,20 +34,7 @@ export default async function AdminLayout({
                 Admin
               </Badge>
             </div>
-            <nav
-              aria-label="Admin"
-              className="flex items-center gap-1 overflow-x-auto"
-            >
-              {ADMIN_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-paper/70 hover:text-paper rounded-sm px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+            <AdminNav />
           </div>
         </Container>
       </header>

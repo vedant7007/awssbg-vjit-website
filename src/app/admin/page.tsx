@@ -21,51 +21,51 @@ const TILES = [
   {
     href: routes.adminTasks,
     title: "Tasks",
-    description: "Assign tasks across teams and track status + overdue.",
+    description: "Assign across teams and track status + overdue.",
     icon: ListChecks,
-    ready: true,
+    color: "#FF9900",
   },
   {
     href: routes.adminMembers,
     title: "Members",
-    description: "Add, edit, and manage member profiles. Reference CRUD.",
+    description: "Add, edit, and manage member profiles.",
     icon: Users,
-    ready: true,
+    color: "#43B4FF",
   },
   {
     href: routes.adminEvents,
     title: "Events",
     description: "Create and manage events and registrations.",
     icon: CalendarDays,
-    ready: true,
+    color: "#AD5CFF",
   },
   {
     href: routes.adminProjects,
     title: "Projects",
-    description: "Manage the project entries shown on member profiles.",
+    description: "Manage the project entries shown on profiles.",
     icon: FolderGit2,
-    ready: true,
+    color: "#2EE6A0",
   },
   {
     href: routes.adminRoadmap,
     title: "Roadmap",
     description: "Manage roadmap items and their status.",
     icon: Map,
-    ready: true,
-  },
-  {
-    href: routes.adminCheckin,
-    title: "Check-in",
-    description: "Scan tickets to mark attendance at events.",
-    icon: ScanLine,
-    ready: true,
+    color: "#FF57EA",
   },
   {
     href: routes.adminApplications,
     title: "Applications",
     description: "View community join-form submissions.",
     icon: Inbox,
-    ready: true,
+    color: "#43B4FF",
+  },
+  {
+    href: routes.adminCheckin,
+    title: "Check-in",
+    description: "Scan tickets to mark attendance at events.",
+    icon: ScanLine,
+    color: "#AD5CFF",
   },
 ];
 
@@ -82,23 +82,34 @@ export default function AdminHomePage() {
             <Link
               key={tile.href}
               href={tile.href}
-              className="group bg-card hover:border-orange flex flex-col gap-3 rounded-sm border p-6 transition-colors"
+              className="group bg-card relative overflow-hidden rounded-xl border p-6 transition-all hover:-translate-y-0.5"
+              style={{
+                borderColor: `color-mix(in oklab, ${tile.color} 22%, var(--border))`,
+              }}
             >
+              <div
+                aria-hidden
+                className="absolute -top-8 -right-8 size-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-25"
+                style={{ background: tile.color }}
+              />
               <div className="flex items-center justify-between">
-                <tile.icon className="text-orange size-6" />
+                <span
+                  className="grid size-10 place-items-center rounded-lg"
+                  style={{
+                    background: `color-mix(in oklab, ${tile.color} 15%, transparent)`,
+                    color: tile.color,
+                  }}
+                >
+                  <tile.icon className="size-5" />
+                </span>
                 <ArrowUpRight className="text-muted-foreground size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </div>
-              <h2 className="font-display text-lg font-semibold">
+              <h2 className="font-display mt-4 text-lg font-semibold">
                 {tile.title}
               </h2>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {tile.description}
               </p>
-              {!tile.ready ? (
-                <span className="text-muted-foreground mt-auto pt-2 font-mono text-xs tracking-wide uppercase">
-                  Skeleton
-                </span>
-              ) : null}
             </Link>
           ))}
         </div>
