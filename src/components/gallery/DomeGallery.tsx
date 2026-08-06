@@ -26,6 +26,8 @@ type DomeGalleryProps = {
   imageBorderRadius?: string;
   openedImageBorderRadius?: string;
   grayscale?: boolean;
+  /** Fires with a tile's src when it's enlarged, and null when closed. */
+  onOpen?: (src: string | null) => void;
 };
 
 type ItemDef = {
@@ -171,7 +173,10 @@ export default function DomeGallery({
   imageBorderRadius = "30px",
   openedImageBorderRadius = "30px",
   grayscale = true,
+  onOpen,
 }: DomeGalleryProps) {
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
   const rootRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const sphereRef = useRef<HTMLDivElement>(null);
@@ -544,6 +549,7 @@ export default function DomeGallery({
       parent.dataset.src ||
       (el.querySelector("img") as HTMLImageElement)?.src ||
       "";
+    onOpenRef.current?.(rawSrc);
     const img = document.createElement("img");
     img.src = rawSrc;
     overlay.appendChild(img);
@@ -636,6 +642,7 @@ export default function DomeGallery({
 
       const el = focusedElRef.current;
       if (!el) return;
+      onOpenRef.current?.(null);
       const parent = el.parentElement as HTMLElement;
       const overlay = viewerRef.current?.querySelector(
         ".enlarge",

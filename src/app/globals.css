@@ -832,6 +832,22 @@ html[data-intro="skip"] #logo-intro {
   }
 }
 
+/* Photo-booth shutter: a quick white flash when a photo is captured. */
+@keyframes booth-shutter {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.booth-shutter {
+  animation: booth-shutter 0.42s ease-out forwards;
+}
+
 /* Cloudle: nudge the active row when a guess is short of five letters. */
 @keyframes cloudle-shake {
   0%,
