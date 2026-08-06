@@ -90,6 +90,13 @@ service cloud.firestore {
       allow write: if false; // seed script / console only
     }
 
+    // Orientation booth photos. Public read so the homepage globe shows them
+    // live; writes go through the server (Admin SDK) only, and admins delete.
+    match /boothPhotos/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Deny everything not matched above.
     match /{document=**} {
       allow read, write: if false;

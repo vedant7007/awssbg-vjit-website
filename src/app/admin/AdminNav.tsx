@@ -14,6 +14,7 @@ const LINKS = [
   { label: "Projects", href: routes.adminProjects },
   { label: "Roadmap", href: routes.adminRoadmap },
   { label: "Applications", href: routes.adminApplications },
+  { label: "Booth", href: routes.adminBooth },
   { label: "Check-in", href: routes.adminCheckin },
 ];
 

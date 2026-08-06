@@ -8,6 +8,7 @@ import {
   ScanLine,
   Inbox,
   ListChecks,
+  Camera,
   ArrowUpRight,
 } from "lucide-react";
 
@@ -59,6 +60,13 @@ const TILES = [
     description: "View community join-form submissions.",
     icon: Inbox,
     color: "#43B4FF",
+  },
+  {
+    href: routes.adminBooth,
+    title: "Photo booth",
+    description: "Moderate the live orientation-day photo globe.",
+    icon: Camera,
+    color: "#FF9900",
   },
   {
     href: routes.adminCheckin,

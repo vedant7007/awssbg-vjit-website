@@ -38,6 +38,7 @@ export const routes = {
   adminRoadmapEdit: (id: string) => `/admin/roadmap/${id}/edit`,
   adminCheckin: "/admin/checkin",
   adminApplications: "/admin/applications",
+  adminBooth: "/admin/booth",
   adminTasks: "/admin/tasks",
 } as const;
 
