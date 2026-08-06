@@ -468,8 +468,7 @@ export const CORE: RosterMember[] = [
     year: "3rd Year",
     handle: "rsahithireddy",
     bio: null,
-    about:
-      "I'm Sahithi Reddy, a B.Tech student who loves technology, design, and continuous learning. I enjoy creating creative designs, exploring new ideas, and improving my technical skills through projects and teamwork.",
+    about: "naak telidu andi ✨",
     photo: "/team/members/rsahithireddy.jpg",
     socials: {
       linkedin:
@@ -542,8 +541,7 @@ export const CORE: RosterMember[] = [
     year: "3rd Year",
     handle: "anjanasaripell",
     bio: null,
-    about:
-      "I'm Anjana, a CSE student who loves blending creativity with technology. Whether it's designing posters, building projects, or learning something new, I enjoy bringing ideas to life and working with others to create meaningful experiences.",
+    about: "naak telidu andi ✨",
     photo: "/team/members/anjanasaripell.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/anjana-saripella-846798353",
