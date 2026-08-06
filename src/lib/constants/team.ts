@@ -468,7 +468,7 @@ export const CORE: RosterMember[] = [
     year: "3rd Year",
     handle: "rsahithireddy",
     bio: null,
-    about: "naak telidu andi ✨",
+    about: "Keep it simple, make it memorable 😋",
     photo: "/team/members/rsahithireddy.jpg",
     socials: {
       linkedin:
@@ -541,7 +541,7 @@ export const CORE: RosterMember[] = [
     year: "3rd Year",
     handle: "anjanasaripell",
     bio: null,
-    about: "naak telidu andi ✨",
+    about: "Pixels, passion, and a little bit of chaos ✨",
     photo: "/team/members/anjanasaripell.jpg",
     socials: {
       linkedin: "https://www.linkedin.com/in/anjana-saripella-846798353",
