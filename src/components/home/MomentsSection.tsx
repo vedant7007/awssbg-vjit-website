@@ -51,10 +51,25 @@ export function MomentsSection() {
       .catch(() => setIsAdmin(false));
   }, [user]);
 
-  const placeholder = { src: PLACEHOLDER, alt: "AWS SBG VJIT" };
-  const images = live.length
-    ? [...live.map((p) => ({ src: p.url, alt: p.alt })), placeholder]
-    : [placeholder];
+  // The dome has this many tiles (segments 35 × 5 rows). We build an array of
+  // exactly this length so DomeGallery doesn't cycle-repeat: each real photo
+  // lands on ONE tile, spread evenly, and AWS-blue placeholders fill the rest.
+  const TILE_COUNT = 175;
+  const images = React.useMemo(() => {
+    const ph = { src: PLACEHOLDER, alt: "AWS SBG VJIT" };
+    const arr: { src: string; alt: string }[] = Array.from(
+      { length: TILE_COUNT },
+      () => ph,
+    );
+    const n = live.length;
+    if (n > 0) {
+      const step = Math.max(1, Math.floor(TILE_COUNT / n));
+      live.forEach((p, i) => {
+        arr[(i * step) % TILE_COUNT] = { src: p.url, alt: p.alt };
+      });
+    }
+    return arr;
+  }, [live]);
 
   // The photo currently enlarged on the globe (a real booth photo, not the
   // placeholder) — drives the download/delete toolbar.
@@ -129,6 +144,7 @@ export function MomentsSection() {
       <div className="-mt-4 h-[68vh] min-h-[460px] w-full sm:h-[76vh] lg:-mt-8 lg:h-[82vh]">
         <DomeGallery
           images={images}
+          segments={35}
           fit={0.7}
           grayscale={false}
           overlayBlurColor="var(--band)"
