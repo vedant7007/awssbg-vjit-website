@@ -51,25 +51,15 @@ export function MomentsSection() {
       .catch(() => setIsAdmin(false));
   }, [user]);
 
-  // The dome has this many tiles (segments 35 × 5 rows). We build an array of
-  // exactly this length so DomeGallery doesn't cycle-repeat: each real photo
-  // lands on ONE tile, spread evenly, and AWS-blue placeholders fill the rest.
-  const TILE_COUNT = 175;
-  const images = React.useMemo(() => {
-    const ph = { src: PLACEHOLDER, alt: "AWS SBG VJIT" };
-    const arr: { src: string; alt: string }[] = Array.from(
-      { length: TILE_COUNT },
-      () => ph,
-    );
-    const n = live.length;
-    if (n > 0) {
-      const step = Math.max(1, Math.floor(TILE_COUNT / n));
-      live.forEach((p, i) => {
-        arr[(i * step) % TILE_COUNT] = { src: p.url, alt: p.alt };
-      });
-    }
-    return arr;
-  }, [live]);
+  // Show only the real booth photos; they repeat to fill the sphere. Falls back
+  // to the AWS-blue placeholder only when there are no photos at all.
+  const images = React.useMemo(
+    () =>
+      live.length
+        ? live.map((p) => ({ src: p.url, alt: p.alt }))
+        : [{ src: PLACEHOLDER, alt: "AWS SBG VJIT" }],
+    [live],
+  );
 
   // The photo currently enlarged on the globe (a real booth photo, not the
   // placeholder) — drives the download/delete toolbar.
