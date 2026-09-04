@@ -9,6 +9,7 @@ const base: Viewer = {
   isLead: false,
   team: "Tech",
   hasProfile: true,
+  mustChangePassword: false,
 };
 
 describe("canAssignToTeam", () => {

@@ -17,6 +17,8 @@ export type Viewer = {
   isLead: boolean;
   team: string | null;
   hasProfile: boolean;
+  /** Still on the provisioned starting password → must set their own first. */
+  mustChangePassword: boolean;
 };
 
 export async function getViewer(): Promise<Viewer | null> {
@@ -30,6 +32,7 @@ export async function getViewer(): Promise<Viewer | null> {
     isLead: member?.role === "lead",
     team: member?.team ?? null,
     hasProfile: member !== null,
+    mustChangePassword: member?.mustChangePassword === true,
   };
 }
 

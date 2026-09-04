@@ -9,6 +9,7 @@ import { listTasksForAssignee, listTasksForTeam } from "@/lib/firestore/tasks";
 import { listMembers } from "@/lib/firestore/members.server";
 import { PageShell } from "@/components/layout/PageShell";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
+import { TeamProgress } from "@/components/tasks/TeamProgress";
 import {
   AssignTaskForm,
   type AssignableMember,
@@ -47,7 +48,7 @@ export default async function ConsoleTasksPage() {
       description={
         showLead
           ? `Your work, and the ${viewer.team} team board.`
-          : "Your work — drag each card across as you go."
+          : "Your assigned work — open a card to post progress as you go."
       }
     >
       <div className="space-y-12">
@@ -77,6 +78,14 @@ export default async function ConsoleTasksPage() {
               </h2>
               <AssignTaskForm members={teamMembers} />
             </section>
+            {teamTasks.length > 0 ? (
+              <section>
+                <h2 className="font-display mb-4 text-xl font-semibold">
+                  Team progress
+                </h2>
+                <TeamProgress tasks={teamTasks} title={`${viewer.team} team`} />
+              </section>
+            ) : null}
             <section>
               <h2 className="font-display mb-4 text-xl font-semibold">
                 {viewer.team} team board

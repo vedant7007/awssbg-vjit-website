@@ -7,6 +7,7 @@ import { listMembers } from "@/lib/firestore/members.server";
 import type { Task } from "@/lib/types/task";
 import { PageShell } from "@/components/layout/PageShell";
 import { TaskStats, type StatDef } from "@/components/tasks/TaskStats";
+import { TeamProgress } from "@/components/tasks/TeamProgress";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
 import {
   AssignTaskForm,
@@ -64,6 +65,10 @@ export default async function AdminTasksPage() {
     >
       <div className="space-y-8">
         <TaskStats stats={stats} />
+
+        {tasks.length > 0 ? (
+          <TeamProgress tasks={tasks} title="Who's on what" />
+        ) : null}
 
         <details className="group border-orange/30 bg-orange/[0.04] rounded-xl border">
           <summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-medium">

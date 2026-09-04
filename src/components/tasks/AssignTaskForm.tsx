@@ -26,6 +26,17 @@ export function AssignTaskForm({ members }: { members: AssignableMember[] }) {
   const [assigneeUid, setAssigneeUid] = React.useState("");
   const [dueDate, setDueDate] = React.useState("");
 
+  // Group by team so a long roster stays scannable in the dropdown.
+  const groups = React.useMemo(() => {
+    const byTeam = new Map<string, AssignableMember[]>();
+    for (const m of members) {
+      const key = m.team ?? "No team";
+      byTeam.set(key, [...(byTeam.get(key) ?? []), m]);
+    }
+    return [...byTeam.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [members]);
+  const multiTeam = groups.length > 1;
+
   if (members.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
@@ -86,12 +97,21 @@ export function AssignTaskForm({ members }: { members: AssignableMember[] }) {
             className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-sm border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none"
           >
             <option value="">Select a member…</option>
-            {members.map((m) => (
-              <option key={m.uid} value={m.uid}>
-                {m.name}
-                {m.team ? ` — ${m.team}` : ""}
-              </option>
-            ))}
+            {multiTeam
+              ? groups.map(([team, list]) => (
+                  <optgroup key={team} label={team}>
+                    {list.map((m) => (
+                      <option key={m.uid} value={m.uid}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))
+              : members.map((m) => (
+                  <option key={m.uid} value={m.uid}>
+                    {m.name}
+                  </option>
+                ))}
           </select>
         </div>
         <div className="space-y-2">

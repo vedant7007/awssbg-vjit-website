@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Check,
   RotateCcw,
+  MessageSquareText,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
@@ -19,6 +20,7 @@ import {
   setTaskStatusAction,
   deleteTaskAction,
 } from "@/app/console/tasks/actions";
+import { TaskDetail } from "@/components/tasks/TaskDetail";
 
 const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: "todo", label: "To do", color: "#8b93a1" },
@@ -59,10 +61,14 @@ export function KanbanBoard({
   const router = useRouter();
   const [items, setItems] = React.useState<Task[]>(tasks);
   const [team, setTeam] = React.useState<string>("all");
+  const [openId, setOpenId] = React.useState<string | null>(null);
   const [, startTransition] = React.useTransition();
 
   // Re-sync when the server sends fresh data (after a revalidate/refresh).
   React.useEffect(() => setItems(tasks), [tasks]);
+
+  // Kept live against `items` so the open drawer reflects the latest data.
+  const openTask = openId ? (items.find((t) => t.id === openId) ?? null) : null;
 
   const teams = React.useMemo(
     () =>
@@ -163,15 +169,21 @@ export function KanbanBoard({
                         className="bg-card rounded-lg border p-3.5 shadow-sm"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <h4
-                            className={cn(
-                              "text-sm leading-snug font-medium",
-                              task.status === "done" &&
-                                "text-muted-foreground line-through",
-                            )}
+                          <button
+                            type="button"
+                            onClick={() => setOpenId(task.id)}
+                            className="min-w-0 flex-1 text-left"
                           >
-                            {task.title}
-                          </h4>
+                            <h4
+                              className={cn(
+                                "text-sm leading-snug font-medium hover:underline",
+                                task.status === "done" &&
+                                  "text-muted-foreground line-through",
+                              )}
+                            >
+                              {task.title}
+                            </h4>
+                          </button>
                           {canManage ? (
                             <button
                               type="button"
@@ -190,9 +202,38 @@ export function KanbanBoard({
                           </p>
                         ) : null}
 
+                        {/* Progress bar — the live tracking signal. */}
+                        {task.progress > 0 && task.status !== "done" ? (
+                          <div className="mt-2.5">
+                            <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                              <div
+                                className="h-full rounded-full transition-[width] duration-500"
+                                style={{
+                                  width: `${task.progress}%`,
+                                  background: "var(--orange)",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ) : null}
+
                         <div className="text-muted-foreground mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[0.68rem]">
                           {showAssignee ? (
                             <span>{task.assigneeName}</span>
+                          ) : null}
+                          {task.progress > 0 && task.status !== "done" ? (
+                            <span className="tabular-nums">
+                              {task.progress}%
+                            </span>
+                          ) : null}
+                          {task.updates.length > 0 ? (
+                            <span className="inline-flex items-center gap-1">
+                              <MessageSquareText
+                                className="size-3"
+                                aria-hidden
+                              />
+                              {task.updates.length}
+                            </span>
                           ) : null}
                           {task.dueDate ? (
                             <span
@@ -209,6 +250,14 @@ export function KanbanBoard({
                         </div>
 
                         <div className="mt-3 flex flex-wrap gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setOpenId(task.id)}
+                            className="border-orange/40 text-orange hover:bg-orange/10 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-colors"
+                          >
+                            <MessageSquareText className="size-3" />
+                            Update
+                          </button>
                           {moves(task.status).map((m) => (
                             <button
                               key={m.to}
@@ -236,6 +285,13 @@ export function KanbanBoard({
           })}
         </div>
       </LayoutGroup>
+
+      <TaskDetail
+        task={openTask}
+        onOpenChange={(o) => {
+          if (!o) setOpenId(null);
+        }}
+      />
     </div>
   );
 }

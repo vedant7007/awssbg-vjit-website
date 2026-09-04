@@ -17,6 +17,7 @@ export const routes = {
 
   signin: "/signin",
   signinNext: (next: string) => `/signin?next=${encodeURIComponent(next)}`,
+  welcome: "/welcome",
 
   console: "/console",
   consoleProfile: "/console/profile",

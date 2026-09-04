@@ -1,9 +1,11 @@
 import * as React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
 import { requireAdmin } from "@/lib/auth/server";
+import { getViewer } from "@/lib/auth/viewer";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +21,10 @@ export default async function AdminLayout({
   // this verifies the session and the `admin` custom claim before any admin
   // page renders (which read via the Admin SDK, bypassing Firestore rules).
   await requireAdmin(routes.admin);
+
+  // First sign-in: force setting a personal password before anything else.
+  const viewer = await getViewer();
+  if (viewer?.mustChangePassword) redirect(routes.welcome);
 
   return (
     <div className="min-h-dvh">

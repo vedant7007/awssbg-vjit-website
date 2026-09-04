@@ -26,6 +26,9 @@ export type Member = {
   skills: string[];
   socials: MemberSocials;
   isPublic: boolean;
+  /** True until the member replaces the starting password provisioning gave
+   * them. Drives the forced /welcome set-password step on first sign-in. */
+  mustChangePassword?: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };

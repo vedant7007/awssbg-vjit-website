@@ -1,7 +1,9 @@
 import * as React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { requireAuth } from "@/lib/auth/server";
+import { getViewer } from "@/lib/auth/viewer";
 import { routes } from "@/lib/constants/routes";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
@@ -14,6 +16,10 @@ export default async function ConsoleLayout({
   children: React.ReactNode;
 }) {
   await requireAuth(routes.console);
+
+  // First sign-in: force setting a personal password before anything else.
+  const viewer = await getViewer();
+  if (viewer?.mustChangePassword) redirect(routes.welcome);
 
   return (
     <div className="min-h-dvh">

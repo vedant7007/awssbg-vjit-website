@@ -8,9 +8,15 @@ import {
   createTask,
   getTask,
   updateTaskStatus,
+  addTaskUpdate,
   deleteTask,
 } from "@/lib/firestore/tasks";
-import { TASK_STATUSES, type TaskStatus } from "@/lib/types/task";
+import {
+  TASK_STATUSES,
+  progressForStatus,
+  statusForProgress,
+  type TaskStatus,
+} from "@/lib/types/task";
 import { logger } from "@/lib/utils/logger";
 
 export type TaskActionState = { ok: boolean; error?: string };
@@ -92,12 +98,58 @@ export async function setTaskStatusAction(
   if (!allowed) return { ok: false, error: "You can't change this task." };
 
   try {
-    await updateTaskStatus(taskId, status);
+    const implied = progressForStatus(status);
+    await updateTaskStatus(taskId, status, implied ?? undefined);
     refresh();
     return { ok: true };
   } catch (e) {
     logger.error("task:status", e);
     return { ok: false, error: "Couldn't update the task." };
+  }
+}
+
+/**
+ * The assignee (or their lead / an admin) posts a progress note. The note is
+ * appended to the task's log, `progress` is updated, and the status is nudged
+ * to match (any progress ⇒ in progress; 100% ⇒ done).
+ */
+export async function addTaskUpdateAction(
+  taskId: string,
+  input: { note: string; progress: number },
+): Promise<TaskActionState> {
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false, error: "You're not signed in." };
+
+  const task = await getTask(taskId);
+  if (!task) return { ok: false, error: "Task not found." };
+
+  const allowed =
+    viewer.isAdmin ||
+    viewer.uid === task.assigneeUid ||
+    (viewer.isLead && viewer.team === task.team);
+  if (!allowed) return { ok: false, error: "You can't update this task." };
+
+  const note = (input.note ?? "").trim();
+  if (note.length > 500) return { ok: false, error: "Keep the note shorter." };
+  const progress = Math.max(
+    0,
+    Math.min(100, Math.round(Number(input.progress) || 0)),
+  );
+  if (!note && progress === task.progress) {
+    return { ok: false, error: "Add a note or move the progress." };
+  }
+
+  try {
+    await addTaskUpdate(
+      taskId,
+      { note, progress, byUid: viewer.uid, byName: viewer.name },
+      statusForProgress(progress, task.status),
+    );
+    refresh();
+    return { ok: true };
+  } catch (e) {
+    logger.error("task:update", e);
+    return { ok: false, error: "Couldn't post that update." };
   }
 }
 
