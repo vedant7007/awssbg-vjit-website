@@ -19,6 +19,7 @@
     "format:check": "prettier --check .",
     "seed": "tsx scripts/seed.ts",
     "provision": "tsx scripts/provision-team.ts",
+    "credentials": "tsx scripts/credentials-pdf.ts",
     "prepare": "husky"
   },
   "dependencies": {
