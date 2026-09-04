@@ -7,9 +7,11 @@ import { getViewer } from "@/lib/auth/viewer";
 import { routes } from "@/lib/constants/routes";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
-import { ConsoleNav } from "./ConsoleNav";
+import { Badge } from "@/components/ui/badge";
+import { AppNav } from "@/components/console/AppNav";
 
-/** Authenticated console shell. Server-side auth gate; middleware is the first pass. */
+/** The one authenticated shell — used for everyone. Admin areas render in this
+ * same shell (see the admin layout), so it never feels like a second app. */
 export default async function ConsoleLayout({
   children,
 }: {
@@ -26,11 +28,20 @@ export default async function ConsoleLayout({
       <header className="bg-background/80 sticky top-0 z-30 border-b backdrop-blur">
         <Container>
           <div className="flex h-16 items-center justify-between gap-4">
-            <Link href={routes.home} className="rounded-sm">
-              <Logo variant="compact" />
-            </Link>
-            <div className="overflow-x-auto">
-              <ConsoleNav />
+            <div className="flex shrink-0 items-center gap-2.5">
+              <Link href={routes.home} className="rounded-sm">
+                <Logo variant="compact" />
+              </Link>
+              {viewer?.isAdmin ? (
+                <Badge className="bg-orange/15 text-orange border-0">
+                  Admin
+                </Badge>
+              ) : viewer?.isLead ? (
+                <Badge variant="secondary">Lead</Badge>
+              ) : null}
+            </div>
+            <div className="min-w-0">
+              <AppNav isAdmin={viewer?.isAdmin ?? false} />
             </div>
           </div>
         </Container>

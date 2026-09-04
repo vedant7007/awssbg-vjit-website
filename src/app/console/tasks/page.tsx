@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Plus } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
 import { getViewer } from "@/lib/auth/viewer";
 import { safe } from "@/lib/utils/safe";
-import { listTasksForAssignee, listTasksForTeam } from "@/lib/firestore/tasks";
+import {
+  listTasksForAssignee,
+  listTasksForTeam,
+  listAllTasks,
+} from "@/lib/firestore/tasks";
 import { listMembers } from "@/lib/firestore/members.server";
+import type { Task } from "@/lib/types/task";
 import { PageShell } from "@/components/layout/PageShell";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
 import { TeamProgress } from "@/components/tasks/TeamProgress";
+import { TaskStats, type StatDef } from "@/components/tasks/TaskStats";
 import {
   AssignTaskForm,
   type AssignableMember,
@@ -17,6 +24,11 @@ import {
 
 export const metadata: Metadata = { title: "Tasks | Console" };
 export const dynamic = "force-dynamic";
+
+const isOverdue = (t: Task) =>
+  t.status !== "done" &&
+  t.dueDate !== null &&
+  new Date(t.dueDate).getTime() < Date.now();
 
 export default async function ConsoleTasksPage() {
   const viewer = await getViewer();
@@ -41,14 +53,54 @@ export default async function ConsoleTasksPage() {
         .map((m) => ({ uid: m.id, name: m.displayName, team: m.team }))
     : [];
 
+  // Admins see every team's board and can assign to anyone — inline, in the
+  // same page, so there is no separate "admin tasks".
+  const allTasks = viewer.isAdmin
+    ? await safe(listAllTasks(), [], "console:all-tasks")
+    : [];
+  const allMembers: AssignableMember[] = viewer.isAdmin
+    ? (await safe(listMembers(), [], "console:all-members")).map((m) => ({
+        uid: m.id,
+        name: m.displayName,
+        team: m.team,
+      }))
+    : [];
+
+  const adminStats: StatDef[] = [
+    { label: "Total", value: allTasks.length, color: "#43B4FF" },
+    {
+      label: "To do",
+      value: allTasks.filter((t) => t.status === "todo").length,
+      color: "#8b93a1",
+    },
+    {
+      label: "In progress",
+      value: allTasks.filter((t) => t.status === "in_progress").length,
+      color: "#FF9900",
+    },
+    {
+      label: "Done",
+      value: allTasks.filter((t) => t.status === "done").length,
+      color: "#2EE6A0",
+    },
+    {
+      label: "Overdue",
+      value: allTasks.filter(isOverdue).length,
+      color: "#ef4444",
+      danger: true,
+    },
+  ];
+
   return (
     <PageShell
       eyebrow="Console"
       title="Tasks"
       description={
-        showLead
-          ? `Your work, and the ${viewer.team} team board.`
-          : "Your assigned work — open a card to post progress as you go."
+        viewer.isAdmin
+          ? "Your work, plus every team's progress in one board."
+          : showLead
+            ? `Your work, and the ${viewer.team} team board.`
+            : "Your assigned work — open a card to post progress as you go."
       }
     >
       <div className="space-y-12">
@@ -96,13 +148,35 @@ export default async function ConsoleTasksPage() {
         ) : null}
 
         {viewer.isAdmin ? (
-          <p className="text-muted-foreground text-sm">
-            You&apos;re an admin —{" "}
-            <Link href={routes.adminTasks} className="text-orange underline">
-              open the full task dashboard
-            </Link>
-            .
-          </p>
+          <section className="space-y-6">
+            <div className="border-t pt-8">
+              <h2 className="font-display text-xl font-semibold">All teams</h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Every task across the club — assign, track, and keep an eye on
+                what&apos;s overdue.
+              </p>
+            </div>
+
+            <TaskStats stats={adminStats} />
+
+            {allTasks.length > 0 ? (
+              <TeamProgress tasks={allTasks} title="Who's on what" />
+            ) : null}
+
+            <details className="group border-orange/30 bg-orange/[0.04] rounded-xl border">
+              <summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-medium">
+                <span className="bg-orange/15 text-orange grid size-7 place-items-center rounded-full transition-transform group-open:rotate-45">
+                  <Plus className="size-4" />
+                </span>
+                Assign a new task
+              </summary>
+              <div className="border-t p-5">
+                <AssignTaskForm members={allMembers} />
+              </div>
+            </details>
+
+            <KanbanBoard tasks={allTasks} canManage showTeamFilter />
+          </section>
         ) : null}
 
         {!viewer.hasProfile ? (
