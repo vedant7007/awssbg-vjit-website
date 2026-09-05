@@ -32,8 +32,10 @@ const slug = (s: string): string =>
 
 async function write(rows: Row[], name: string, heading?: string) {
   const html = buildCredentialsHtml(rows, heading);
-  writeFileSync(resolve(OUT_DIR, `${name}.html`), html, "utf8");
   const ok = await renderPdf(html, resolve(OUT_DIR, `${name}.pdf`));
+  // PDF is the deliverable. Only fall back to an HTML file if the PDF could
+  // not be rendered (no Chromium), so there's always something to hand out.
+  if (!ok) writeFileSync(resolve(OUT_DIR, `${name}.html`), html, "utf8");
   console.info(
     `  ${ok ? "PDF " : "HTML"}  ${name.padEnd(20)} ${String(rows.length).padStart(2)} member${rows.length === 1 ? "" : "s"}`,
   );

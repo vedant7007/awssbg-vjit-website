@@ -179,8 +179,9 @@ async function main(): Promise<void> {
   writeFileSync(OUT_PATH, csv + "\n", "utf8");
 
   const html = buildCredentialsHtml(rows);
-  writeFileSync(HTML_PATH, html, "utf8");
   const pdf = await renderPdf(html, PDF_PATH);
+  // Only keep an HTML copy when the PDF couldn't be rendered.
+  if (!pdf) writeFileSync(HTML_PATH, html, "utf8");
 
   const kept = rows.filter((r) => r.password.startsWith("—")).length;
   console.info(`\nProvisioned ${rows.length} accounts.`);
@@ -190,7 +191,7 @@ async function main(): Promise<void> {
     );
   }
   console.info(`  CSV : ${OUT_PATH}`);
-  console.info(`  HTML: ${HTML_PATH}`);
+  if (!pdf) console.info(`  HTML: ${HTML_PATH}`);
   console.info(
     pdf
       ? `  PDF : ${PDF_PATH}  ← hand this out`
