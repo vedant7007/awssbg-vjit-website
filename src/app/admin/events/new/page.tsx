@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { routes } from "@/lib/constants/routes";
-import { createEvent } from "@/lib/firestore/events";
+import { createEventAction } from "@/app/admin/events/actions";
 import type { EventFormValues } from "@/lib/types";
 import { PageShell } from "@/components/layout/PageShell";
 import { EventForm } from "@/components/forms/EventForm";
@@ -14,7 +14,7 @@ export default function NewEventPage() {
 
   async function handleSubmit(values: EventFormValues) {
     try {
-      await createEvent(values);
+      await createEventAction(values);
       toast.success(`Created event: ${values.title}`);
       router.push(routes.adminEvents);
       router.refresh();

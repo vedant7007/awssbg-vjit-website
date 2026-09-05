@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { routes } from "@/lib/constants/routes";
-import { updateEvent } from "@/lib/firestore/events";
+import { updateEventAction } from "@/app/admin/events/actions";
 import type { EventFormValues } from "@/lib/types";
 import { EventForm } from "@/components/forms/EventForm";
 
@@ -19,7 +19,7 @@ export function EditEventClient({
 
   async function handleSubmit(values: EventFormValues) {
     try {
-      await updateEvent(id, values);
+      await updateEventAction(id, values);
       toast.success(`Updated event: ${values.title}`);
       router.push(routes.adminEvents);
       router.refresh();

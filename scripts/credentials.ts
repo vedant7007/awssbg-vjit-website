@@ -65,7 +65,7 @@ const roleLabel = (role: MemberRole): string =>
       : "Core Member";
 
 /** A branded, print-ready credentials sheet — one cut-out card per member. */
-export function buildCredentialsHtml(rows: Row[]): string {
+export function buildCredentialsHtml(rows: Row[], heading?: string): string {
   const cards = rows
     .map(
       (r) => `
@@ -113,7 +113,7 @@ export function buildCredentialsHtml(rows: Row[]): string {
 <body>
   <div class="head">
     <div class="brand">AWS <span>SBG</span> VJIT</div>
-    <div class="sub">Team access credentials<br>Generated ${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</div>
+    <div class="sub">${heading ? esc(heading) + " — " : ""}Team access credentials<br>Generated ${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</div>
   </div>
   <div class="intro">
     <b>How to sign in:</b> go to <b>aws-sbg-vjit.vercel.app/signin</b>, enter your handle and the starting password below.

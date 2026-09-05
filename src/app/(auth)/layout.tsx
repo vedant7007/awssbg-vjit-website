@@ -11,7 +11,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="relative flex min-h-dvh flex-col">
+      <div className="app-bg" aria-hidden />
       <header className="flex h-16 items-center px-6">
         <Link
           href={routes.home}

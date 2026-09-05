@@ -44,17 +44,19 @@ export function SignInClient() {
     setPending(true);
     const ok = await signInWithUsername(handle, password);
     if (ok) {
-      toast.success("Signed in");
+      toast.success("Signed in — welcome back.");
       router.replace(next);
       router.refresh();
     } else {
-      toast.error("Wrong handle or password.");
+      toast.error(
+        "That handle and password don't match. Check the sheet your lead gave you.",
+      );
       setPending(false);
     }
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="glass-panel w-full max-w-sm rounded-2xl border-0">
       <CardHeader className="items-center text-center">
         <span className="bg-orange/10 mb-2 grid size-14 place-items-center rounded-2xl">
           <LogoMark className="size-8" />

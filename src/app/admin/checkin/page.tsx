@@ -7,7 +7,7 @@ import { Loader2, UserCheck, AlertTriangle } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { QRScanner } from "@/components/qr/QRScanner";
 import { Label } from "@/components/ui/label";
-import { listEventsSerialized } from "@/lib/firestore/events";
+import { listEventsForAdminAction } from "@/app/admin/events/actions";
 import type { Event, Serialized } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 
@@ -35,7 +35,7 @@ export default function CheckinPage() {
   React.useEffect(() => {
     async function loadEvents() {
       try {
-        const data = await listEventsSerialized();
+        const data = await listEventsForAdminAction();
         // Show live and upcoming first, then past
         const sorted = [...data].sort((a, b) => {
           const statusOrder = { live: 0, upcoming: 1, past: 2 };

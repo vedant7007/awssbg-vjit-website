@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Pencil, Trash2 } from "lucide-react";
 
 import { routes } from "@/lib/constants/routes";
-import { deleteEvent } from "@/lib/firestore/events";
+import { deleteEventAction } from "@/app/admin/events/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +57,7 @@ export function EventsTable({ events }: { events: EventRow[] }) {
 
   async function handleDelete(id: string, title: string) {
     try {
-      await deleteEvent(id);
+      await deleteEventAction(id);
       setRows((prev) => prev.filter((e) => e.id !== id));
       toast.success(`Removed ${title}`);
     } catch (error) {

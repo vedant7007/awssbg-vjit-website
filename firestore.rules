@@ -15,11 +15,16 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    // Fields an owner may never change on their own member doc.
+    // Fields an owner may never change on their own member doc. `.get` with a
+    // default keeps this safe on docs written before a field existed.
     function memberProtectedUnchanged() {
       return request.resource.data.role == resource.data.role
         && request.resource.data.team == resource.data.team
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && request.resource.data.createdAt == resource.data.createdAt
+        // Clearing this client-side would skip the forced first-login password
+        // change; only the server (Admin SDK) may flip it.
+        && request.resource.data.get('mustChangePassword', false)
+             == resource.data.get('mustChangePassword', false);
     }
 
     match /members/{uid} {
@@ -43,7 +48,16 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isSignedIn()
         && request.resource.data.uid == request.auth.uid;
-      allow update, delete: if isAdmin();
+      // A member changing their username releases the old reservation and
+      // claims the new one in one transaction (see updateMember). Both halves
+      // are limited to reservations they already own, so nobody can free or
+      // hijack someone else's handle.
+      allow update: if isAdmin()
+        || (isSignedIn()
+            && resource.data.uid == request.auth.uid
+            && request.resource.data.uid == request.auth.uid);
+      allow delete: if isAdmin()
+        || (isSignedIn() && resource.data.uid == request.auth.uid);
     }
 
     match /events/{eventId} {

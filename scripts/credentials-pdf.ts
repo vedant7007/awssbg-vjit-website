@@ -1,11 +1,14 @@
 /*
- * Regenerate ONLY the credentials handout (branded HTML + real PDF) from the
+ * Regenerate the credentials handouts (branded HTML + real PDF) from the
  * roster — no Firebase, no account changes, no password resets. The starting
  * passwords are deterministic (see credentials.ts), so this reproduces exactly
- * what provisioning set, without touching anyone's account.
+ * what provisioning set without touching anyone's account.
+ *
+ * Writes one PDF per team (so each lead only ever handles their own people's
+ * passwords) plus a combined sheet for the group leader.
  *
  * Run with: pnpm credentials
- * Output (gitignored): secrets/team-credentials.pdf + .html
+ * Output (gitignored): secrets/credentials/
  */
 import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -18,12 +21,27 @@ import {
   type Row,
 } from "./credentials";
 
-const SECRETS_DIR = resolve(process.cwd(), "secrets");
-const HTML_PATH = resolve(SECRETS_DIR, "team-credentials.html");
-const PDF_PATH = resolve(SECRETS_DIR, "team-credentials.pdf");
+const OUT_DIR = resolve(process.cwd(), "secrets/credentials");
+
+/** "Event Management" → "event-management" */
+const slug = (s: string): string =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+async function write(rows: Row[], name: string, heading?: string) {
+  const html = buildCredentialsHtml(rows, heading);
+  writeFileSync(resolve(OUT_DIR, `${name}.html`), html, "utf8");
+  const ok = await renderPdf(html, resolve(OUT_DIR, `${name}.pdf`));
+  console.info(
+    `  ${ok ? "PDF " : "HTML"}  ${name.padEnd(20)} ${String(rows.length).padStart(2)} member${rows.length === 1 ? "" : "s"}`,
+  );
+  return ok;
+}
 
 async function main(): Promise<void> {
-  mkdirSync(SECRETS_DIR, { recursive: true });
+  mkdirSync(OUT_DIR, { recursive: true });
 
   const rows: Row[] = [
     rowFor(CAPTAIN, "core"),
@@ -31,23 +49,33 @@ async function main(): Promise<void> {
     ...CORE.map((c) => rowFor(c, "member")),
   ];
 
-  const html = buildCredentialsHtml(rows);
-  writeFileSync(HTML_PATH, html, "utf8");
-  const pdf = await renderPdf(html, PDF_PATH);
+  // Group by team label, leads first so each sheet starts with the lead.
+  const byTeam = new Map<string, Row[]>();
+  for (const r of rows) {
+    byTeam.set(r.team, [...(byTeam.get(r.team) ?? []), r]);
+  }
+  const rank = { core: 0, lead: 1, member: 2, alumni: 3 } as const;
+  for (const list of byTeam.values()) {
+    list.sort(
+      (a, b) => rank[a.role] - rank[b.role] || a.name.localeCompare(b.name),
+    );
+  }
 
-  console.info(`Credentials sheet for ${rows.length} members.`);
-  console.info(`  HTML: ${HTML_PATH}`);
+  console.info(`Credentials for ${rows.length} members → ${OUT_DIR}\n`);
+  await write(rows, "all-teams", "Everyone");
+  for (const [team, list] of [...byTeam.entries()].sort()) {
+    await write(list, slug(team), team);
+  }
+
   console.info(
-    pdf
-      ? `  PDF : ${PDF_PATH}  ← hand this out`
-      : `  PDF : skipped — open the HTML and "Save as PDF"`,
+    "\nOne sheet per team — hand each lead only their own team's file.",
   );
-  console.info("(gitignored — contains starting passwords, keep it private).");
+  console.info("Gitignored: these contain starting passwords. Keep private.");
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error("Credentials PDF failed:", error);
+    console.error("Credentials generation failed:", error);
     process.exit(1);
   });

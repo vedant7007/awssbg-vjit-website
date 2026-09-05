@@ -53,13 +53,17 @@ export function WelcomeClient({ name }: { name: string }) {
     const changed = await changePassword(pw1);
     if (!changed) {
       setPending(false);
-      toast.error("Couldn't set it. Sign out and sign in again, then retry.");
+      toast.error(
+        "Couldn't set your password. Sign out, sign in again, then retry.",
+      );
       return;
     }
     const res = await finishFirstLoginAction();
     if (!res.ok) {
       setPending(false);
-      toast.error("Saved, but something hiccupped — try refreshing.");
+      toast.error(
+        "Password saved, but finishing setup failed. Refresh and try once more.",
+      );
       return;
     }
     toast.success("You're all set 🎉");
@@ -68,7 +72,7 @@ export function WelcomeClient({ name }: { name: string }) {
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="glass-panel w-full max-w-sm rounded-2xl border-0">
       <CardHeader className="items-center text-center">
         <span className="bg-orange/10 mb-2 grid size-14 place-items-center rounded-2xl">
           <LogoMark className="size-8" />

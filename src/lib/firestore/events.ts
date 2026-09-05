@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { getAdminDb } from "@/lib/firebase/admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";

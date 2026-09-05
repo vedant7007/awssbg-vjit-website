@@ -77,7 +77,9 @@ export function SettingsClient({
       setPw2("");
       toast.success("Password updated.");
     } else {
-      toast.error("Couldn't update. Sign out and back in, then retry.");
+      toast.error(
+        "Couldn't update your password. Sign out, sign in again, then retry.",
+      );
     }
   }
 
