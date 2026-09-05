@@ -3,13 +3,13 @@
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
 
 import { signInWithUsername } from "@/lib/auth/client";
 import { routes } from "@/lib/constants/routes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { LogoMark } from "@/components/brand/LogoMark";
 import {
   Card,
@@ -37,7 +37,6 @@ export function SignInClient() {
   const [handle, setHandle] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [pending, setPending] = React.useState(false);
-  const [show, setShow] = React.useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -84,29 +83,13 @@ export function SignInClient() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={show ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                className="pr-10"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShow((s) => !s)}
-                aria-label={show ? "Hide password" : "Show password"}
-                className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 grid w-10 place-items-center"
-              >
-                {show ? (
-                  <EyeOff className="size-4" />
-                ) : (
-                  <Eye className="size-4" />
-                )}
-              </button>
-            </div>
+            <PasswordInput
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
           </div>
           <Button
             type="submit"

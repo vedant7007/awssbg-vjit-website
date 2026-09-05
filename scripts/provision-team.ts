@@ -96,7 +96,20 @@ async function provision(
   const password = passwordFor(member);
   const team = TEAM_LABEL[member.team] ?? member.team;
 
-  const uid = await ensureAuthUser(email, password, member.name);
+  // Has this person already replaced their starting password? If so, leave
+  // their account alone: don't reset the password and don't re-arm the
+  // first-login prompt. Re-running provisioning must never undo onboarding.
+  const existing = await db
+    .collection("members")
+    .where("username", "==", username)
+    .limit(1)
+    .get();
+  const onboarded =
+    !existing.empty && existing.docs[0]!.data().mustChangePassword === false;
+
+  const uid = onboarded
+    ? existing.docs[0]!.id
+    : await ensureAuthUser(email, password, member.name);
 
   if (isAdmin) {
     await auth.setCustomUserClaims(uid, { admin: true });
@@ -128,8 +141,9 @@ async function provision(
         skills: [],
         socials: socialsOf(member),
         isPublic: true,
-        // Force the /welcome set-password step on their first sign-in.
-        mustChangePassword: true,
+        // Force the /welcome set-password step on their first sign-in. Members
+        // who already completed it keep `false` (see `onboarded` above).
+        mustChangePassword: !onboarded,
         createdAt: now,
         updatedAt: now,
       },
@@ -137,7 +151,14 @@ async function provision(
     );
   await reserveUsername(username, uid);
 
-  return { name: member.name, handle: username, password, team, role };
+  return {
+    name: member.name,
+    handle: username,
+    // Never print a starting password that no longer works.
+    password: onboarded ? "— already set by member —" : password,
+    team,
+    role,
+  };
 }
 
 async function main(): Promise<void> {
@@ -161,7 +182,13 @@ async function main(): Promise<void> {
   writeFileSync(HTML_PATH, html, "utf8");
   const pdf = await renderPdf(html, PDF_PATH);
 
+  const kept = rows.filter((r) => r.password.startsWith("—")).length;
   console.info(`\nProvisioned ${rows.length} accounts.`);
+  if (kept > 0) {
+    console.info(
+      `  ${kept} already set their own password — left untouched (not reset, not re-prompted).`,
+    );
+  }
   console.info(`  CSV : ${OUT_PATH}`);
   console.info(`  HTML: ${HTML_PATH}`);
   console.info(

@@ -8,7 +8,7 @@ import { Loader2, Check, ShieldCheck } from "lucide-react";
 import { changePassword } from "@/lib/auth/client";
 import { routes } from "@/lib/constants/routes";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { LogoMark } from "@/components/brand/LogoMark";
 import {
@@ -83,9 +83,8 @@ export function WelcomeClient({ name }: { name: string }) {
         <form onSubmit={submit} className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="pw1">New password</Label>
-            <Input
+            <PasswordInput
               id="pw1"
-              type="password"
               value={pw1}
               onChange={(e) => setPw1(e.target.value)}
               autoComplete="new-password"
@@ -95,9 +94,8 @@ export function WelcomeClient({ name }: { name: string }) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="pw2">Confirm password</Label>
-            <Input
+            <PasswordInput
               id="pw2"
-              type="password"
               value={pw2}
               onChange={(e) => setPw2(e.target.value)}
               autoComplete="new-password"

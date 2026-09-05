@@ -10,7 +10,7 @@ import { updateMember, deleteMember } from "@/lib/firestore/members";
 import { signOut, changePassword } from "@/lib/auth/client";
 import type { MemberFormValues } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -133,9 +133,8 @@ export function SettingsClient({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="pw1">New password</Label>
-              <Input
+              <PasswordInput
                 id="pw1"
-                type="password"
                 value={pw1}
                 onChange={(e) => setPw1(e.target.value)}
                 autoComplete="new-password"
@@ -143,9 +142,8 @@ export function SettingsClient({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="pw2">Confirm</Label>
-              <Input
+              <PasswordInput
                 id="pw2"
-                type="password"
                 value={pw2}
                 onChange={(e) => setPw2(e.target.value)}
                 autoComplete="new-password"
