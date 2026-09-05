@@ -53,7 +53,7 @@ export function TaskDetail({
 }) {
   return (
     <Dialog open={!!task} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] gap-0 overflow-y-auto p-0 sm:max-w-lg">
+      <DialogContent className="glass-panel max-h-[90vh] gap-0 overflow-y-auto rounded-2xl p-0 sm:max-w-lg">
         {task ? <Body key={task.id} task={task} /> : null}
       </DialogContent>
     </Dialog>

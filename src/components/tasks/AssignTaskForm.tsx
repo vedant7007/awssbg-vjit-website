@@ -94,7 +94,7 @@ export function AssignTaskForm({ members }: { members: AssignableMember[] }) {
             value={assigneeUid}
             onChange={(e) => setAssigneeUid(e.target.value)}
             required
-            className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-sm border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none"
+            className="glass-well focus-visible:ring-orange/40 h-9 w-full rounded-lg px-3 text-sm outline-none focus-visible:ring-2"
           >
             <option value="">Select a member…</option>
             {multiTeam
@@ -143,7 +143,7 @@ export function AssignTaskForm({ members }: { members: AssignableMember[] }) {
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending} className="rounded-full">
         {pending ? "Assigning…" : "Assign task"}
       </Button>
     </form>

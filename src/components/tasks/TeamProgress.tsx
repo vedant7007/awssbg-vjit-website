@@ -90,7 +90,7 @@ export function TeamProgress({
         {title}
         <span className="font-mono text-xs">({rows.length})</span>
       </div>
-      <div className="divide-border/70 divide-y overflow-hidden rounded-xl border">
+      <div className="glass-panel divide-border/60 divide-y overflow-hidden rounded-2xl">
         {rows.map((r) => (
           <div
             key={r.uid}

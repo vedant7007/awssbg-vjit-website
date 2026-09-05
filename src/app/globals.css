@@ -876,3 +876,110 @@ html[data-intro="skip"] #logo-intro {
     }
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+ * App shell (console / management). Brings the marketing site's
+ * depth language into the signed-in product: an ambient aurora
+ * ground, glass panels, and pointer-tracked 3D tilt on cards.
+ * ───────────────────────────────────────────────────────────── */
+
+/* Soft brand glow behind the whole console. Gradients only (no blur
+ * filter) so it stays cheap to composite on a scrolling page. */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      55% 40% at 8% -8%,
+      color-mix(in oklab, var(--orange) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      48% 36% at 92% -2%,
+      color-mix(in oklab, var(--blue) 14%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40% 40% at 50% 108%,
+      color-mix(in oklab, var(--orange) 8%, transparent),
+      transparent 70%
+    );
+}
+
+/* The primary frosted surface: translucent card + top sheen + inner
+ * hairline highlight, so panels read as glass sitting above the ground. */
+.glass-panel {
+  position: relative;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--foreground) 5%, transparent),
+      transparent 55%
+    ),
+    color-mix(in oklab, var(--card) 74%, transparent);
+  backdrop-filter: blur(14px) saturate(1.45);
+  -webkit-backdrop-filter: blur(14px) saturate(1.45);
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, var(--foreground) 9%, transparent),
+    0 20px 40px -30px rgb(0 0 0 / 0.6);
+}
+
+/* Slightly recessed glass, for columns/wells that hold other cards. */
+.glass-well {
+  background: color-mix(in oklab, var(--muted) 40%, transparent);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+
+/* 3D tilt. The component sets --rx/--ry (degrees) and --gx/--gy (glare
+ * position) from the pointer; CSS owns the easing and the resting state. */
+.tilt {
+  transform: perspective(900px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg)) translateZ(0);
+  transform-style: preserve-3d;
+  transition:
+    transform 0.45s var(--ease-brand),
+    box-shadow 0.45s var(--ease-brand),
+    border-color 0.45s var(--ease-brand);
+  will-change: transform;
+}
+.tilt:hover {
+  box-shadow:
+    0 28px 60px -32px color-mix(in oklab, var(--orange) 55%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--orange) 18%, transparent);
+}
+/* Lifts content off the card face so the tilt reads as real depth. */
+.tilt-layer {
+  transform: translateZ(38px);
+}
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-brand);
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 50%),
+    color-mix(in oklab, var(--foreground) 18%, transparent),
+    transparent 55%
+  );
+}
+.tilt:hover .tilt-glare {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt,
+  .tilt-layer {
+    transform: none;
+    transition: none;
+  }
+  .tilt-glare {
+    display: none;
+  }
+}

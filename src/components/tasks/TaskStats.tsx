@@ -36,7 +36,7 @@ function Tile({ stat }: { stat: StatDef }) {
   const active = stat.danger ? stat.value > 0 : true;
   return (
     <div
-      className="group relative overflow-hidden rounded-xl border p-5"
+      className="glass-panel group relative overflow-hidden rounded-2xl p-5"
       style={{
         borderColor: `color-mix(in oklab, ${stat.color} 30%, var(--border))`,
         background: `linear-gradient(150deg, color-mix(in oklab, ${stat.color} 10%, var(--card)) 0%, var(--card) 70%)`,

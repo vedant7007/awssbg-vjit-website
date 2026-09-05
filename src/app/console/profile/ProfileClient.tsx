@@ -54,7 +54,7 @@ export function ProfileClient({
         </Link>
       ) : null}
       {isNew ? (
-        <div className="border-orange/30 bg-orange/5 rounded-sm border-l-2 px-4 py-3 text-sm">
+        <div className="glass-panel border-l-orange/60 rounded-2xl border-l-2 px-5 py-4 text-sm">
           Welcome. Complete your profile to finish setting up your account.
         </div>
       ) : null}

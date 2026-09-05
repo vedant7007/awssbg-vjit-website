@@ -163,7 +163,7 @@ export default async function ConsoleTasksPage() {
               <TeamProgress tasks={allTasks} title="Who's on what" />
             ) : null}
 
-            <details className="group border-orange/30 bg-orange/[0.04] rounded-xl border">
+            <details className="glass-panel group rounded-2xl">
               <summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-medium">
                 <span className="bg-orange/15 text-orange grid size-7 place-items-center rounded-full transition-transform group-open:rotate-45">
                   <Plus className="size-4" />

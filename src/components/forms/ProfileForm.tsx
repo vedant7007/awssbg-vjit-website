@@ -181,7 +181,7 @@ export function ProfileForm({
         />
 
         <FormItem>
-          <FormLabel htmlFor="skill-input">Skills</FormLabel>
+          <Label htmlFor="skill-input">Skills</Label>
           <div className="flex gap-2">
             <Input
               id="skill-input"
@@ -253,7 +253,7 @@ export function ProfileForm({
           control={form.control}
           name="isPublic"
           render={({ field }) => (
-            <FormItem className="flex items-center justify-between rounded-sm border p-4">
+            <FormItem className="glass-panel flex items-center justify-between rounded-2xl p-5">
               <div className="space-y-0.5">
                 <Label>Public profile</Label>
                 <FormDescription>
@@ -270,7 +270,7 @@ export function ProfileForm({
           )}
         />
 
-        <Button type="submit" disabled={submitting}>
+        <Button type="submit" disabled={submitting} className="rounded-full">
           {submitting ? "Saving..." : submitLabel}
         </Button>
       </form>

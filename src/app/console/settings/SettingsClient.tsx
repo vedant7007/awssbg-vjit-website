@@ -100,7 +100,7 @@ export function SettingsClient({
     <div className="max-w-2xl space-y-8">
       <section className="space-y-4">
         <h2 className="eyebrow">Account</h2>
-        <div className="flex items-center justify-between rounded-sm border p-4">
+        <div className="glass-panel flex items-center justify-between rounded-2xl p-5">
           <div className="min-w-0">
             <p className="text-sm font-medium">Signed in as</p>
             <p className="text-muted-foreground truncate text-sm">
@@ -125,7 +125,7 @@ export function SettingsClient({
         <h2 className="eyebrow">Password</h2>
         <form
           onSubmit={handleChangePassword}
-          className="space-y-3 rounded-sm border p-4"
+          className="glass-panel space-y-3 rounded-2xl p-5"
         >
           <p className="text-muted-foreground text-sm">
             Change the starting password your team gave you.
@@ -159,7 +159,7 @@ export function SettingsClient({
       {values ? (
         <section className="space-y-4">
           <h2 className="eyebrow">Privacy</h2>
-          <div className="flex items-center justify-between rounded-sm border p-4">
+          <div className="glass-panel flex items-center justify-between rounded-2xl p-5">
             <div className="space-y-0.5 pr-4">
               <Label>Public profile</Label>
               <p className="text-muted-foreground text-sm">
@@ -176,7 +176,7 @@ export function SettingsClient({
       ) : (
         <section className="space-y-4">
           <h2 className="eyebrow">Privacy</h2>
-          <p className="text-muted-foreground rounded-sm border border-dashed p-4 text-sm">
+          <p className="text-muted-foreground rounded-2xl border border-dashed p-5 text-sm">
             Complete your profile to manage visibility.
           </p>
         </section>
@@ -184,8 +184,8 @@ export function SettingsClient({
 
       {values ? (
         <section className="space-y-4">
-          <h2 className="eyebrow text-danger">Danger zone</h2>
-          <div className="border-danger/30 flex flex-col gap-4 rounded-sm border p-4 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="eyebrow text-destructive">Danger zone</h2>
+          <div className="border-destructive/30 bg-destructive/[0.04] flex flex-col gap-4 rounded-2xl border p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-medium">Leave the group</p>
               <p className="text-muted-foreground text-sm">

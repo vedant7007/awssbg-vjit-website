@@ -12,6 +12,8 @@ import {
   Check,
   RotateCcw,
   MessageSquareText,
+  Search,
+  TriangleAlert,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
@@ -27,6 +29,12 @@ const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: "in_progress", label: "In progress", color: "#FF9900" },
   { status: "done", label: "Done", color: "#2EE6A0" },
 ];
+
+const EMPTY_COPY: Record<TaskStatus, string> = {
+  todo: "Nothing queued",
+  in_progress: "Nothing in flight",
+  done: "Nothing finished yet",
+};
 
 function overdue(t: Task): boolean {
   return (
@@ -61,6 +69,8 @@ export function KanbanBoard({
   const router = useRouter();
   const [items, setItems] = React.useState<Task[]>(tasks);
   const [team, setTeam] = React.useState<string>("all");
+  const [query, setQuery] = React.useState("");
+  const [lateOnly, setLateOnly] = React.useState(false);
   const [openId, setOpenId] = React.useState<string | null>(null);
   const [, startTransition] = React.useTransition();
 
@@ -76,7 +86,21 @@ export function KanbanBoard({
     [tasks],
   );
 
-  const visible = team === "all" ? items : items.filter((t) => t.team === team);
+  const lateCount = React.useMemo(() => items.filter(overdue).length, [items]);
+
+  const visible = React.useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter((t) => {
+      if (team !== "all" && t.team !== team) return false;
+      if (lateOnly && !overdue(t)) return false;
+      if (!q) return true;
+      return (
+        t.title.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        t.assigneeName.toLowerCase().includes(q)
+      );
+    });
+  }, [items, team, lateOnly, query]);
 
   const move = (task: Task, status: TaskStatus) => {
     const prev = items;
@@ -110,23 +134,53 @@ export function KanbanBoard({
 
   return (
     <div>
-      {showTeamFilter && teams.length > 0 ? (
-        <div className="mb-5 flex flex-wrap gap-2">
-          {["all", ...teams].map((t) => (
+      {items.length > 0 ? (
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          <div className="relative min-w-0 flex-1 sm:max-w-xs">
+            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search tasks or people…"
+              aria-label="Search tasks"
+              className="glass-well focus-visible:ring-orange/40 h-9 w-full rounded-full pr-3 pl-9 text-sm outline-none focus-visible:ring-2"
+            />
+          </div>
+
+          {lateCount > 0 ? (
             <button
-              key={t}
               type="button"
-              onClick={() => setTeam(t)}
+              onClick={() => setLateOnly((v) => !v)}
               className={cn(
-                "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
-                team === t
-                  ? "border-orange bg-orange/15 text-orange"
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                lateOnly
+                  ? "border-destructive bg-destructive/15 text-destructive"
                   : "border-border/70 text-muted-foreground hover:text-foreground",
               )}
             >
-              {t === "all" ? "All teams" : t}
+              <TriangleAlert className="size-3" />
+              {lateCount} overdue
             </button>
-          ))}
+          ) : null}
+
+          {showTeamFilter && teams.length > 0
+            ? ["all", ...teams].map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTeam(t)}
+                  className={cn(
+                    "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
+                    team === t
+                      ? "border-orange bg-orange/15 text-orange"
+                      : "border-border/70 text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {t === "all" ? "All teams" : t}
+                </button>
+              ))
+            : null}
         </div>
       ) : null}
 
@@ -135,14 +189,14 @@ export function KanbanBoard({
           {COLUMNS.map((col) => {
             const colItems = visible.filter((t) => t.status === col.status);
             return (
-              <div
-                key={col.status}
-                className="bg-muted/30 rounded-xl border p-3"
-              >
+              <div key={col.status} className="glass-well rounded-2xl p-3">
                 <div className="mb-3 flex items-center gap-2 px-1">
                   <span
                     className="size-2.5 rounded-full"
-                    style={{ background: col.color }}
+                    style={{
+                      background: col.color,
+                      boxShadow: `0 0 10px ${col.color}`,
+                    }}
                     aria-hidden
                   />
                   <h3 className="text-sm font-semibold">{col.label}</h3>
@@ -166,7 +220,7 @@ export function KanbanBoard({
                           stiffness: 500,
                           damping: 38,
                         }}
-                        className="bg-card rounded-lg border p-3.5 shadow-sm"
+                        className="glass-panel rounded-xl p-3.5 transition-shadow hover:shadow-lg"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <button
@@ -275,8 +329,10 @@ export function KanbanBoard({
                   </AnimatePresence>
 
                   {colItems.length === 0 ? (
-                    <p className="text-muted-foreground/60 px-1 py-6 text-center text-xs">
-                      Nothing here
+                    <p className="text-muted-foreground/60 border-border/50 rounded-xl border border-dashed px-3 py-7 text-center text-xs">
+                      {query.trim() || lateOnly
+                        ? "No matches"
+                        : EMPTY_COPY[col.status]}
                     </p>
                   ) : null}
                 </div>

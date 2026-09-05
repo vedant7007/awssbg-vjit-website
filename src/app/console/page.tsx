@@ -13,22 +13,41 @@ import {
   Map,
   Camera,
   ScanLine,
+  CalendarClock,
+  TriangleAlert,
 } from "lucide-react";
 
 import { getViewer } from "@/lib/auth/viewer";
-import { getMemberById } from "@/lib/firestore/members.server";
-import { listMembers } from "@/lib/firestore/members.server";
+import { getMemberById, listMembers } from "@/lib/firestore/members.server";
 import { listTasksForAssignee, listAllTasks } from "@/lib/firestore/tasks";
 import { listApplications } from "@/lib/firestore/applications";
 import { listBoothPhotos } from "@/lib/firestore/booth";
 import { routes } from "@/lib/constants/routes";
 import { firstName } from "@/lib/utils/format";
 import { safe } from "@/lib/utils/safe";
+import type { Task } from "@/lib/types/task";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
+import { TiltCard } from "@/components/ui/tilt-card";
 
 export const metadata: Metadata = { title: "Console" };
 export const dynamic = "force-dynamic";
+
+const isOverdue = (t: Task) =>
+  t.status !== "done" &&
+  t.dueDate !== null &&
+  new Date(t.dueDate).getTime() < Date.now();
+
+/** "in 3 days" / "2 days late" — the thing you actually want to know. */
+function dueLabel(iso: string): string {
+  const days = Math.round((new Date(iso).getTime() - Date.now()) / 86_400_000);
+  if (Number.isNaN(days)) return "";
+  if (days < -1) return `${Math.abs(days)} days late`;
+  if (days === -1) return "1 day late";
+  if (days === 0) return "due today";
+  if (days === 1) return "due tomorrow";
+  return `in ${days} days`;
+}
 
 type Tile = {
   href: string;
@@ -37,58 +56,80 @@ type Tile = {
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   stat?: string | null;
-  alert?: string | null;
 };
 
 function TileCard({ tile }: { tile: Tile }) {
   return (
-    <Link
-      href={tile.href}
-      className="group bg-card relative overflow-hidden rounded-xl border p-6 transition-all hover:-translate-y-0.5"
-      style={{
-        borderColor: `color-mix(in oklab, ${tile.color} 22%, var(--border))`,
-      }}
-    >
-      <div
-        aria-hidden
-        className="absolute -top-8 -right-8 size-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-25"
-        style={{ background: tile.color }}
-      />
-      <div className="flex items-center justify-between">
-        <span
-          className="grid size-10 place-items-center rounded-lg"
-          style={{
-            background: `color-mix(in oklab, ${tile.color} 15%, transparent)`,
-            color: tile.color,
-          }}
-        >
-          <tile.icon className="size-5" />
-        </span>
-        <ArrowUpRight className="text-muted-foreground size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </div>
-      <h2 className="font-display mt-4 text-lg font-semibold">{tile.title}</h2>
-      <p className="text-muted-foreground mt-1 text-sm">{tile.description}</p>
-      {tile.stat || tile.alert ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          {tile.stat ? (
-            <span
-              className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-              style={{
-                background: `color-mix(in oklab, ${tile.color} 14%, transparent)`,
-                color: tile.color,
-              }}
-            >
-              {tile.stat}
-            </span>
-          ) : null}
-          {tile.alert ? (
-            <span className="text-destructive bg-destructive/10 rounded-full px-2.5 py-0.5 text-xs font-semibold">
-              {tile.alert}
-            </span>
-          ) : null}
+    <TiltCard className="glass-panel group overflow-hidden rounded-2xl" max={6}>
+      <Link href={tile.href} className="tilt-layer block p-6">
+        <div className="flex items-center justify-between">
+          <span
+            className="grid size-11 place-items-center rounded-xl"
+            style={{
+              background: `color-mix(in oklab, ${tile.color} 16%, transparent)`,
+              color: tile.color,
+              boxShadow: `0 0 0 1px color-mix(in oklab, ${tile.color} 22%, transparent)`,
+            }}
+          >
+            <tile.icon className="size-5" />
+          </span>
+          <ArrowUpRight className="text-muted-foreground size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
+        <h3 className="font-display mt-4 text-lg font-semibold">
+          {tile.title}
+        </h3>
+        <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+          {tile.description}
+        </p>
+        {tile.stat ? (
+          <span
+            className="mt-3 inline-block rounded-full px-2.5 py-0.5 font-mono text-xs font-semibold"
+            style={{
+              background: `color-mix(in oklab, ${tile.color} 14%, transparent)`,
+              color: tile.color,
+            }}
+          >
+            {tile.stat}
+          </span>
+        ) : null}
+      </Link>
+    </TiltCard>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  color,
+  hint,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  hint?: string;
+}) {
+  return (
+    <div className="glass-panel rounded-2xl p-4 sm:p-5">
+      <div className="flex items-center gap-2">
+        <span
+          className="size-2 rounded-full"
+          style={{ background: color, boxShadow: `0 0 10px ${color}` }}
+          aria-hidden
+        />
+        <span className="text-muted-foreground font-mono text-[0.68rem] tracking-[0.12em] uppercase">
+          {label}
+        </span>
+      </div>
+      <div
+        className="font-display mt-2 text-3xl font-bold tabular-nums sm:text-4xl"
+        style={{ color }}
+      >
+        {value}
+      </div>
+      {hint ? (
+        <p className="text-muted-foreground/80 mt-0.5 text-xs">{hint}</p>
       ) : null}
-    </Link>
+    </div>
   );
 }
 
@@ -106,18 +147,31 @@ export default async function ConsolePage() {
     : [];
 
   const open = tasks.filter((t) => t.status !== "done").length;
+  const doing = tasks.filter((t) => t.status === "in_progress").length;
   const done = tasks.filter((t) => t.status === "done").length;
+  const mineOverdue = tasks.filter(isOverdue);
 
-  // Personal tiles — everyone.
+  // The three things due soonest — the actual "what should I do now".
+  const upNext = tasks
+    .filter((t) => t.status !== "done")
+    .sort((a, b) => {
+      if (a.dueDate === b.dueDate) return 0;
+      if (a.dueDate === null) return 1;
+      if (b.dueDate === null) return -1;
+      return a.dueDate.localeCompare(b.dueDate);
+    })
+    .slice(0, 3);
+
   const personalTiles: Tile[] = [
     {
       href: routes.consoleTasks,
       title: "Tasks",
       description: isAdmin
-        ? "Your work, your teams, and every team's board."
+        ? "Your work, your teams, and every board."
         : "Your assigned work and progress.",
       icon: ListChecks,
       color: "#FF9900",
+      stat: open > 0 ? `${open} open` : null,
     },
     {
       href: routes.consoleProfile,
@@ -135,8 +189,8 @@ export default async function ConsolePage() {
     },
   ];
 
-  // Management tiles + live counts — admins only, in the same space.
   let manageTiles: Tile[] = [];
+  let teamOverdue = 0;
   if (isAdmin) {
     const [allTasks, members, apps, photos] = await Promise.all([
       safe(listAllTasks(), [], "console:home-tasks"),
@@ -144,12 +198,7 @@ export default async function ConsolePage() {
       safe(listApplications(), [], "console:home-apps"),
       safe(listBoothPhotos(), [], "console:home-photos"),
     ]);
-    const overdue = allTasks.filter(
-      (t) =>
-        t.status !== "done" &&
-        t.dueDate !== null &&
-        new Date(t.dueDate).getTime() < Date.now(),
-    ).length;
+    teamOverdue = allTasks.filter(isOverdue).length;
 
     manageTiles = [
       {
@@ -186,7 +235,7 @@ export default async function ConsolePage() {
       {
         href: routes.adminProjects,
         title: "Projects",
-        description: "Manage the project entries shown on profiles.",
+        description: "Manage the projects shown on profiles.",
         icon: FolderGit2,
         color: "#2EE6A0",
       },
@@ -205,9 +254,6 @@ export default async function ConsolePage() {
         color: "#43B4FF",
       },
     ];
-    // Surface overdue right on the Tasks tile at the top.
-    personalTiles[0]!.stat = `${open} open`;
-    if (overdue > 0) personalTiles[0]!.alert = `${overdue} overdue team-wide`;
   }
 
   return (
@@ -216,13 +262,37 @@ export default async function ConsolePage() {
       title={`Welcome, ${name}`}
       description={
         isAdmin
-          ? "Your work and everything behind AWS SBG VJIT, all in one place."
-          : "Your tasks and profile, all in one place."
+          ? "Your work and everything behind AWS SBG VJIT, in one place."
+          : "Your tasks, progress, and profile — all in one place."
       }
     >
       <div className="space-y-10">
+        {/* Anything late gets said first, plainly. */}
+        {mineOverdue.length > 0 ? (
+          <Link
+            href={routes.consoleTasks}
+            className="border-destructive/30 bg-destructive/[0.07] hover:border-destructive/50 flex items-center gap-3 rounded-2xl border p-4 transition-colors"
+          >
+            <TriangleAlert className="text-destructive size-5 shrink-0" />
+            <p className="text-sm">
+              <span className="font-semibold">
+                {mineOverdue.length} of your tasks{" "}
+                {mineOverdue.length === 1 ? "is" : "are"} overdue
+              </span>
+              <span className="text-muted-foreground">
+                {" "}
+                — {mineOverdue[0]!.title}
+                {mineOverdue.length > 1
+                  ? ` +${mineOverdue.length - 1} more`
+                  : ""}
+              </span>
+            </p>
+            <ArrowUpRight className="text-muted-foreground ml-auto size-4 shrink-0" />
+          </Link>
+        ) : null}
+
         {!member ? (
-          <div className="border-orange/30 bg-orange/5 flex flex-col gap-4 rounded-xl border p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="glass-panel flex flex-col gap-4 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
               <CircleAlert className="text-orange mt-0.5 size-5 shrink-0" />
               <div>
@@ -240,31 +310,68 @@ export default async function ConsolePage() {
           </div>
         ) : null}
 
+        {/* At-a-glance numbers. */}
         {tasks.length > 0 ? (
-          <Link
-            href={routes.consoleTasks}
-            className="group border-orange/25 from-orange/[0.07] block rounded-xl border bg-gradient-to-br to-transparent p-6 transition-colors"
-          >
-            <p className="text-muted-foreground font-mono text-xs tracking-wide uppercase">
-              Your tasks
-            </p>
-            <div className="mt-2 flex items-end gap-6">
-              <span className="font-display text-orange text-4xl font-bold tabular-nums">
-                {open}
-                <span className="text-muted-foreground ml-2 text-base font-normal">
-                  open
-                </span>
-              </span>
-              <span className="text-muted-foreground font-display text-2xl font-semibold tabular-nums">
-                {done}
-                <span className="ml-1.5 text-sm font-normal">done</span>
-              </span>
-              <span className="text-orange ml-auto inline-flex items-center gap-1 text-sm font-medium">
-                Open board
-                <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </span>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            <Stat label="Open" value={open} color="#FF9900" />
+            <Stat label="In progress" value={doing} color="#43B4FF" />
+            <Stat label="Done" value={done} color="#2EE6A0" />
+            <Stat
+              label="Overdue"
+              value={mineOverdue.length}
+              color={mineOverdue.length > 0 ? "#ef4444" : "#8b93a1"}
+              {...(isAdmin && teamOverdue > 0
+                ? { hint: `${teamOverdue} across all teams` }
+                : {})}
+            />
+          </div>
+        ) : null}
+
+        {/* Up next — the shortlist, not the whole board. */}
+        {upNext.length > 0 ? (
+          <section>
+            <h2 className="text-muted-foreground mb-3 flex items-center gap-2 text-sm font-semibold">
+              <CalendarClock className="size-4" />
+              Up next
+            </h2>
+            <div className="glass-panel divide-border/60 divide-y overflow-hidden rounded-2xl">
+              {upNext.map((t) => (
+                <Link
+                  key={t.id}
+                  href={routes.consoleTasks}
+                  className="hover:bg-foreground/[0.03] flex items-center gap-3 px-4 py-3 transition-colors"
+                >
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{
+                      background:
+                        t.status === "in_progress" ? "#FF9900" : "#8b93a1",
+                    }}
+                    aria-hidden
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                    {t.title}
+                  </span>
+                  {t.progress > 0 ? (
+                    <span className="text-muted-foreground hidden font-mono text-xs tabular-nums sm:inline">
+                      {t.progress}%
+                    </span>
+                  ) : null}
+                  {t.dueDate ? (
+                    <span
+                      className={
+                        isOverdue(t)
+                          ? "text-destructive font-mono text-xs font-semibold"
+                          : "text-muted-foreground font-mono text-xs"
+                      }
+                    >
+                      {dueLabel(t.dueDate)}
+                    </span>
+                  ) : null}
+                </Link>
+              ))}
             </div>
-          </Link>
+          </section>
         ) : null}
 
         <section>

@@ -25,8 +25,9 @@ export default async function AdminLayout({
   if (viewer?.mustChangePassword) redirect(routes.welcome);
 
   return (
-    <div className="min-h-dvh">
-      <header className="bg-background/80 sticky top-0 z-30 border-b backdrop-blur">
+    <div className="relative min-h-dvh">
+      <div className="app-bg" aria-hidden />
+      <header className="glass sticky top-0 z-30 border-b">
         <Container>
           <div className="flex h-16 items-center justify-between gap-4">
             <div className="flex shrink-0 items-center gap-2.5">
