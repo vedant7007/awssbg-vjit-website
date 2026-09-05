@@ -14,8 +14,11 @@ import { handleToEmail } from "@/lib/constants/auth";
 import { logger } from "@/lib/utils/logger";
 
 /** POST a fresh ID token to mint the httpOnly session cookie. */
-async function exchangeForSession(user: User): Promise<boolean> {
-  const idToken = await user.getIdToken();
+async function exchangeForSession(
+  user: User,
+  forceRefresh = false,
+): Promise<boolean> {
+  const idToken = await user.getIdToken(forceRefresh);
   const res = await fetch("/api/auth/session", {
     method: "POST",
     credentials: "include",
@@ -84,12 +87,20 @@ export async function signInWithUsername(
   }
 }
 
-/** Change the signed-in user's password (Firebase requires a recent login). */
+/**
+ * Change the signed-in user's password (Firebase requires a recent login).
+ *
+ * Firebase revokes the user's existing tokens when the password changes, which
+ * also invalidates the httpOnly session cookie we minted at sign-in (it is
+ * verified with checkRevoked). So we immediately mint a new one from a
+ * force-refreshed ID token — otherwise every server action right after a
+ * password change would see a signed-out user.
+ */
 export async function changePassword(newPassword: string): Promise<boolean> {
   if (!auth?.currentUser) return false;
   try {
     await updatePassword(auth.currentUser, newPassword);
-    return true;
+    return await exchangeForSession(auth.currentUser, true);
   } catch (error) {
     logger.error("password change failed", error);
     return false;
