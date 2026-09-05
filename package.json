@@ -20,6 +20,7 @@
     "seed": "tsx scripts/seed.ts",
     "provision": "tsx scripts/provision-team.ts",
     "credentials": "tsx scripts/credentials-pdf.ts",
+    "repair": "tsx scripts/repair-data.ts",
     "prepare": "husky"
   },
   "dependencies": {

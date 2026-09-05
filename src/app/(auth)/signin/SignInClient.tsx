@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 import { signInWithUsername } from "@/lib/auth/client";
 import { routes } from "@/lib/constants/routes";
@@ -36,6 +37,7 @@ export function SignInClient() {
   const [handle, setHandle] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [pending, setPending] = React.useState(false);
+  const [show, setShow] = React.useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,7 +62,8 @@ export function SignInClient() {
         </span>
         <CardTitle className="text-2xl">Team sign in</CardTitle>
         <CardDescription>
-          Use the handle and password your team gave you.
+          Use the handle and starting password your team gave you. You&apos;ll
+          set your own password on first sign-in.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -81,14 +84,29 @@ export function SignInClient() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={show ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                className="pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShow((s) => !s)}
+                aria-label={show ? "Hide password" : "Show password"}
+                className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 grid w-10 place-items-center"
+              >
+                {show ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
+              </button>
+            </div>
           </div>
           <Button
             type="submit"

@@ -31,7 +31,7 @@ export default async function AdminLayout({
           <div className="flex h-16 items-center justify-between gap-4">
             <div className="flex shrink-0 items-center gap-2.5">
               <Link href={routes.home} className="rounded-sm">
-                <Logo variant="compact" />
+                <Logo />
               </Link>
               <Badge className="bg-orange/15 text-orange border-0">Admin</Badge>
             </div>

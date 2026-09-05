@@ -3,7 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LayoutDashboard, LogOut } from "lucide-react";
+import {
+  Menu,
+  LayoutDashboard,
+  LogOut,
+  ListChecks,
+  UserRound,
+  Settings,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
 import { NAV_LINKS } from "@/lib/constants/nav";
@@ -107,9 +114,14 @@ export function Nav() {
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel className="truncate">
-                  {user.displayName ?? user.email}
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <p className="truncate text-sm font-semibold">
+                    {user.displayName ?? "Your account"}
+                  </p>
+                  <p className="text-muted-foreground truncate font-mono text-xs">
+                    @{(user.email ?? "").split("@")[0]}
+                  </p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
@@ -118,6 +130,25 @@ export function Nav() {
                     Console
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={routes.consoleTasks}>
+                    <ListChecks className="size-4" />
+                    My tasks
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={routes.consoleProfile}>
+                    <UserRound className="size-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={routes.consoleSettings}>
+                    <Settings className="size-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={() => {
                     signOut().catch(() => undefined);
