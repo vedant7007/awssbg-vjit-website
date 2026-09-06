@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getViewer, canAssignToTeam } from "@/lib/auth/viewer";
 import { getMemberById } from "@/lib/firestore/members.server";
 import {
-  createTask,
+  createTasks,
   getTask,
   updateTaskStatus,
   addTaskUpdate,
@@ -26,32 +26,66 @@ function refresh() {
   revalidatePath("/admin/tasks");
 }
 
+const MAX_TITLES = 25;
+const MAX_ASSIGNEES = 50;
+
+/**
+ * Assign one or more tasks to one or more people. Every (title × assignee)
+ * pair becomes its own task so progress stays per-person. Permission is checked
+ * for each assignee, so a lead can never slip someone outside their team into
+ * the list.
+ */
 export async function createTaskAction(input: {
-  title: string;
+  titles: string[];
   description: string;
-  assigneeUid: string;
+  assigneeUids: string[];
   dueDate: string;
-}): Promise<TaskActionState> {
+}): Promise<TaskActionState & { created?: number }> {
   const viewer = await getViewer();
   if (!viewer) return { ok: false, error: "You're not signed in." };
   if (!viewer.isAdmin && !viewer.isLead) {
     return { ok: false, error: "Only team leads and admins can assign tasks." };
   }
 
-  const title = input.title.trim();
+  const titles = (input.titles ?? []).map((t) => t.trim()).filter(Boolean);
   const description = (input.description ?? "").trim();
-  const assigneeUid = input.assigneeUid.trim();
-  if (!title) return { ok: false, error: "Add a task title." };
-  if (title.length > 140) return { ok: false, error: "Title is too long." };
+  const assigneeUids = [
+    ...new Set((input.assigneeUids ?? []).map((u) => u.trim()).filter(Boolean)),
+  ];
+
+  if (titles.length === 0) return { ok: false, error: "Add a task title." };
+  if (titles.length > MAX_TITLES)
+    return {
+      ok: false,
+      error: `That's more than ${MAX_TITLES} tasks at once.`,
+    };
+  if (titles.some((t) => t.length > 140))
+    return { ok: false, error: "One of the titles is too long." };
   if (description.length > 2000)
     return { ok: false, error: "Description is too long." };
-  if (!assigneeUid)
-    return { ok: false, error: "Pick someone to assign it to." };
+  if (assigneeUids.length === 0)
+    return { ok: false, error: "Pick at least one person." };
+  if (assigneeUids.length > MAX_ASSIGNEES)
+    return { ok: false, error: "That's too many people at once." };
 
-  const assignee = await getMemberById(assigneeUid);
-  if (!assignee) return { ok: false, error: "That member no longer exists." };
-  if (!canAssignToTeam(viewer, assignee.team)) {
-    return { ok: false, error: "You can only assign within your own team." };
+  const assignees = await Promise.all(
+    assigneeUids.map((uid) => getMemberById(uid)),
+  );
+  const resolved: { uid: string; name: string; team: string | null }[] = [];
+  for (const [i, member] of assignees.entries()) {
+    if (!member)
+      return { ok: false, error: "One of those members no longer exists." };
+    if (!canAssignToTeam(viewer, member.team)) {
+      return {
+        ok: false,
+        error: `You can only assign within your own team — ${member.displayName} isn't on it.`,
+      };
+    }
+    resolved.push({
+      uid: assigneeUids[i]!,
+      name: member.displayName,
+      team: member.team ?? null,
+    });
   }
 
   let dueDate: Date | null = null;
@@ -60,22 +94,26 @@ export async function createTaskAction(input: {
     if (!Number.isNaN(d.getTime())) dueDate = d;
   }
 
-  try {
-    await createTask({
+  const batch = titles.flatMap((title) =>
+    resolved.map((a) => ({
       title,
       description,
-      assigneeUid,
-      assigneeName: assignee.displayName,
-      team: assignee.team ?? null,
+      assigneeUid: a.uid,
+      assigneeName: a.name,
+      team: a.team,
       assignedByUid: viewer.uid,
       assignedByName: viewer.name,
       dueDate,
-    });
+    })),
+  );
+
+  try {
+    const created = await createTasks(batch);
     refresh();
-    return { ok: true };
+    return { ok: true, created };
   } catch (e) {
     logger.error("task:create", e);
-    return { ok: false, error: "Couldn't save the task. Try again?" };
+    return { ok: false, error: "Couldn't save the tasks. Try again?" };
   }
 }
 

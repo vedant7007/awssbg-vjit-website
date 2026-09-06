@@ -10,7 +10,7 @@
  * Run with: pnpm credentials
  * Output (gitignored): secrets/credentials/
  */
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { CAPTAIN, LEADS, CORE } from "../src/lib/constants/team";
@@ -22,6 +22,33 @@ import {
 } from "./credentials";
 
 const OUT_DIR = resolve(process.cwd(), "secrets/credentials");
+const KEY_PATH = resolve(process.cwd(), "secrets/service-account.json");
+
+/**
+ * Handles of people who already replaced their starting password. Printing the
+ * old one for them would be wrong and confusing, so those cards say so instead.
+ * Best-effort: without a service account we just print every starting password.
+ */
+async function onboardedHandles(): Promise<Set<string>> {
+  if (!existsSync(KEY_PATH)) return new Set();
+  try {
+    const { initializeApp, cert, getApps } = await import("firebase-admin/app");
+    const { getFirestore } = await import("firebase-admin/firestore");
+    if (getApps().length === 0) {
+      initializeApp({
+        credential: cert(JSON.parse(readFileSync(KEY_PATH, "utf8"))),
+      });
+    }
+    const snap = await getFirestore().collection("members").get();
+    return new Set(
+      snap.docs
+        .filter((d) => d.data().mustChangePassword === false)
+        .map((d) => String(d.data().username)),
+    );
+  } catch {
+    return new Set();
+  }
+}
 
 /** "Event Management" → "event-management" */
 const slug = (s: string): string =>
@@ -45,11 +72,19 @@ async function write(rows: Row[], name: string, heading?: string) {
 async function main(): Promise<void> {
   mkdirSync(OUT_DIR, { recursive: true });
 
+  const done = await onboardedHandles();
   const rows: Row[] = [
     rowFor(CAPTAIN, "core"),
     ...LEADS.map((l) => rowFor(l, "lead")),
     ...CORE.map((c) => rowFor(c, "member")),
-  ];
+  ].map((r) =>
+    done.has(r.handle) ? { ...r, password: "— already set by member —" } : r,
+  );
+  if (done.size > 0) {
+    console.info(
+      `${done.size} already set their own password — their cards say so instead.\n`,
+    );
+  }
 
   // Group by team label, leads first so each sheet starts with the lead.
   const byTeam = new Map<string, Row[]>();

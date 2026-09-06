@@ -905,6 +905,20 @@ export const CORE: RosterMember[] = [
     photo: "/team/members/pavanakarthikeya.jpg",
     socials: { linkedin: null, github: null, instagram: null },
   },
+  {
+    id: "m-36",
+    name: "Rishikesh",
+    role: "Core Member",
+    team: "tech",
+    branch: "",
+    year: "",
+    handle: "rishikesh",
+    bio: null,
+    about: null,
+    // No photo on file yet — drop one at /team/members/rishikesh.jpg and set it.
+    photo: null,
+    socials: { linkedin: null, github: null, instagram: null },
+  },
 ];
 
 /* ------------------------------- helpers -------------------------------- */

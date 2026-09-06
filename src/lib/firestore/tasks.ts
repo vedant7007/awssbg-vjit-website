@@ -98,6 +98,33 @@ export async function createTask(input: NewTask): Promise<void> {
     });
 }
 
+/**
+ * Create many tasks at once, in a single atomic batch.
+ *
+ * Assigning to several people fans out into one task per person rather than one
+ * shared task with many owners: status and progress are tracked per assignee,
+ * so a shared row could not represent "Medha is at 60%, Rohan hasn't started".
+ */
+export async function createTasks(inputs: NewTask[]): Promise<number> {
+  if (inputs.length === 0) return 0;
+  const db = getAdminDb();
+  const batch = db.batch();
+  const now = Timestamp.now();
+  for (const input of inputs) {
+    batch.set(db.collection(COLLECTION).doc(), {
+      ...input,
+      dueDate: input.dueDate ? Timestamp.fromDate(input.dueDate) : null,
+      status: "todo" as TaskStatus,
+      progress: 0,
+      updates: [],
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+  await batch.commit();
+  return inputs.length;
+}
+
 export async function getTask(id: string): Promise<Task | null> {
   const snap = await getAdminDb().collection(COLLECTION).doc(id).get();
   if (!snap.exists) return null;
