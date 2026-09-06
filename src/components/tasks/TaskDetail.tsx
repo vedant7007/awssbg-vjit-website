@@ -42,8 +42,8 @@ const STATUS_TINT: Record<string, string> = {
 };
 
 /** Detail + progress-update drawer for a single task. Controlled by its parent
- * through `task` (null = closed). The assignee, their lead, or an admin can
- * post progress notes; everyone with access sees the running log. */
+ * through `task` (null = closed). Only the assignee or an admin can post
+ * progress; everyone with access sees the running log. */
 export function TaskDetail({
   task,
   onOpenChange,
