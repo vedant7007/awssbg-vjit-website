@@ -166,7 +166,7 @@ export function KanbanBoard({
               type="button"
               onClick={() => setLateOnly((v) => !v)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                "inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                 lateOnly
                   ? "border-destructive bg-destructive/15 text-destructive"
                   : "border-border/70 text-muted-foreground hover:text-foreground",
@@ -184,7 +184,7 @@ export function KanbanBoard({
                   type="button"
                   onClick={() => setTeam(t)}
                   className={cn(
-                    "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
+                    "inline-flex min-h-8 items-center rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
                     team === t
                       ? "border-orange bg-orange/15 text-orange"
                       : "border-border/70 text-muted-foreground hover:text-foreground",
@@ -256,7 +256,7 @@ export function KanbanBoard({
                               type="button"
                               aria-label="Delete task"
                               onClick={() => remove(task)}
-                              className="text-muted-foreground hover:text-destructive shrink-0"
+                              className="text-muted-foreground hover:text-destructive -m-1.5 grid size-8 shrink-0 place-items-center rounded-full"
                             >
                               <Trash2 className="size-3.5" />
                             </button>
@@ -321,7 +321,7 @@ export function KanbanBoard({
                             type="button"
                             onClick={() => setOpenId(task.id)}
                             className={cn(
-                              "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-colors",
+                              "inline-flex min-h-8 items-center gap-1 rounded-full border px-3 py-1.5 text-[0.7rem] font-medium transition-colors",
                               mayEdit(task)
                                 ? "border-orange/40 text-orange hover:bg-orange/10"
                                 : "border-border/70 text-muted-foreground hover:text-foreground",
@@ -336,7 +336,7 @@ export function KanbanBoard({
                                 key={m.to}
                                 type="button"
                                 onClick={() => move(task, m.to)}
-                                className="border-border/70 hover:border-foreground/40 hover:text-foreground text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.7rem] transition-colors"
+                                className="border-border/70 hover:border-foreground/40 hover:text-foreground text-muted-foreground inline-flex min-h-8 items-center gap-1 rounded-full border px-3 py-1.5 text-[0.7rem] transition-colors"
                               >
                                 {m.icon}
                                 {m.label}

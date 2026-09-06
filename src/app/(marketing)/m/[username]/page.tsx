@@ -298,7 +298,7 @@ function RosterProfilePage({ member }: { member: RosterMember }) {
       <Container>
         <Link
           href={routes.team}
-          className="text-muted-foreground hover:text-foreground font-mono text-xs tracking-[0.15em] uppercase transition-colors"
+          className="text-muted-foreground hover:text-foreground -mx-1 inline-flex min-h-9 items-center px-1 font-mono text-xs tracking-[0.15em] uppercase transition-colors"
         >
           ← Team
         </Link>

@@ -92,7 +92,7 @@ function FooterLink({
   return (
     <Link
       href={href}
-      className="text-muted-foreground hover:text-orange text-sm transition-colors"
+      className="text-muted-foreground hover:text-orange -mx-1 inline-flex min-h-9 items-center px-1 text-sm transition-colors"
     >
       {children}
     </Link>

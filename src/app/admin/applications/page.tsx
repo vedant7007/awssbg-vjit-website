@@ -78,7 +78,7 @@ function ApplicationCard({ app }: { app: Application }) {
         {app.email ? (
           <a
             href={`mailto:${app.email}`}
-            className="text-foreground/80 hover:text-orange inline-flex items-center gap-1.5"
+            className="text-foreground/80 hover:text-orange -mx-1 inline-flex min-h-9 items-center gap-1.5 px-1"
           >
             <Mail className="size-3.5" aria-hidden />
             {app.email}
@@ -89,7 +89,7 @@ function ApplicationCard({ app }: { app: Application }) {
             href={waLink(app.whatsapp)}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-foreground/80 hover:text-orange inline-flex items-center gap-1.5"
+            className="text-foreground/80 hover:text-orange -mx-1 inline-flex min-h-9 items-center gap-1.5 px-1"
           >
             <MessageCircle className="size-3.5" aria-hidden />
             {app.whatsapp}
@@ -100,7 +100,7 @@ function ApplicationCard({ app }: { app: Application }) {
             href={app.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-foreground/80 hover:text-orange inline-flex items-center gap-1.5"
+            className="text-foreground/80 hover:text-orange -mx-1 inline-flex min-h-9 items-center gap-1.5 px-1"
           >
             <Linkedin className="size-3.5" aria-hidden />
             LinkedIn
@@ -111,7 +111,7 @@ function ApplicationCard({ app }: { app: Application }) {
             href={app.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-foreground/80 hover:text-orange inline-flex items-center gap-1.5"
+            className="text-foreground/80 hover:text-orange -mx-1 inline-flex min-h-9 items-center gap-1.5 px-1"
           >
             <Github className="size-3.5" aria-hidden />
             GitHub

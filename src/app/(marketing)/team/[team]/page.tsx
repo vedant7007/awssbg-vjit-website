@@ -137,7 +137,7 @@ export default async function TeamSubPage({
                 <Link
                   key={t.key}
                   href={routes.teamPage(t.key)}
-                  className="text-muted-foreground hover:text-foreground font-mono text-xs tracking-[0.15em] uppercase transition-colors"
+                  className="text-muted-foreground hover:text-foreground -mx-1 inline-flex min-h-9 items-center px-1 font-mono text-xs tracking-[0.15em] uppercase transition-colors"
                   style={{ borderColor: t.color }}
                 >
                   {t.wrap[0]}
@@ -147,7 +147,7 @@ export default async function TeamSubPage({
               ))}
               <Link
                 href={routes.teamAll}
-                className="text-muted-foreground hover:text-foreground font-mono text-xs tracking-[0.15em] uppercase transition-colors"
+                className="text-muted-foreground hover:text-foreground -mx-1 inline-flex min-h-9 items-center px-1 font-mono text-xs tracking-[0.15em] uppercase transition-colors"
               >
                 Everyone →
               </Link>

@@ -132,7 +132,7 @@ export function AssignTaskForm({ members }: { members: AssignableMember[] }) {
             <button
               type="button"
               onClick={() => setPicked([])}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs"
+              className="text-muted-foreground hover:text-foreground -mx-2 inline-flex min-h-8 items-center gap-1 px-2 text-xs"
             >
               <X className="size-3" /> Clear {picked.length}
             </button>
@@ -170,7 +170,7 @@ export function AssignTaskForm({ members }: { members: AssignableMember[] }) {
                   <button
                     type="button"
                     onClick={() => toggleTeam(list)}
-                    className="text-orange text-[0.68rem] hover:underline"
+                    className="text-orange -mx-2 inline-flex min-h-8 items-center px-2 text-[0.68rem] hover:underline"
                   >
                     {allOn ? "none" : "all"}
                   </button>
@@ -185,7 +185,7 @@ export function AssignTaskForm({ members }: { members: AssignableMember[] }) {
                         onClick={() => toggle(m.uid)}
                         aria-pressed={on}
                         className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors",
+                          "inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
                           on
                             ? "border-orange bg-orange/15 text-orange font-medium"
                             : "border-border/70 text-muted-foreground hover:text-foreground",
