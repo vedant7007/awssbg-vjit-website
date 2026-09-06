@@ -60,11 +60,16 @@ export function KanbanBoard({
   canManage = false,
   showAssignee = true,
   showTeamFilter = false,
+  viewerUid,
+  isAdmin = false,
 }: {
   tasks: Task[];
   canManage?: boolean;
   showAssignee?: boolean;
   showTeamFilter?: boolean;
+  /** Who is looking — decides which cards they may act on. */
+  viewerUid?: string;
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const [items, setItems] = React.useState<Task[]>(tasks);
@@ -87,6 +92,14 @@ export function KanbanBoard({
   );
 
   const lateCount = React.useMemo(() => items.filter(overdue).length, [items]);
+
+  /* Mirrors the server rules in console/tasks/actions.ts: progress and status
+   * belong to the assignee (or an admin), and only whoever assigned a task can
+   * withdraw it. Leads still see every card — they just can't act on someone
+   * else's. */
+  const mayEdit = (t: Task) => isAdmin || t.assigneeUid === viewerUid;
+  const mayDelete = (t: Task) =>
+    canManage && (isAdmin || t.assignedByUid === viewerUid);
 
   const visible = React.useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -238,7 +251,7 @@ export function KanbanBoard({
                               {task.title}
                             </h4>
                           </button>
-                          {canManage ? (
+                          {mayDelete(task) ? (
                             <button
                               type="button"
                               aria-label="Delete task"
@@ -307,22 +320,29 @@ export function KanbanBoard({
                           <button
                             type="button"
                             onClick={() => setOpenId(task.id)}
-                            className="border-orange/40 text-orange hover:bg-orange/10 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-colors"
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-colors",
+                              mayEdit(task)
+                                ? "border-orange/40 text-orange hover:bg-orange/10"
+                                : "border-border/70 text-muted-foreground hover:text-foreground",
+                            )}
                           >
                             <MessageSquareText className="size-3" />
-                            Update
+                            {mayEdit(task) ? "Update" : "View"}
                           </button>
-                          {moves(task.status).map((m) => (
-                            <button
-                              key={m.to}
-                              type="button"
-                              onClick={() => move(task, m.to)}
-                              className="border-border/70 hover:border-foreground/40 hover:text-foreground text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.7rem] transition-colors"
-                            >
-                              {m.icon}
-                              {m.label}
-                            </button>
-                          ))}
+                          {(mayEdit(task) ? moves(task.status) : []).map(
+                            (m) => (
+                              <button
+                                key={m.to}
+                                type="button"
+                                onClick={() => move(task, m.to)}
+                                className="border-border/70 hover:border-foreground/40 hover:text-foreground text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.7rem] transition-colors"
+                              >
+                                {m.icon}
+                                {m.label}
+                              </button>
+                            ),
+                          )}
                         </div>
                       </motion.article>
                     ))}
@@ -344,6 +364,7 @@ export function KanbanBoard({
 
       <TaskDetail
         task={openTask}
+        canEdit={openTask ? mayEdit(openTask) : false}
         onOpenChange={(o) => {
           if (!o) setOpenId(null);
         }}

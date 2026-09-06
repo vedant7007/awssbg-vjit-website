@@ -47,20 +47,23 @@ const STATUS_TINT: Record<string, string> = {
 export function TaskDetail({
   task,
   onOpenChange,
+  canEdit = false,
 }: {
   task: Task | null;
   onOpenChange: (open: boolean) => void;
+  /** Only the assignee (or an admin) may post progress; everyone else reads. */
+  canEdit?: boolean;
 }) {
   return (
     <Dialog open={!!task} onOpenChange={onOpenChange}>
       <DialogContent className="glass-panel max-h-[90vh] gap-0 overflow-y-auto rounded-2xl p-0 sm:max-w-lg">
-        {task ? <Body key={task.id} task={task} /> : null}
+        {task ? <Body key={task.id} task={task} canEdit={canEdit} /> : null}
       </DialogContent>
     </Dialog>
   );
 }
 
-function Body({ task }: { task: Task }) {
+function Body({ task, canEdit }: { task: Task; canEdit: boolean }) {
   const router = useRouter();
   const [progress, setProgress] = React.useState(task.progress);
   const [note, setNote] = React.useState("");
@@ -129,7 +132,7 @@ function Body({ task }: { task: Task }) {
         </div>
       </DialogHeader>
 
-      {/* Progress composer */}
+      {/* Progress — editable only by the assignee or an admin. */}
       <div className="space-y-4 p-5">
         <div>
           <div className="mb-2 flex items-center justify-between">
@@ -141,53 +144,69 @@ function Body({ task }: { task: Task }) {
               {progress}%
             </span>
           </div>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={5}
-            value={progress}
-            onChange={(e) => setProgress(Number(e.target.value))}
-            className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[var(--muted)] accent-[var(--orange)]"
-            style={{
-              background: `linear-gradient(to right, ${tint} ${progress}%, var(--muted) ${progress}%)`,
-            }}
-            aria-label="Progress percent"
-          />
+          {canEdit ? (
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={5}
+              value={progress}
+              onChange={(e) => setProgress(Number(e.target.value))}
+              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[var(--muted)] accent-[var(--orange)]"
+              style={{
+                background: `linear-gradient(to right, ${tint} ${progress}%, var(--muted) ${progress}%)`,
+              }}
+              aria-label="Progress percent"
+            />
+          ) : (
+            <div className="bg-muted h-2 overflow-hidden rounded-full">
+              <div
+                className="h-full rounded-full transition-[width] duration-500"
+                style={{ width: `${progress}%`, background: tint }}
+              />
+            </div>
+          )}
         </div>
 
-        <div>
-          <Textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="What did you get done? (e.g. finished the poster draft, waiting on copy)"
-            rows={3}
-            maxLength={500}
-            className="resize-none text-sm"
-          />
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-muted-foreground text-[0.7rem]">
-              {progress >= 100
-                ? "Marks this task done."
-                : progress > 0
-                  ? "Marks this in progress."
-                  : "Log where you're at."}
-            </span>
-            <Button
-              size="sm"
-              onClick={post}
-              disabled={!dirty || saving}
-              className="rounded-full"
-            >
-              {saving ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Send className="size-4" />
-              )}
-              Post update
-            </Button>
+        {!canEdit ? (
+          <p className="text-muted-foreground border-border/60 rounded-xl border border-dashed px-3 py-2.5 text-xs">
+            Only {task.assigneeName.split(/\s+/)[0]} can post progress on this
+            task. You can follow the updates below.
+          </p>
+        ) : (
+          <div>
+            <Textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="What did you get done? (e.g. finished the poster draft, waiting on copy)"
+              rows={3}
+              maxLength={500}
+              className="resize-none text-sm"
+            />
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-muted-foreground text-[0.7rem]">
+                {progress >= 100
+                  ? "Marks this task done."
+                  : progress > 0
+                    ? "Marks this in progress."
+                    : "Log where you're at."}
+              </span>
+              <Button
+                size="sm"
+                onClick={post}
+                disabled={!dirty || saving}
+                className="rounded-full"
+              >
+                {saving ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Send className="size-4" />
+                )}
+                Post update
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Log */}

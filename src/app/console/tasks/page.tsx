@@ -119,7 +119,12 @@ export default async function ConsoleTasksPage() {
               />
             </div>
           ) : null}
-          <KanbanBoard tasks={myTasks} showAssignee={false} />
+          <KanbanBoard
+            tasks={myTasks}
+            showAssignee={false}
+            viewerUid={viewer.uid}
+            isAdmin={viewer.isAdmin}
+          />
         </section>
 
         {showLead ? (
@@ -142,7 +147,12 @@ export default async function ConsoleTasksPage() {
               <h2 className="font-display mb-4 text-xl font-semibold">
                 {viewer.team} team board
               </h2>
-              <KanbanBoard tasks={teamTasks} canManage />
+              <KanbanBoard
+                tasks={teamTasks}
+                canManage
+                viewerUid={viewer.uid}
+                isAdmin={viewer.isAdmin}
+              />
             </section>
           </>
         ) : null}
@@ -175,7 +185,13 @@ export default async function ConsoleTasksPage() {
               </div>
             </details>
 
-            <KanbanBoard tasks={allTasks} canManage showTeamFilter />
+            <KanbanBoard
+              tasks={allTasks}
+              canManage
+              showTeamFilter
+              viewerUid={viewer.uid}
+              isAdmin={viewer.isAdmin}
+            />
           </section>
         ) : null}
 

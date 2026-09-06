@@ -129,11 +129,11 @@ export async function setTaskStatusAction(
   const task = await getTask(taskId);
   if (!task) return { ok: false, error: "Task not found." };
 
-  const allowed =
-    viewer.isAdmin ||
-    viewer.uid === task.assigneeUid ||
-    (viewer.isLead && viewer.team === task.team);
-  if (!allowed) return { ok: false, error: "You can't change this task." };
+  // Only an admin or the person the task belongs to. A lead can watch their
+  // team's progress but never move someone else's card.
+  const allowed = viewer.isAdmin || viewer.uid === task.assigneeUid;
+  if (!allowed)
+    return { ok: false, error: "Only the assignee can change this task." };
 
   try {
     const implied = progressForStatus(status);
@@ -161,11 +161,10 @@ export async function addTaskUpdateAction(
   const task = await getTask(taskId);
   if (!task) return { ok: false, error: "Task not found." };
 
-  const allowed =
-    viewer.isAdmin ||
-    viewer.uid === task.assigneeUid ||
-    (viewer.isLead && viewer.team === task.team);
-  if (!allowed) return { ok: false, error: "You can't update this task." };
+  // Progress is a first-person report: only the assignee (or an admin) posts it.
+  const allowed = viewer.isAdmin || viewer.uid === task.assigneeUid;
+  if (!allowed)
+    return { ok: false, error: "Only the assignee can post progress here." };
 
   const note = (input.note ?? "").trim();
   if (note.length > 500) return { ok: false, error: "Keep the note shorter." };
@@ -200,11 +199,10 @@ export async function deleteTaskAction(
   const task = await getTask(taskId);
   if (!task) return { ok: true }; // already gone
 
-  const allowed =
-    viewer.isAdmin ||
-    viewer.uid === task.assignedByUid ||
-    (viewer.isLead && viewer.team === task.team);
-  if (!allowed) return { ok: false, error: "You can't delete this task." };
+  // You can withdraw work you assigned; admins can remove anything.
+  const allowed = viewer.isAdmin || viewer.uid === task.assignedByUid;
+  if (!allowed)
+    return { ok: false, error: "Only whoever assigned this can delete it." };
 
   try {
     await deleteTask(taskId);
