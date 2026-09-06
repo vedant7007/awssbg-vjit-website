@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { PhotoField } from "@/components/forms/PhotoField";
 import {
   Form,
   FormControl,
@@ -167,18 +168,13 @@ export function ProfileForm({
           name="photoURL"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Photo URL</FormLabel>
+              <FormLabel>Photo</FormLabel>
               <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://..."
-                  value={field.value ?? ""}
-                  onChange={(e) => field.onChange(e.target.value || null)}
+                <PhotoField
+                  value={field.value ?? null}
+                  onChange={(next) => field.onChange(next)}
                 />
               </FormControl>
-              <FormDescription>
-                Paste a link to your photo. Direct file upload is coming soon.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
