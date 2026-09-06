@@ -4,6 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 import { memberFormSchema, type MemberFormValues } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,10 @@ export function ProfileForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, () =>
+          // Never let the button look dead: say why nothing happened.
+          toast.error("Some fields need fixing — check the highlighted ones."),
+        )}
         className="max-w-2xl space-y-8"
         noValidate
       >

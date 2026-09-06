@@ -4,6 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   memberFormSchema,
@@ -84,7 +85,9 @@ export function MemberForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, () =>
+          toast.error("Some fields need fixing — check the highlighted ones."),
+        )}
         className="max-w-2xl space-y-8"
         noValidate
       >

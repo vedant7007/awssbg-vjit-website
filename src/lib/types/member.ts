@@ -49,12 +49,23 @@ export const memberFormSchema = z.object({
     ),
   displayName: z.string().min(2, "Required").max(80),
   email: z.string().email("Enter a valid email"),
-  photoURL: z.string().url("Must be a valid URL").nullable(),
+  /* Roster photos are served from /public, so a site-relative path like
+   * "/team/members/ruthvik.jpg" is just as valid here as a full URL. Requiring
+   * url() locked almost everyone out of saving their own profile. */
+  photoURL: z
+    .string()
+    .trim()
+    .refine(
+      (v) => v.startsWith("/") || /^https?:\/\/\S+$/i.test(v),
+      "Use a full https:// link or a site path like /team/members/you.jpg",
+    )
+    .nullable(),
   role: z.enum(MEMBER_ROLES),
   team: z.string().max(40).nullable(),
   cohortYear: z.coerce.number().int().min(2015).max(2100),
   batchYear: z.coerce.number().int().min(2015).max(2100),
-  branch: z.string().min(1, "Required").max(40),
+  // Optional: most of the roster was imported without a branch on file.
+  branch: z.string().max(40),
   bio: z.string().max(280, "Keep it under 280 characters"),
   skills: z.array(z.string().min(1)).max(24),
   socials: z.object({
