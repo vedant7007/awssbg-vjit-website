@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/auth/server";
 import { getViewer } from "@/lib/auth/viewer";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
+import { LogoMark } from "@/components/brand/LogoMark";
 import { Badge } from "@/components/ui/badge";
 import { AppNav } from "@/components/console/AppNav";
 
@@ -32,9 +33,14 @@ export default async function AdminLayout({
           <div className="flex h-16 items-center justify-between gap-4">
             <div className="flex shrink-0 items-center gap-2.5">
               <Link href={routes.home} className="rounded-sm">
-                <Logo />
+                {/* The full wordmark crowds the nav on a phone; the mark alone
+                    leaves room for every link. */}
+                <LogoMark className="size-7 sm:hidden" />
+                <Logo className="hidden sm:inline-flex" />
               </Link>
-              <Badge className="bg-orange/15 text-orange border-0">Admin</Badge>
+              <Badge className="bg-orange/15 text-orange hidden border-0 sm:inline-flex">
+                Admin
+              </Badge>
             </div>
             <div className="min-w-0">
               <AppNav isAdmin />

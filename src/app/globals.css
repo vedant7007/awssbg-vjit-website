@@ -911,7 +911,8 @@ html[data-intro="skip"] #logo-intro {
 /* The primary frosted surface: translucent card + top sheen + inner
  * hairline highlight, so panels read as glass sitting above the ground. */
 .glass-panel {
-  position: relative;
+  /* No `position` here on purpose: this is plain CSS, so it would override
+   * Tailwind's fixed/sticky utilities on anything it is combined with. */
   background:
     linear-gradient(
       180deg,
@@ -938,6 +939,7 @@ html[data-intro="skip"] #logo-intro {
 /* 3D tilt. The component sets --rx/--ry (degrees) and --gx/--gy (glare
  * position) from the pointer; CSS owns the easing and the resting state. */
 .tilt {
+  position: relative;
   transform: perspective(900px) rotateX(var(--rx, 0deg))
     rotateY(var(--ry, 0deg)) translateZ(0);
   transform-style: preserve-3d;
